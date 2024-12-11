@@ -29,12 +29,12 @@ if (session_status() == PHP_SESSION_NONE) {
 
     <div class="collapse navbar-collapse" id="navbarsFurni">
       <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
-        <li class="nav-item active">
+        <li>
           <a class="nav-link" href="index.php">Home</a>
         </li>
         <li><a class="nav-link" href="products.php">Shop</a></li>
-        <li><a class="nav-link" href="about.html">About us</a></li>
-        <li><a class="nav-link" href="contact.html">Contact us</a></li>
+        <li><a class="nav-link" href="about.php">About us</a></li>
+        <li><a class="nav-link" href="contact.php">Contact us</a></li>
       </ul>
 
       <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
