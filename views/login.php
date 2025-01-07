@@ -61,7 +61,7 @@ if (isset($_SESSION['user_id'])) {
 							<div class="col-lg-6">
 								<div class="p-5">
 									<div class="text-center">
-										<h1 class="h4 text-gray-900 mb-4">Online Ordering | Sign-in</h1>
+										<h1 class="h4 text-gray-900 mb-4">Blüt Medical | Sign-in</h1>
 									</div>
 
 									<form class="user" id="loginForm" onsubmit="submitForm(); return false;">

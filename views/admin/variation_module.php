@@ -19,7 +19,7 @@ if (session_status() == PHP_SESSION_NONE) {
   <link href="./../../assets/img/favicon.ico" rel="icon">
 
 
-  <title>Admin | Product</title>
+  <title>Admin | Variation</title>
 
   <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
@@ -46,8 +46,7 @@ if (session_status() == PHP_SESSION_NONE) {
     <!-- End of Sidebar -->
 
     <!-- Modal for Adding and Editing Supplier -->
-    <?php include './../../modals/purchase/modal_add_purchase.php'; ?>
-
+    <?php include './../../modals/variation/modal_add_variation.php'; ?>
 
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
@@ -63,12 +62,11 @@ if (session_status() == PHP_SESSION_NONE) {
 
           <!-- Page Heading -->
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Purchase Order Module</h1>
+            <h1 class="h3 mb-0 text-gray-800">Variation Module</h1>
           </div>
 
           <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mb-4" data-toggle="modal"
-            data-target="#addPurchaseOrderModal"> <i class="fas fa-plus"></i> Add Stocks</a>
-
+            data-target="#addVariationModel"> <i class="fas fa-plus"></i> Add Variation</a>
           <!-- <a href="./../../excels/supplier_export.php" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mb-4"><i class="fas fa-file-excel"></i> Export Excel</a> -->
 
           <div class="row">
@@ -76,18 +74,17 @@ if (session_status() == PHP_SESSION_NONE) {
               <div class="tab-pane fade show active" id="aa" role="tabpanel" aria-labelledby="aa-tab">
 
                 <div class="table-responsive">
-                  <div id="modalContainerProduct"></div>
+                  <div id="modalContainerVariation"></div>
+                  <!-- <div id="modalContainerVariationDelete"></div> -->
 
-                  <table class="table custom-table table-hover" name="purchase_table" id="purchase_table">
+
+                  <table class="table custom-table table-hover" name="variation_table" id="variation_table">
                     <thead>
                       <tr>
                         <th>ID</th>
-                        <th>PO #</th>
-                        <th>Supplier</th>
-                        <th>Product</th>
-                        <th>Quantity</th>
-                        <th>Date Created</th>
-                        <th>Date Updated</th>
+                        <th>Product Name</th>
+                        <th>Attribute</th>
+                        <th>Value</th>
                         <th>Manage</th>
                       </tr>
                     </thead>
@@ -146,21 +143,21 @@ if (session_status() == PHP_SESSION_NONE) {
 
 <script>
   $('#sidebarToggle').click(function () {
-    $('#purchase_table').css('width', '100%');
+    $('#variation_table').css('width', '100%');
     // console.log(table) //This is for testing only
   });
 
   //Table for Product
   $(document).ready(function () {
-    var purchase_table = $('#purchase_table').DataTable({
+    var variation_table = $('#variation_table').DataTable({
       "pagingType": "numbers",
       "processing": true,
       "serverSide": true,
-      "ajax": "./../../controllers/tables/purchase_table.php",
+      "ajax": "./../../controllers/tables/variation_table.php",
     });
 
     window.reloadDataTable = function () {
-      purchase_table.ajax.reload();
+      variation_table.ajax.reload();
     };
 
   });
@@ -168,19 +165,19 @@ if (session_status() == PHP_SESSION_NONE) {
   //Column 5
   $(document).ready(function () {
     // Function to handle click event on datatable rows
-    $('#purchase_table').on('click', 'tr td:nth-child(8) .fetchDataPurchase', function () {
-      var purchase_order_id = $(this).closest('tr').find('td').first().text(); // Get the purchase_order_id from the clicked row
+    $('#variation_table').on('click', 'tr td:nth-child(5) .fetchDataVariation', function () {
+      var variation_id = $(this).closest('tr').find('td').first().text(); // Get the product_id from the clicked row
 
       $.ajax({
-        url: './../../modals/purchase/modal_edit_purchase.php', // Path to PHP script to fetch modal content
+        url: './../../modals/variation/modal_edit_variation.php', // Path to PHP script to fetch modal content
         method: 'POST',
         data: {
-          purchase_order_id: purchase_order_id
+          variation_id: variation_id
         },
         success: function (response) {
-          $('#modalContainerProduct').html(response);
-          $('#editPurchaseModal').modal('show');
-          console.log("#editPurchaseModal" + purchase_order_id);
+          $('#modalContainerVariation').html(response);
+          $('#editVariationModal').modal('show');
+          console.log("#editVariationModal" + variation_id);
         },
         error: function (xhr, status, error) {
           console.error(xhr.responseText);

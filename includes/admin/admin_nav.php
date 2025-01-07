@@ -114,13 +114,7 @@ if ($result) {
           Reports, Product & Setup
         </div>
 
-        <?php if ($row['po_module'] == 1): ?>
-          <li class="nav-item">
-            <a class="nav-link" href="/blutmedical/views/admin/purchase_module.php">
-              <i class="fas fa-fw fa-cart-plus"></i>
-              <span>Purchase Order</span></a>
-          </li>
-        <?php endif; ?>
+
 
         <?php if ($row['reports_module'] == 1): ?>
           <!-- Reports Collapse -->
@@ -138,7 +132,13 @@ if ($result) {
             </div>
           </li>
         <?php endif; ?>
-
+        <?php if ($row['po_module'] == 1): ?>
+          <li class="nav-item">
+            <a class="nav-link" href="/blutmedical/views/admin/purchase_module.php">
+              <i class="fas fa-fw fa-cart-plus"></i>
+              <span>Add Stocks</span></a>
+          </li>
+        <?php endif; ?>
         <?php if ($row['inventory_module'] == 1): ?>
           <!-- Products Setup Collapse -->
           <li class="nav-item">
@@ -153,6 +153,8 @@ if ($result) {
                 <a class="collapse-item" href="/blutmedical/views/admin/supplier_module.php">Suppliers</a>
                 <a class="collapse-item" href="/blutmedical/views/admin/category_module.php">Category</a>
                 <a class="collapse-item" href="/blutmedical/views/admin/product_module.php">Products</a>
+                <a class="collapse-item" href="/blutmedical/views/admin/variation_module.php">Variation</a>
+
               </div>
 
             </div>

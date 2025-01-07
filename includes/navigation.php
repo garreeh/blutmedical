@@ -20,7 +20,9 @@ if (session_status() == PHP_SESSION_NONE) {
 <nav class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
 
   <div class="container">
-    <a class="navbar-brand" href="index.php">Blut Logo here</a>
+    <a class="navbar-brand" href="index.php">
+      <img src="assets/logo/blut_logo.png" alt="Blut Logo" style="height: 8rem; width: auto;">
+    </a>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni"
       aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,16 +46,29 @@ if (session_status() == PHP_SESSION_NONE) {
             aria-expanded="false">
             <i class="fa-solid fa-user"></i>
           </a>
-          <ul class="dropdown-menu" aria-labelledby="userDropdown">
-            <li><a class="dropdown-item" href="views/login.php">Login</a></li>
-            <li><a class="dropdown-item" href="views/register.php">Register</a></li>
-          </ul>
+          <?php if (isset($_SESSION['user_id'])): ?>
+            <ul class="dropdown-menu" aria-labelledby="userDropdown">
+              <li><a class="dropdown-item" href="/online_ordering/controllers/logout_process.php">Sign-out</a></li>
+            </ul>
+          <?php else: ?>
+            <ul class="dropdown-menu" aria-labelledby="userDropdown">
+              <li><a class="dropdown-item" href="views/login.php">Log In</a></li>
+              <li><a class="dropdown-item" href="views/register.php">Register</a></li>
+            </ul>
+          <?php endif; ?>
         </li>
 
         <!-- Cart Icon -->
         <li>
-          <a class="nav-link" href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a>
+          <a class="nav-link position-relative" href="cart.html">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span id="cart-badge"
+              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+              3 <!-- Replace 3 with your cart count dynamically -->
+            </span>
+          </a>
         </li>
+
       </ul>
 
 
