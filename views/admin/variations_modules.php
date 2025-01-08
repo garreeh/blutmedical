@@ -5,6 +5,22 @@ if (session_status() == PHP_SESSION_NONE) {
   session_start();
 }
 
+$product_id = isset($_GET['product_id']) ? $_GET['product_id'] : null;
+
+// Initialize product name
+$product_name = 'Unknown Product';
+
+if ($product_id) {
+  // Directly query the database
+  $query = "SELECT product_name FROM product WHERE product_id = " . intval($product_id);
+  $result = mysqli_query($conn, $query);
+
+  if ($result && mysqli_num_rows($result) > 0) {
+    $row = mysqli_fetch_assoc($result);
+    $product_name = $row['product_name'];
+  }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -62,11 +78,11 @@ if (session_status() == PHP_SESSION_NONE) {
 
           <!-- Page Heading -->
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Select product to add variation</h1>
+            <h1 class="h3 mb-0 text-gray-800">Varation for <?php echo $row['product_name'] ?></h1>
           </div>
 
-          <!-- <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mb-4" data-toggle="modal"
-            data-target="#addVariationModel"> <i class="fas fa-plus"></i> Add Variation</a> -->
+          <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mb-4" data-toggle="modal"
+            data-target="#addVariationModel"> <i class="fas fa-plus"></i> Add Variation</a>
           <!-- <a href="./../../excels/supplier_export.php" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mb-4"><i class="fas fa-file-excel"></i> Export Excel</a> -->
 
           <div class="row">
@@ -78,11 +94,12 @@ if (session_status() == PHP_SESSION_NONE) {
                   <!-- <div id="modalContainerVariationDelete"></div> -->
 
 
-                  <table class="table custom-table table-hover" name="variation_table" id="variation_table">
+                  <table class="table custom-table table-hover" name="variations_table" id="variations_table">
                     <thead>
                       <tr>
                         <th>ID</th>
-                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Variation</th>
                         <th>Manage</th>
                       </tr>
                     </thead>
@@ -141,23 +158,52 @@ if (session_status() == PHP_SESSION_NONE) {
 
 <script>
   $('#sidebarToggle').click(function () {
-    $('#variation_table').css('width', '100%');
+    $('#variations_table').css('width', '100%');
     // console.log(table) //This is for testing only
   });
 
   //Table for Product
   $(document).ready(function () {
-    var variation_table = $('#variation_table').DataTable({
+    var variations_table = $('#variations_table').DataTable({
       "pagingType": "numbers",
       "processing": true,
       "serverSide": true,
-      "ajax": "./../../controllers/tables/variation_table.php",
+      "ajax": {
+        url: "./../../controllers/tables/variations_table.php",
+        type: "GET",
+        data: function (d) {
+          d.product_id = <?php echo $product_id; ?>; // Pass client_id
+        }
+      }
     });
 
     window.reloadDataTable = function () {
-      variation_table.ajax.reload();
+      variations_table.ajax.reload();
     };
 
   });
 
+  //Column 5
+  $(document).ready(function () {
+    // Function to handle click event on datatable rows
+    $('#variations_table').on('click', 'tr td:nth-child(4) .fetchDataVariation', function () {
+      var variation_id = $(this).closest('tr').find('td').first().text(); // Get the product_id from the clicked row
+
+      $.ajax({
+        url: './../../modals/variation/modal_edit_variation.php', // Path to PHP script to fetch modal content
+        method: 'POST',
+        data: {
+          variation_id: variation_id
+        },
+        success: function (response) {
+          $('#modalContainerVariation').html(response);
+          $('#editVariationModal').modal('show');
+          console.log("#editVariationModal" + variation_id);
+        },
+        error: function (xhr, status, error) {
+          console.error(xhr.responseText);
+        }
+      });
+    });
+  });
 </script>

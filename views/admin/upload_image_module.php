@@ -62,7 +62,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
           <!-- Page Heading -->
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Select product to add variation</h1>
+            <h1 class="h3 mb-0 text-gray-800">Select product to add image</h1>
           </div>
 
           <!-- <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mb-4" data-toggle="modal"
@@ -78,7 +78,7 @@ if (session_status() == PHP_SESSION_NONE) {
                   <!-- <div id="modalContainerVariationDelete"></div> -->
 
 
-                  <table class="table custom-table table-hover" name="variation_table" id="variation_table">
+                  <table class="table custom-table table-hover" name="product_image_table" id="product_image_table">
                     <thead>
                       <tr>
                         <th>ID</th>
@@ -141,21 +141,21 @@ if (session_status() == PHP_SESSION_NONE) {
 
 <script>
   $('#sidebarToggle').click(function () {
-    $('#variation_table').css('width', '100%');
+    $('#product_image_table').css('width', '100%');
     // console.log(table) //This is for testing only
   });
 
   //Table for Product
   $(document).ready(function () {
-    var variation_table = $('#variation_table').DataTable({
+    var product_image_table = $('#product_image_table').DataTable({
       "pagingType": "numbers",
       "processing": true,
       "serverSide": true,
-      "ajax": "./../../controllers/tables/variation_table.php",
+      "ajax": "./../../controllers/tables/product_image_table.php",
     });
 
     window.reloadDataTable = function () {
-      variation_table.ajax.reload();
+      product_image_table.ajax.reload();
     };
 
   });

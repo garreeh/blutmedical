@@ -1,46 +1,50 @@
 <?php
 
 // Define table and primary key
-$table = 'product';
-$primaryKey = 'product_id';
+$table = 'variations';
+$primaryKey = 'variation_id';
 // Define columns for DataTables
 $columns = array(
   array(
-    'db' => 'product_id',
+    'db' => 'variation_id',
     'dt' => 0,
-    'field' => 'product_id',
+    'field' => 'variation_id',
     'formatter' => function ($lab1, $row) {
-      // return $row['product_id'];
-      return '<a href="../admin/variations_modules.php?product_id=' . $row['product_id'] . '">' . $row['product_id'] . '</a>';
-
+      return $row['variation_id'];
     }
   ),
 
   array(
-    'db' => 'product_name',
+    'db' => 'price',
     'dt' => 1,
-    'field' => 'product_name',
+    'field' => 'price',
     'formatter' => function ($lab2, $row) {
-      // return $row['product_name'];
-      return '<a href="../admin/variations_modules.php?product_id=' . $row['product_id'] . '">' . $row['product_name'] . '</a>';
-
+      return $row['price'];
     }
   ),
 
   array(
-    'db' => 'product_id',
+    'db' => 'value',
     'dt' => 2,
-    'field' => 'product_id',
+    'field' => 'value',
+    'formatter' => function ($lab2, $row) {
+      return $row['value'];
+    }
+  ),
+
+  array(
+    'db' => 'variation_id',
+    'dt' => 3,
+    'field' => 'variation_id',
     'formatter' => function ($lab6, $row) {
 
       return '
       <div class="dropdown">
-          <button class="btn btn-info" type="button" id="dropdownMenuButton' . $row['product_id'] . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <button class="btn btn-info" type="button" id="dropdownMenuButton' . $row['variation_id'] . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               &#x22EE;
           </button>
-          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $row['product_id'] . '">
-              <a class="dropdown-item fetchDataVariation" href="../admin/variations_modules.php?product_id=' . $row['product_id'] . '">Add Variation</a>
-              
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $row['variation_id'] . '">
+              <a class="dropdown-item fetchDataVariation" href="#">Edit</a>
           </div>
       </div>';
     }
@@ -55,7 +59,9 @@ include '../../connections/ssp_connection.php';
 // Include the SSP class
 require('../../assets/datatables/ssp.class_with_where.php');
 
-$where = "product_id";
+$product_id = isset($_GET['product_id']) ? intval($_GET['product_id']) : 0;
+
+$where = "product_id = '$product_id'";
 
 // THIS IS A SAMPLE ONLY
 // $joinQuery = "FROM $table

@@ -17,12 +17,21 @@ if ($product_id) {
 }
 
 ?>
-<div class="modal fade" id="addVariationModel" tabindex="-1" role="dialog" aria-labelledby="addVariationModelLabel"
+<style>
+  /* Custom CSS for label color */
+  .modal-body label {
+    color: #333;
+    /* Darker label color */
+    font-weight: bolder;
+  }
+</style>
+
+<div class="modal fade" id="addProductImageModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel"
   aria-hidden="true">
   <div class="modal-dialog modal-l" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="addVariationModelLabel">Add Variation for <?php echo $row['product_name'] ?></h5>
+        <h5 class="modal-title" id="addProductModalLabel">Add Image for <?php echo $row['product_name'] ?></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -30,31 +39,24 @@ if ($product_id) {
 
       <div class="modal-body">
         <form method="post" enctype="multipart/form-data">
-          <div class="form-row">
-            <div class="form-group col-md-12">
-              <input type="hidden" class="form-control" id="product_id" name="product_id" placeholder="Enter Product ID"
-                value="<?php echo $product_id ?>" required>
-            </div>
-            <div class="form-group col-md-12">
-              <label for="price">Price:</label>
-              <input type="text" class="form-control" id="price" name="price" placeholder="Enter price for variation"
-                required>
-            </div>
-          </div>
 
           <div class="form-row">
+            <div class="form-group col-md-6">
+              <input type="hidden" class="form-control" id="product_id" name="product_id"
+                value="<?php echo $product_id; ?>" required>
+            </div>
+
             <div class="form-group col-md-12">
-              <label for="value">Value:</label>
-              <input type="text" class="form-control" id="value" name="value" placeholder="Enter variation value"
-                required>
+              <label for="product_image_path">Product Image:</label>
+              <input type="file" class="form-control" id="product_image_path" name="fileToUpload" required>
             </div>
           </div>
 
           <!-- Add a hidden input field to submit the form with the button click -->
-          <input type="hidden" name="add_variation" value="1">
+          <input type="hidden" name="add_product_image" value="1">
 
           <div class="modal-footer">
-            <button type="submit" class="btn btn-primary" id="addProductButton">Add</button>
+            <button type="submit" class="btn btn-primary" id="addProductImageButton">Add</button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </div>
         </form>
@@ -70,7 +72,7 @@ if ($product_id) {
 
 <script>
   $(document).ready(function () {
-    $('#addVariationModel form').submit(function (event) {
+    $('#addProductImageModal form').submit(function (event) {
       event.preventDefault(); // Prevent default form submission
 
       // Store a reference to $(this)
@@ -80,14 +82,14 @@ if ($product_id) {
       var formData = new FormData($form[0]);
 
       // Change button text to "Adding..." and disable it
-      var $addButton = $('#addProductButton');
+      var $addButton = $('#addProductImageButton');
       $addButton.text('Adding...');
       $addButton.prop('disabled', true);
 
       // Send AJAX request
       $.ajax({
         type: 'POST',
-        url: '/blutmedical/controllers/admin/add_variation_process.php',
+        url: '/blutmedical/controllers/admin/add_product_image_process.php',
         data: formData,
         contentType: false,
         processData: false,
@@ -105,9 +107,8 @@ if ($product_id) {
             // Optionally, reset the form
             $form.trigger('reset');
 
-            $('#product_id')[0].selectize.clear();
             // Optionally, close the modal
-            $('#addVariationModel').modal('hide');
+            $('#addProductImageModal').modal('hide');
             window.reloadDataTable();
           } else {
             Toastify({
@@ -134,10 +135,5 @@ if ($product_id) {
       });
     });
 
-    $('#addVariationModel').on('hidden.bs.modal', function () {
-
-      $('#product_id')[0].selectize.clear();
-
-    });
   });
 </script>

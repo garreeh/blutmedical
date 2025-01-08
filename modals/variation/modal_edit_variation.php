@@ -9,6 +9,8 @@
 
 <?php
 include './../../connections/connections.php';
+$product_id = isset($_GET['product_id']) ? $_GET['product_id'] : null;
+
 // Fetch user types from the database
 $sql = "SELECT * FROM product";
 $result = mysqli_query($conn, $sql);
@@ -44,23 +46,14 @@ if (isset($_POST['variation_id'])) {
                 <input type="hidden" name="variation_id" value="<?php echo $row['variation_id']; ?>">
                 <div class="form-row">
                   <div class="form-group col-md-12">
-                    <label for="product_id">Products:</label>
-                    <select class="form-control" id="product_id" name="product_id" required>
-                      <option value="" disabled>Select Product</option>
-                      <?php
-                      foreach ($product_names as $product_rows) {
-                        // Set selected if the product_id matches
-                        $selected = ($product_rows['product_id'] == $row['product_id']) ? 'selected' : '';
-                        echo "<option value='" . $product_rows['product_id'] . "' $selected>" . $product_rows['product_name'] . "</option>";
-                      }
-                      ?>
-                    </select>
+                    <input type="hidden" class="form-control" id="product_id" name="product_id" placeholder="Enter Product ID"
+                      value="<?php echo $row['product_id']; ?>" required>
                   </div>
 
                   <div class="form-group col-md-12">
-                    <label for="attribute">Attributes:</label>
-                    <input type="text" class="form-control" id="attribute" name="attribute" placeholder="Enter Attribute"
-                      value="<?php echo $row['attribute']; ?>" required>
+                    <label for="price">Price:</label>
+                    <input type="text" class="form-control" id="price" name="price" placeholder="Enter price for variation"
+                      value="<?php echo $row['price']; ?>" required>
                   </div>
                 </div>
 
@@ -74,10 +67,10 @@ if (isset($_POST['variation_id'])) {
                 </div>
 
                 <!-- Add a hidden input field to submit the form with the button click -->
-                <input type="hidden" name="edit_supplier" value="1">
+                <input type="hidden" name="edit_variation" value="1">
 
                 <div class="modal-footer">
-                  <button type="submit" class="btn btn-primary" id="saveCategoryButton">Save</button>
+                  <button type="submit" class="btn btn-primary" id="saveVariationButton">Save</button>
                   <!-- <input type="hidden" name="item_id" value="</?php echo $row['variation_id']; ?>"> -->
                   <button type="button" class="btn btn btn-danger" data-dismiss="modal">Close</button>
                 </div>
@@ -105,14 +98,14 @@ if (isset($_POST['variation_id'])) {
       var formData = $form.serialize();
 
       // Change button text to "Saving..." and disable it
-      var $saveButton = $('#saveCategoryButton');
+      var $saveButton = $('#saveVariationButton');
       $saveButton.text('Saving...');
       $saveButton.prop('disabled', true);
 
       // Send AJAX request
       $.ajax({
         type: 'POST',
-        url: '/blutmedical/controllers/admin/edit_category_process.php',
+        url: '/blutmedical/controllers/admin/edit_variation_process.php',
         data: formData,
         success: function (response) {
           // Handle success response

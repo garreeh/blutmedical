@@ -2,7 +2,7 @@
 
 include '../../connections/connections.php';
 
-if (isset($_POST['update_variation'])) {
+if (isset($_POST['edit_variation'])) {
   // Get form data
   $variation_id = $conn->real_escape_string($_POST['variation_id']);
   $price = $conn->real_escape_string($_POST['price']);
@@ -14,7 +14,7 @@ if (isset($_POST['update_variation'])) {
             SET `value` = '$value', 
                 `price` = '$price', 
                 `product_id` = '$product_id'
-            WHERE `id` = '$variation_id'";
+            WHERE `variation_id` = '$variation_id'";
 
   // Execute SQL query
   if (mysqli_query($conn, $sql)) {

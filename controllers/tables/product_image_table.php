@@ -11,7 +11,7 @@ $columns = array(
     'field' => 'product_id',
     'formatter' => function ($lab1, $row) {
       // return $row['product_id'];
-      return '<a href="../admin/variations_modules.php?product_id=' . $row['product_id'] . '">' . $row['product_id'] . '</a>';
+      return '<a href="../admin/upload_images_module.php?product_id=' . $row['product_id'] . '">' . $row['product_id'] . '</a>';
 
     }
   ),
@@ -22,7 +22,7 @@ $columns = array(
     'field' => 'product_name',
     'formatter' => function ($lab2, $row) {
       // return $row['product_name'];
-      return '<a href="../admin/variations_modules.php?product_id=' . $row['product_id'] . '">' . $row['product_name'] . '</a>';
+      return '<a href="../admin/upload_images_module.php?product_id=' . $row['product_id'] . '">' . $row['product_name'] . '</a>';
 
     }
   ),
@@ -39,7 +39,7 @@ $columns = array(
               &#x22EE;
           </button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $row['product_id'] . '">
-              <a class="dropdown-item fetchDataVariation" href="../admin/variations_modules.php?product_id=' . $row['product_id'] . '">Add Variation</a>
+              <a class="dropdown-item fetchDataVariation" href="../admin/upload_images_module.php?product_id=' . $row['product_id'] . '">Add Image</a>
               
           </div>
       </div>';

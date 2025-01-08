@@ -5,6 +5,22 @@ if (session_status() == PHP_SESSION_NONE) {
   session_start();
 }
 
+$product_id = isset($_GET['product_id']) ? $_GET['product_id'] : null;
+
+// Initialize product name
+$product_name = 'Unknown Product';
+
+if ($product_id) {
+  // Directly query the database
+  $query = "SELECT product_name FROM product WHERE product_id = " . intval($product_id);
+  $result = mysqli_query($conn, $query);
+
+  if ($result && mysqli_num_rows($result) > 0) {
+    $row = mysqli_fetch_assoc($result);
+    $product_name = $row['product_name'];
+  }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -46,7 +62,7 @@ if (session_status() == PHP_SESSION_NONE) {
     <!-- End of Sidebar -->
 
     <!-- Modal for Adding and Editing Supplier -->
-    <?php include './../../modals/variation/modal_add_variation.php'; ?>
+    <?php include './../../modals/product_image/modal_add_product_image.php'; ?>
 
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
@@ -62,11 +78,11 @@ if (session_status() == PHP_SESSION_NONE) {
 
           <!-- Page Heading -->
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Select product to add variation</h1>
+            <h1 class="h3 mb-0 text-gray-800">Images for <?php echo $row['product_name'] ?></h1>
           </div>
 
-          <!-- <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mb-4" data-toggle="modal"
-            data-target="#addVariationModel"> <i class="fas fa-plus"></i> Add Variation</a> -->
+          <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mb-4" data-toggle="modal"
+            data-target="#addProductImageModal"> <i class="fas fa-plus"></i> Add Image</a>
           <!-- <a href="./../../excels/supplier_export.php" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mb-4"><i class="fas fa-file-excel"></i> Export Excel</a> -->
 
           <div class="row">
@@ -74,15 +90,15 @@ if (session_status() == PHP_SESSION_NONE) {
               <div class="tab-pane fade show active" id="aa" role="tabpanel" aria-labelledby="aa-tab">
 
                 <div class="table-responsive">
-                  <div id="modalContainerVariation"></div>
+                  <div id="modalContainerProductImages"></div>
                   <!-- <div id="modalContainerVariationDelete"></div> -->
 
 
-                  <table class="table custom-table table-hover" name="variation_table" id="variation_table">
+                  <table class="table custom-table table-hover" name="product_images_table" id="product_images_table">
                     <thead>
                       <tr>
                         <th>ID</th>
-                        <th>Product Name</th>
+                        <th>Product Images</th>
                         <th>Manage</th>
                       </tr>
                     </thead>
@@ -141,23 +157,78 @@ if (session_status() == PHP_SESSION_NONE) {
 
 <script>
   $('#sidebarToggle').click(function () {
-    $('#variation_table').css('width', '100%');
+    $('#product_images_table').css('width', '100%');
     // console.log(table) //This is for testing only
   });
 
   //Table for Product
   $(document).ready(function () {
-    var variation_table = $('#variation_table').DataTable({
+    var product_images_table = $('#product_images_table').DataTable({
       "pagingType": "numbers",
       "processing": true,
       "serverSide": true,
-      "ajax": "./../../controllers/tables/variation_table.php",
+      "ajax": {
+        url: "./../../controllers/tables/product_images_table.php",
+        type: "GET",
+        data: function (d) {
+          d.product_id = <?php echo $product_id; ?>; // Pass client_id
+        }
+      }
     });
 
     window.reloadDataTable = function () {
-      variation_table.ajax.reload();
+      product_images_table.ajax.reload();
     };
 
   });
+
+  $(document).ready(function () {
+    // Function to handle click event on datatable rows
+    $('#product_images_table').on('click', 'tr td:nth-child(2) .fetchDataProductImage', function () {
+      var product_image_id = $(this).closest('tr').find('td').first().text(); // Get the product_image_id from the clicked row
+
+      $.ajax({
+        url: './../../modals/product_image/modal_view_image_product.php', // Path to PHP script to fetch modal content
+        method: 'POST',
+        data: {
+          product_image_id: product_image_id
+        },
+        success: function (response) {
+          $('#modalContainerProductImages').html(response);
+          $('#viewProductImageModal').modal('show');
+          console.log("#viewProductImageModal" + product_image_id);
+        },
+        error: function (xhr, status, error) {
+          console.error(xhr.responseText);
+        }
+      });
+    });
+  });
+
+  $(document).ready(function () {
+    // Function to handle click event on datatable rows
+    $('#product_images_table').on('click', 'tr td:nth-child(3) .fetchDataProductImagesEdit', function () {
+      var product_image_id = $(this).closest('tr').find('td').first().text(); // Get the product_id from the clicked row
+
+      $.ajax({
+        url: './../../modals/product_image/modal_edit_product_image.php', // Path to PHP script to fetch modal content
+        method: 'POST',
+        data: {
+          product_image_id: product_image_id
+        },
+        success: function (response) {
+          $('#modalContainerProductImages').html(response);
+          $('#editProductImageModal').modal('show');
+          console.log("#editProductImageModal" + product_image_id);
+        },
+        error: function (xhr, status, error) {
+          console.error(xhr.responseText);
+        }
+      });
+    });
+
+
+  });
+
 
 </script>

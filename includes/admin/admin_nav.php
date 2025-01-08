@@ -56,7 +56,7 @@ if ($result) {
           <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-laugh-wink"></i>
           </div>
-          <div class="sidebar-brand-text mx-3">Ordering <sup>System</sup></div>
+          <div class="sidebar-brand-text mx-3">Blut <sup>Medical</sup></div>
         </a>
 
         <!-- Divider -->
@@ -154,6 +154,8 @@ if ($result) {
                 <a class="collapse-item" href="/blutmedical/views/admin/category_module.php">Category</a>
                 <a class="collapse-item" href="/blutmedical/views/admin/product_module.php">Products</a>
                 <a class="collapse-item" href="/blutmedical/views/admin/variation_module.php">Variation</a>
+                <a class="collapse-item" href="/blutmedical/views/admin/upload_image_module.php">Image Upload</a>
+
 
               </div>
 
