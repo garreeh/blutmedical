@@ -64,13 +64,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $mail->isSMTP();                                            // Send using SMTP
             $mail->Host = 'smtp.gmail.com';                       // Set the SMTP server to send through
             $mail->SMTPAuth = true;                                   // Enable SMTP authentication
-            $mail->Username = 'lawrencegardon800@gmail.com';          // SMTP username
-            $mail->Password = 'amgqdranfybsyfut';                     // SMTP password
+            $mail->Username = 'gajultos.garry123@gmail.com';          // SMTP username
+            $mail->Password = 'dkjukjhiygnwipjc';
+            // SMTP password
             $mail->SMTPSecure = 'ssl';                                  // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
             $mail->Port = '465';                                  // TCP port to connect to
 
             //Recipients
-            $mail->setFrom('lawrencegardon800@gmail.com', 'Lawrence Gardon');
+            $mail->setFrom('gajultos.garry123@gmail.com', 'Garry Gajultos');
             $mail->addAddress($user_email, $user_fullname);             // Add a recipient
 
             // Content
@@ -123,7 +124,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <div class='email-body'>
                                         <p>Dear $user_fullname,</p>
                                         <p>Thank you for registering with us. To complete your registration, please verify your email address by clicking the button below:</p>
-                                        <a href='https://sterling-ordering.online/blutmedical/controllers/verification_process.php?email=" . $user_email . "' class='verify-button'>Verify Email</a>
+                                        <a href='http://localhost/blutmedical/controllers/verification_process.php?email=" . $user_email . "' class='verify-button'>Verify Email</a>
                                         <p>If you did not sign up for this account, please disregard this email.</p>
                                         <p>Best Regards,<br>Sterling</p>
                                     </div>

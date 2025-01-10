@@ -48,7 +48,7 @@ if (session_status() == PHP_SESSION_NONE) {
           </a>
           <?php if (isset($_SESSION['user_id'])): ?>
             <ul class="dropdown-menu" aria-labelledby="userDropdown">
-              <li><a class="dropdown-item" href="/online_ordering/controllers/logout_process.php">Sign-out</a></li>
+              <li><a class="dropdown-item" href="/blutmedical/controllers/logout_process.php">Sign-out</a></li>
             </ul>
           <?php else: ?>
             <ul class="dropdown-menu" aria-labelledby="userDropdown">
@@ -60,14 +60,15 @@ if (session_status() == PHP_SESSION_NONE) {
 
         <!-- Cart Icon -->
         <li>
-          <a class="nav-link position-relative" href="cart.html">
+          <a class="nav-link position-relative" href="cart.php">
             <i class="fa-solid fa-cart-shopping"></i>
             <span id="cart-badge"
               class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-              3 <!-- Replace 3 with your cart count dynamically -->
+              0 <!-- This will be dynamically updated -->
             </span>
           </a>
         </li>
+
 
       </ul>
 
@@ -77,3 +78,34 @@ if (session_status() == PHP_SESSION_NONE) {
 
 </nav>
 <!-- End Header/Navigation -->
+
+<script>
+  // Function to fetch cart count and update the badge
+  function updateCartBadge() {
+    // Check if the user is logged in
+    var isLoggedIn = <?php echo json_encode(isset($_SESSION['user_id'])); ?>;
+
+    if (isLoggedIn) {
+      // User is logged in, fetch cart count from the server
+      fetch('/online_ordering/controllers/users/get_cart_count.php')
+        .then((response) => response.json())
+        .then((data) => {
+          // Update the cart badge with the fetched cart count
+          document.getElementById('cart-badge').textContent = data.cart_count;
+        })
+        .catch((error) => {
+          console.error('Error fetching cart count:', error);
+        });
+    } else {
+      // User is not logged in, fetch cart count from localStorage
+      var guestCart = JSON.parse(localStorage.getItem('guestCart')) || [];
+      var cartCount = guestCart.length; // Get the number of items in the guest cart
+      // Update the cart badge with the guest cart count
+      document.getElementById('cart-badge').textContent = cartCount;
+    }
+  }
+
+  // Call the function to update the cart badge when the page loads
+  updateCartBadge();
+
+</script>

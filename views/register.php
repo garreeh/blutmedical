@@ -30,7 +30,7 @@ if (isset($_SESSION['user_id'])) {
 	<meta name="description" content="">
 	<meta name="author" content="">
 
-	<title>Sterling | Register</title>
+	<title>Blut | Register</title>
 
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 	<!-- Custom fonts for this template-->

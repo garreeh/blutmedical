@@ -11,7 +11,7 @@
  Target Server Version : 100432
  File Encoding         : 65001
 
- Date: 08/01/2025 18:20:10
+ Date: 10/01/2025 13:48:46
 */
 
 SET NAMES utf8mb4;
@@ -65,12 +65,13 @@ CREATE TABLE `cart`  (
   `delivery_guest_fullname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `delivery_guest_contact_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`cart_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 132 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 133 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of cart
 -- ----------------------------
 INSERT INTO `cart` VALUES (131, 40, 17, NULL, 3, 'Delivered', NULL, 109.00, 'Cash On Delivery', 'Paid', 'E08F95', '2024-11-08 22:46:00', '2024-11-08 22:54:02', 2, NULL, NULL, NULL);
+INSERT INTO `cart` VALUES (132, 1, 17, NULL, 5, 'Cart', NULL, 545.00, NULL, NULL, NULL, '2025-01-09 12:30:58', '2025-01-09 12:31:08', NULL, NULL, NULL, NULL);
 
 -- ----------------------------
 -- Table structure for category
@@ -174,11 +175,11 @@ CREATE TABLE `product`  (
 -- ----------------------------
 -- Records of product
 -- ----------------------------
-INSERT INTO `product` VALUES (17, 26, 1, 'Scissor 1', 'Scissor 1', '../../uploads/showcase2.png', 'Scissor 1', 18, 100.00, 109.00, '2024-09-05 14:39:33', '2025-01-06 11:52:39');
-INSERT INTO `product` VALUES (18, 27, 2, 'Scissor 2', 'Scissor 2', '../../uploads/sample.png', 'Scissor 2', -9, 99.00, 109.00, '2024-09-05 14:40:14', '2025-01-06 11:52:52');
-INSERT INTO `product` VALUES (22, 26, 5, 'Scissor 3', 'Scissor 3', '../../uploads/showcase1.png', 'Scissor 3', 0, 177.00, 188.00, '2024-11-08 22:11:48', '2025-01-06 11:54:27');
-INSERT INTO `product` VALUES (23, 26, 6, 'Scissor 4', 'Noodles', '../../uploads/dreamy-watercolor-delicate-dusty-blue-heart-clipart-white-background_983420-312343.png', 'Noodles', 0, 77.00, 99.00, '2024-11-08 22:12:38', '2025-01-06 11:54:41');
-INSERT INTO `product` VALUES (24, 26, 5, 'Test Product', 'Test Product', '../../uploads/wilcon.jpg', 'Test Product', 0, 244.00, 257.00, '2025-01-06 11:55:33', '2025-01-06 11:55:33');
+INSERT INTO `product` VALUES (17, 26, 1, 'Scissor 1', 'Test Description', '../../uploads/showcase2.png', 'Scissor 1', 18, 100.00, 109.00, '2024-09-05 14:39:33', '2025-01-09 13:03:40');
+INSERT INTO `product` VALUES (18, 27, 2, 'Scissor 2', 'Test Description', '../../uploads/sample.png', 'Scissor 2', -9, 99.00, 109.00, '2024-09-05 14:40:14', '2025-01-09 13:03:41');
+INSERT INTO `product` VALUES (22, 26, 5, 'Scissor 3', 'Test Description', '../../uploads/showcase1.png', 'Scissor 3', 0, 177.00, 188.00, '2024-11-08 22:11:48', '2025-01-09 13:03:42');
+INSERT INTO `product` VALUES (23, 26, 6, 'Scissor 4', 'Test Description', '../../uploads/dreamy-watercolor-delicate-dusty-blue-heart-clipart-white-background_983420-312343.png', 'Noodles', 0, 77.00, 99.00, '2024-11-08 22:12:38', '2025-01-09 13:03:43');
+INSERT INTO `product` VALUES (24, 26, 5, 'Test Product', 'Test Test Description', '../../uploads/wilcon.jpg', 'Test Product', 0, 244.00, 257.00, '2025-01-06 11:55:33', '2025-01-09 13:03:45');
 
 -- ----------------------------
 -- Table structure for product_image
@@ -273,7 +274,7 @@ CREATE TABLE `users`  (
   `account_status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `user_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`user_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 41 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 43 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of users

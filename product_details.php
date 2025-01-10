@@ -40,8 +40,36 @@ if (isset($_GET['product_id'])) {
         <div class="container">
           <div class="row">
             <div class="col-md-6">
-              <img src="<?php echo $image_url; ?>" class="img-fluid" style="border-radius: 10px; object-fit: cover;">
+              <!-- Main Product Image with Zoom Effect -->
+              <div class="zoom-container">
+                <img id="mainProductImage" src="<?php echo $image_url; ?>" class="img-fluid"
+                  style="border-radius: 10px; object-fit: cover;">
+
+                <!-- Optional: Add zoom effect using CSS -->
+                <div id="zoomedImage" class="zoomed-image"></div>
+              </div>
+
+              <!-- Thumbnail Images below main image -->
+              <div class="product-thumbnails mt-3">
+                <?php
+                // Display the main product image as the first thumbnail
+                echo '<img src="' . $image_url . '" class="img-thumbnail" alt="Product Image" style="cursor: pointer;" onclick="changeMainImage(\'' . $image_url . '\')">';
+
+                // Fetch all other product images from 'product_image' table
+                $queryImages = "SELECT product_image_path FROM product_image WHERE product_id = $product_id";
+                $resultImages = mysqli_query($conn, $queryImages);
+
+                if ($resultImages && mysqli_num_rows($resultImages) > 0) {
+                  while ($image = mysqli_fetch_assoc($resultImages)) {
+                    $productImagePath = './uploads/' . basename($image['product_image_path']);
+                    echo '<img src="' . $productImagePath . '" class="img-thumbnail" alt="Product Image" style="cursor: pointer;" onclick="changeMainImage(\'' . $productImagePath . '\')">';
+                  }
+                }
+                ?>
+              </div>
+
             </div>
+
             <div class="col-md-6">
               <h1><?php echo htmlspecialchars($product['product_name']); ?></h1>
 
@@ -78,8 +106,6 @@ if (isset($_GET['product_id'])) {
                   <input type="hidden" name="selected_variation" id="selectedVariation"
                     value="<?php echo $variations[0]['variation_id']; ?>">
                 </form>
-              <?php } else { ?>
-                <!-- No variations available -->
               <?php } ?>
 
               <br>
@@ -93,158 +119,324 @@ if (isset($_GET['product_id'])) {
                 </div>
               </div>
 
-              <button class="btn btn-primary btn-lg mt-4">Add to Cart</button>
+              <button class="btn btn-primary btn-lg mt-4" id="addToCartBtn">
+                Add to Cart
+              </button>
+
             </div>
           </div>
         </div>
       </div>
 
-      <script>
-        document.addEventListener('DOMContentLoaded', () => {
-          // Attach click event to variation buttons
-          const buttons = document.querySelectorAll('.variation-toggle');
-          const productPrice = document.getElementById('productPrice');
-          const selectedVariationInput = document.getElementById('selectedVariation');
+      <!-- Zoom Effect Styles -->
+      <style>
+        #mainProductImage {
+          width: 100%;
+          transition: transform 0.3s ease;
+        }
 
-          buttons.forEach(button => {
-            button.addEventListener('click', () => {
-              // Untoggle all buttons
-              buttons.forEach(btn => btn.classList.remove('active'));
-              buttons.forEach(btn => btn.setAttribute('aria-pressed', 'false'));
+        /* Hidden zoomed image container */
+        #zoomedImage {
+          position: absolute;
+          /* Use absolute positioning */
+          width: 150px;
+          height: 150px;
+          background-color: rgba(255, 255, 255, 0.8);
+          display: none;
+          background-size: contain;
+          background-repeat: no-repeat;
+          pointer-events: none;
+          /* Prevent zoomed image from blocking clicks */
+          border-radius: 50%;
+          /* Circular effect */
+          border: 3px solid #000;
+          /* Border for better visibility */
+          transition: transform 0.1s ease;
+          z-index: 1000;
+          /* Make sure it's above other elements */
+        }
 
-              // Toggle the clicked button
-              button.classList.add('active');
-              button.setAttribute('aria-pressed', 'true');
+        /* Thumbnail Image Styling */
+        .product-thumbnails img {
+          max-width: 100px;
+          margin-right: 10px;
+        }
 
-              // Update the displayed price
-              const price = button.getAttribute('data-price');
-              productPrice.textContent = parseFloat(price).toFixed(2);
-
-              // Update the hidden input value
-              const variationId = button.getAttribute('data-value');
-              selectedVariationInput.value = variationId;
-            });
-          });
-        });
-      </script>
+        /* Hover effect for thumbnails */
+        .product-thumbnails img:hover {
+          border: 2px solid #000;
+        }
+      </style>
 
 
 
       <?php include './includes/footer.php'; ?>
 
-      <script>
-        // JavaScript for Quantity Adjustment
-        const btnMinus = document.getElementById('btn-minus');
-        const btnPlus = document.getElementById('btn-plus');
-        const quantityInput = document.getElementById('quantity');
-
-        btnMinus.addEventListener('click', () => {
-          let currentValue = parseInt(quantityInput.value);
-          if (currentValue > 1) {
-            quantityInput.value = currentValue - 1;
-          }
-        });
-
-        btnPlus.addEventListener('click', () => {
-          let currentValue = parseInt(quantityInput.value);
-          quantityInput.value = currentValue + 1;
-        });
-      </script>
-
     </body>
 
     </html>
+
+    <style>
+      .product-section .container {
+        background: rgb(255, 255, 255);
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+      }
+
+      .product-section h1 {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #333333;
+        margin-bottom: 1rem;
+      }
+
+      .product-section .text-muted {
+        font-size: 1.2rem;
+        color: #666666;
+        margin-bottom: 1.5rem;
+      }
+
+      .product-section ul li {
+        font-size: 1rem;
+        color: #555555;
+        margin-bottom: 0.5rem;
+      }
+
+      .product-section .form-control {
+        font-size: 1.2rem;
+        border: 1px solid #ddd;
+        color: #333333;
+      }
+
+      /* Style for the toggle buttons */
+      .variation-toggle {
+        /* Default border */
+        color: rgb(0, 0, 0);
+        /* Default text color */
+        background-color: transparent;
+        /* Remove background */
+        transition: all 0.3s ease;
+      }
+
+      /* When button is pressed/toggled */
+      .variation-toggle.active,
+      .variation-toggle:focus {
+        border: 2px solid #007bff !important;
+        /* Lighter blue when active */
+        color: #0056b3 !important;
+      }
+
+      /* Prevents background color when clicked */
+      .variation-toggle:active {
+        background-color: transparent !important;
+      }
+
+      form {
+        display: flex;
+        gap: 10px;
+      }
+    </style>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <script>
+      const btnMinus = document.getElementById('btn-minus');
+      const btnPlus = document.getElementById('btn-plus');
+      const quantityInput = document.getElementById('quantity');
+
+      btnMinus.addEventListener('click', () => {
+        let currentValue = parseInt(quantityInput.value);
+        if (currentValue > 1) {
+          quantityInput.value = currentValue - 1;
+        }
+      });
+
+      btnPlus.addEventListener('click', () => {
+        let currentValue = parseInt(quantityInput.value);
+        quantityInput.value = currentValue + 1;
+      });
+      document.addEventListener('DOMContentLoaded', () => {
+        // Attach click event to variation buttons
+        const buttons = document.querySelectorAll('.variation-toggle');
+        const productPrice = document.getElementById('productPrice');
+        const selectedVariationInput = document.getElementById('selectedVariation');
+
+        buttons.forEach(button => {
+          button.addEventListener('click', () => {
+            // Untoggle all buttons
+            buttons.forEach(btn => btn.classList.remove('active'));
+            buttons.forEach(btn => btn.setAttribute('aria-pressed', 'false'));
+
+            // Toggle the clicked button
+            button.classList.add('active');
+            button.setAttribute('aria-pressed', 'true');
+
+            // Update the displayed price
+            const price = button.getAttribute('data-price');
+            productPrice.textContent = parseFloat(price).toFixed(2);
+
+            // Update the hidden input value
+            const variationId = button.getAttribute('data-value');
+            selectedVariationInput.value = variationId;
+          });
+        });
+      });
+
+      document.querySelector('#addToCartBtn').addEventListener('click', function () {
+        var productId = <?php echo json_encode($product_id); ?>; // Safely output product ID
+        var quantity = parseInt(document.getElementById('quantity').value) || 1; // Default to 1 if no valid quantity
+
+        // Check if the selectedVariation element exists
+        var selectedVariationElement = document.getElementById('selectedVariation');
+        var selectedVariation = selectedVariationElement ? selectedVariationElement.value : null; // Set to null if no variation selected
+
+        if (!productId) {
+          console.error("Product ID is missing!");
+          Toastify({
+            text: 'Unable to add product to cart. Product ID is missing.',
+            duration: 3000,
+            close: true,
+            gravity: 'top',
+            position: 'right',
+            backgroundColor: '#FF0000', // Red
+          }).showToast();
+          return;
+        }
+
+        // Get the button and store original text
+        var button = document.getElementById('addToCartBtn');
+        var originalText = button.textContent;
+
+        // Change the text to "Adding to Cart..."
+        button.textContent = 'Adding to Cart...';
+
+        // Disable the button during the process
+        button.disabled = true;
+
+        // Check if the user is logged in
+        var isLoggedIn = <?php echo json_encode(isset($_SESSION['user_id'])); ?>;
+
+        // Prepare cart data
+        var cartData = {
+          product_id: productId,
+          cart_quantity: quantity,
+          variation_id: selectedVariation,
+        };
+
+        if (isLoggedIn) {
+          // User is logged in, make an AJAX call to add to the server cart
+          fetch('/online_ordering/controllers/users/add_cart_process.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(cartData),
+          })
+            .then((response) => response.json())
+            .then((res) => {
+              Toastify({
+                text: res.message || (res.success ? 'Added to cart successfully!' : 'Failed to add to cart.'),
+                duration: 3000,
+                close: true,
+                gravity: 'top',
+                position: 'right',
+                backgroundColor: res.success ? '#4CAF50' : '#FF0000', // Green for success, Red for error
+              }).showToast();
+
+              // Update the cart badge after adding to the cart
+              updateCartBadge(); // Call to update the cart badge
+            })
+            .catch((error) => {
+              console.error('Error:', error);
+              Toastify({
+                text: 'An unexpected error occurred while adding to cart.',
+                duration: 3000,
+                close: true,
+                gravity: 'top',
+                position: 'right',
+                backgroundColor: '#FF0000', // Red
+              }).showToast();
+            })
+            .finally(() => {
+              // Restore the button text and enable the button again
+              button.textContent = originalText;
+              button.disabled = false;
+            });
+        } else {
+          // User is not logged in, update the guest cart in localStorage
+          var cart = JSON.parse(localStorage.getItem('guestCart')) || [];
+          var existingProduct = cart.find(
+            (item) => item.product_id === productId && item.variation_id === selectedVariation
+          );
+
+          if (existingProduct) {
+            // Update quantity if the product already exists
+            existingProduct.cart_quantity += quantity;
+          } else {
+            // Add new product
+            cart.push(cartData);
+          }
+
+          localStorage.setItem('guestCart', JSON.stringify(cart));
+
+          // Show success message
+          Toastify({
+            text: 'Added to cart as guest.',
+            duration: 3000,
+            close: true,
+            gravity: 'top',
+            position: 'right',
+            backgroundColor: '#4CAF50', // Green
+          }).showToast();
+
+          // Update the cart badge after adding to the cart
+          updateCartBadge(); // Call to update the cart badge
+
+          // Restore the button text and enable the button again
+          button.textContent = originalText;
+          button.disabled = false;
+        }
+      });
+
+    </script>
+
+    <!-- Zoom JavaScript -->
+    <script>
+      // Change the main image when a thumbnail is clicked
+      function changeMainImage(imagePath) {
+        document.getElementById('mainProductImage').src = imagePath;
+      }
+
+      // Handle zoom effect on hover
+      var mainImage = document.getElementById('mainProductImage');
+      var zoomedImage = document.getElementById('zoomedImage');
+
+      mainImage.addEventListener('mousemove', function (e) {
+        var zoomScale = 1.5; // Scale factor
+        var offsetX = e.offsetX;
+        var offsetY = e.offsetY;
+
+        var x = (offsetX / mainImage.width) * 105;
+        var y = (offsetY / mainImage.height) * 100;
+
+        // Position the zoomed image next to the cursor
+        var zoomedImageX = e.pageX + 20; // 20px offset from cursor
+        var zoomedImageY = e.pageY + 20; // 20px offset from cursor
+
+        zoomedImage.style.display = 'block';
+        zoomedImage.style.backgroundImage = 'url(' + mainImage.src + ')';
+        zoomedImage.style.backgroundPosition = x + '% ' + y + '%';
+        zoomedImage.style.backgroundSize = (mainImage.width * zoomScale) + 'px ' + (mainImage.height * zoomScale) + 'px';
+        zoomedImage.style.left = zoomedImageX + 'px';
+        zoomedImage.style.top = zoomedImageY + 'px';
+      });
+
+      mainImage.addEventListener('mouseleave', function () {
+        zoomedImage.style.display = 'none';
+      });
+    </script>
 
     <?php
   }
 }
 ?>
-
-<style>
-  .product-section .container {
-    background: rgb(255, 255, 255);
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 2rem;
-  }
-
-  .product-section h1 {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #333333;
-    margin-bottom: 1rem;
-  }
-
-  .product-section .text-muted {
-    font-size: 1.2rem;
-    color: #666666;
-    margin-bottom: 1.5rem;
-  }
-
-  .product-section ul li {
-    font-size: 1rem;
-    color: #555555;
-    margin-bottom: 0.5rem;
-  }
-
-  .product-section .form-control {
-    font-size: 1.2rem;
-    border: 1px solid #ddd;
-    color: #333333;
-  }
-
-  /* Style for the toggle buttons */
-  .variation-toggle {
-    /* Default border */
-    color: rgb(0, 0, 0);
-    /* Default text color */
-    background-color: transparent;
-    /* Remove background */
-    transition: all 0.3s ease;
-  }
-
-  /* When button is pressed/toggled */
-  .variation-toggle.active,
-  .variation-toggle:focus {
-    border: 2px solid #007bff !important;
-    /* Lighter blue when active */
-    color: #0056b3 !important;
-  }
-
-  /* Prevents background color when clicked */
-  .variation-toggle:active {
-    background-color: transparent !important;
-  }
-
-  /* Optional: Additional style for the form group to ensure buttons appear inline */
-  form {
-    display: flex;
-    gap: 10px;
-  }
-</style>
-
-<!-- <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const buttons = document.querySelectorAll('.variation-toggle');
-    const hiddenInput = document.getElementById('selectedVariation');
-
-    buttons.forEach(function (button) {
-      button.addEventListener('click', function () {
-        // Untoggle all buttons
-        buttons.forEach(function (otherButton) {
-          otherButton.classList.remove('active');
-          otherButton.setAttribute('aria-pressed', 'false');
-        });
-
-        // Toggle the clicked button
-        this.classList.add('active');
-        this.setAttribute('aria-pressed', 'true');
-
-        // Set the selected value to the hidden input
-        hiddenInput.value = this.getAttribute('data-value');
-      });
-    });
-  });
-
-
-</script> -->

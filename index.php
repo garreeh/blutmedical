@@ -248,7 +248,7 @@
 
 </html>
 
-<script>
+<!-- <script>
   // Get all the plus and minus buttons and product quantity inputs
   const minusButtons = document.querySelectorAll('.btn-minus');
   const plusButtons = document.querySelectorAll('.btn-plus');
@@ -279,4 +279,4 @@
 
 
 
-</script>
+</script> -->
