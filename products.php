@@ -34,6 +34,13 @@
   <!-- Start Product Section -->
   <div class="product-section">
     <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+          <li class="breadcrumb-item active" aria-current="page">All Products</li>
+
+        </ol>
+      </nav>
       <div class="row">
         <?php
         $sql = "SELECT * FROM product";

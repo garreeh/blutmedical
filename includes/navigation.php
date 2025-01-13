@@ -87,7 +87,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
     if (isLoggedIn) {
       // User is logged in, fetch cart count from the server
-      fetch('/online_ordering/controllers/users/get_cart_count.php')
+      fetch('/blutmedical/controllers/users/get_cart_count.php')
         .then((response) => response.json())
         .then((data) => {
           // Update the cart badge with the fetched cart count

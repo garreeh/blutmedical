@@ -38,137 +38,198 @@ if (isset($_GET['product_id'])) {
 
       <div class="product-section">
         <div class="container">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Product Showcase</li>
+            </ol>
+          </nav>
           <div class="row">
-            <div class="col-md-6">
-              <!-- Main Product Image with Zoom Effect -->
-              <div class="zoom-container">
-                <img id="mainProductImage" src="<?php echo $image_url; ?>" class="img-fluid"
-                  style="border-radius: 10px; object-fit: cover;">
+            <div class="col-md-6 align-items-stretch">
+              <!-- Card for Main Product Image and Thumbnails -->
+              <div id="productStyles">
+                <!-- Main Product Image with Zoom Effect -->
+                <div class="zoom-container">
+                  <img id="mainProductImage" src="<?php echo $image_url; ?>" class="img-fluid"
+                    style="border-radius: 10px; object-fit: cover;">
 
-                <!-- Optional: Add zoom effect using CSS -->
-                <div id="zoomedImage" class="zoomed-image"></div>
-              </div>
+                  <!-- Optional: Add zoom effect using CSS -->
+                  <div id="zoomedImage" class="zoomed-image"></div>
+                </div>
 
-              <!-- Thumbnail Images below main image -->
-              <div class="product-thumbnails mt-3">
-                <?php
-                // Display the main product image as the first thumbnail
-                echo '<img src="' . $image_url . '" class="img-thumbnail" alt="Product Image" style="cursor: pointer;" onclick="changeMainImage(\'' . $image_url . '\')">';
+                <!-- Thumbnail Images below main image -->
+                <div class="product-thumbnails">
+                  <?php
+                  // Display the main product image as the first thumbnail
+                  echo '<img src="' . $image_url . '" class="img-thumbnail" alt="Product Image" style="cursor: pointer;" onclick="changeMainImage(\'' . $image_url . '\')">';
 
-                // Fetch all other product images from 'product_image' table
-                $queryImages = "SELECT product_image_path FROM product_image WHERE product_id = $product_id";
-                $resultImages = mysqli_query($conn, $queryImages);
+                  // Fetch all other product images from 'product_image' table
+                  $queryImages = "SELECT product_image_path FROM product_image WHERE product_id = $product_id";
+                  $resultImages = mysqli_query($conn, $queryImages);
 
-                if ($resultImages && mysqli_num_rows($resultImages) > 0) {
-                  while ($image = mysqli_fetch_assoc($resultImages)) {
-                    $productImagePath = './uploads/' . basename($image['product_image_path']);
-                    echo '<img src="' . $productImagePath . '" class="img-thumbnail" alt="Product Image" style="cursor: pointer;" onclick="changeMainImage(\'' . $productImagePath . '\')">';
+                  if ($resultImages && mysqli_num_rows($resultImages) > 0) {
+                    while ($image = mysqli_fetch_assoc($resultImages)) {
+                      $productImagePath = './uploads/' . basename($image['product_image_path']);
+                      echo '<img src="' . $productImagePath . '" class="img-thumbnail" alt="Product Image" style="cursor: pointer;" onclick="changeMainImage(\'' . $productImagePath . '\')">';
+                    }
                   }
-                }
-                ?>
-              </div>
-
-            </div>
-
-            <div class="col-md-6">
-              <h1><?php echo htmlspecialchars($product['product_name']); ?></h1>
-
-              <?php
-              // Fetch variations for the specific product
-              $query = "SELECT * FROM variations WHERE product_id = $product_id";
-              $result = mysqli_query($conn, $query);
-
-              $variations = [];
-              $initialPrice = 0;
-              if ($result && mysqli_num_rows($result) > 0) {
-                $variations = mysqli_fetch_all($result, MYSQLI_ASSOC);
-                $initialPrice = $variations[0]['price']; // Use the price of the first variation
-              }
-              ?>
-
-              <!-- Display the price -->
-              <p class="text-muted">₱<span id="productPrice"><?php echo number_format($initialPrice, 2); ?></span></p>
-              <p><?php echo htmlspecialchars($product['product_description']); ?></p>
-
-              <?php if (!empty($variations)) { ?>
-                <h4>Available Sizes:</h4>
-                <form id="sizeForm">
-                  <?php foreach ($variations as $index => $variation) { ?>
-                    <button type="button" class="btn variation-toggle <?php echo $index === 0 ? 'active' : ''; ?>"
-                      data-bs-toggle="button" aria-pressed="<?php echo $index === 0 ? 'true' : 'false'; ?>" autocomplete="off"
-                      data-value="<?php echo htmlspecialchars($variation['variation_id']); ?>"
-                      data-price="<?php echo htmlspecialchars($variation['price']); ?>">
-                      <?php echo htmlspecialchars($variation['value']); ?>
-                    </button>
-                  <?php } ?>
-
-                  <!-- Hidden input to store the selected variation -->
-                  <input type="hidden" name="selected_variation" id="selectedVariation"
-                    value="<?php echo $variations[0]['variation_id']; ?>">
-                </form>
-              <?php } ?>
-
-              <br>
-
-              <!-- Quantity Selector -->
-              <div>
-                <div class="input-group" style="max-width: 13rem;">
-                  <button class="btn btn-outline-secondary" type="button" id="btn-minus">-</button>
-                  <input type="number" id="quantity" class="form-control text-center" value="1" readonly>
-                  <button class="btn btn-outline-secondary" type="button" id="btn-plus">+</button>
+                  ?>
                 </div>
               </div>
+            </div>
 
-              <button class="btn btn-primary btn-lg mt-4" id="addToCartBtn">
-                Add to Cart
-              </button>
+            <div class="col-md-6 align-items-stretch">
+              <!-- Card for Product Details -->
+              <div id="productStyles">
+                <h1><?php echo htmlspecialchars($product['product_name']); ?></h1>
 
+                <hr>
+                <i class="fas fa-box"></i> In stock: <?php echo htmlspecialchars($product['product_stocks']); ?>
+                <hr>
+
+
+                <?php
+                // Fetch variations for the specific product
+                $query = "SELECT * FROM variations WHERE product_id = $product_id";
+                $result = mysqli_query($conn, $query);
+
+                $variations = [];
+                $initialPrice = 0;
+                if ($result && mysqli_num_rows($result) > 0) {
+                  $variations = mysqli_fetch_all($result, MYSQLI_ASSOC);
+                  $initialPrice = $variations[0]['price']; // Use the price of the first variation
+                }
+                ?>
+
+                <!-- Display the price -->
+                <p class="text-muted">₱ <span id="productPrice"><?php echo number_format($initialPrice, 2); ?></span></p>
+                <p><?php echo htmlspecialchars($product['product_description']); ?></p>
+
+                <?php if (!empty($variations)) { ?>
+                  <h4>Available Sizes:</h4>
+                  <form id="sizeForm">
+                    <?php foreach ($variations as $index => $variation) { ?>
+                      <button type="button" class="btn variation-toggle <?php echo $index === 0 ? 'active' : ''; ?>"
+                        data-bs-toggle="button" aria-pressed="<?php echo $index === 0 ? 'true' : 'false'; ?>" autocomplete="off"
+                        data-value="<?php echo htmlspecialchars($variation['variation_id']); ?>"
+                        data-price="<?php echo htmlspecialchars($variation['price']); ?>">
+                        <?php echo htmlspecialchars($variation['value']); ?>
+                      </button>
+                    <?php } ?>
+
+                    <!-- Hidden input to store the selected variation -->
+                    <input type="hidden" name="selected_variation" id="selectedVariation"
+                      value="<?php echo $variations[0]['variation_id']; ?>">
+                  </form>
+                <?php } ?>
+
+                <br>
+
+                <!-- Quantity Selector -->
+                <div>
+                  <div class="input-group" style="max-width: 13rem;">
+                    <button class="btn btn-outline-secondary" type="button" id="btn-minus">-</button>
+                    <input type="number" id="quantity" class="form-control text-center" value="1" readonly>
+                    <button class="btn btn-outline-secondary" type="button" id="btn-plus">+</button>
+                  </div>
+                </div>
+
+                <button class="btn btn-primary btn-lg mt-4" id="addToCartBtn">
+                  Add to Cart
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Zoom Effect Styles -->
-      <style>
-        #mainProductImage {
-          width: 100%;
-          transition: transform 0.3s ease;
-        }
+      <!-- Start Product Section -->
+      <div class="footer-section">
+        <div class="container">
+          <h2>Product Description</h2>
+        </div>
+      </div>
+      <!-- End Product Section -->
 
-        /* Hidden zoomed image container */
-        #zoomedImage {
-          position: absolute;
-          /* Use absolute positioning */
-          width: 150px;
-          height: 150px;
-          background-color: rgba(255, 255, 255, 0.8);
-          display: none;
-          background-size: contain;
-          background-repeat: no-repeat;
-          pointer-events: none;
-          /* Prevent zoomed image from blocking clicks */
-          border-radius: 50%;
-          /* Circular effect */
-          border: 3px solid #000;
-          /* Border for better visibility */
-          transition: transform 0.1s ease;
-          z-index: 1000;
-          /* Make sure it's above other elements */
-        }
+      <!-- Start Product Section -->
+      <div class="footer-section" style="text-align: center;">
+        <div class="container">
+          <h2 style="margin-bottom: 20px;">You may also like</h2>
+          <div id="productCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
+            <div class="carousel-inner">
+              <?php
+              $sql = "SELECT * FROM product"; // Fetch all products
+              $result = $conn->query($sql);
 
-        /* Thumbnail Image Styling */
-        .product-thumbnails img {
-          max-width: 100px;
-          margin-right: 10px;
-        }
+              if ($result->num_rows > 0) {
+                $products = [];
+                while ($row = $result->fetch_assoc()) {
+                  $products[] = $row;
+                }
 
-        /* Hover effect for thumbnails */
-        .product-thumbnails img:hover {
-          border: 2px solid #000;
-        }
-      </style>
+                $totalProducts = count($products);
+                $productsPerSlide = 4;
+
+                // Loop through the products and create carousel items
+                for ($i = 0; $i < $totalProducts; $i++) {
+                  if ($i % $productsPerSlide == 0) {
+                    $isActive = ($i == 0) ? 'active' : ''; // Set first item as active
+                    echo "<div class='carousel-item $isActive'>";
+                    echo '<div class="row">';
+                  }
+
+                  $product = $products[$i];
+                  $product_image = basename($product['product_image']);
+                  $image_url = './uploads/' . $product_image;
+                  $product_id = $product['product_id'];
+                  $product_name = htmlspecialchars($product['product_name']);
+                  $product_price = number_format($product['product_sellingprice'], 2);
+
+                  echo <<<HTML
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-5">
+              <a href="product_details.php?product_id={$product_id}" target="_blank">
+                <div class="product-item">
+                  <img src="{$image_url}" class="img-fluid product-thumbnail"
+                    style="height: 200px; width: 100%; object-fit: cover; border-radius: 10px;">
+                  <h3 class="product-title" style="font-size: 1rem; text-align: center; margin-top: 10px;">{$product_name}</h3>
+                  <strong class="product-price" style="font-size: 1.2rem; margin-top: auto;">₱{$product_price}</strong>
+                </div>
+              </a>
+            </div>
+            HTML;
+
+                  // Close the row and carousel-item after every 4 products
+                  if (($i + 1) % $productsPerSlide == 0 || $i == $totalProducts - 1) {
+                    echo '</div>'; // Close row
+                    echo '</div>'; // Close carousel-item
+                  }
+                }
+              }
+              ?>
+            </div>
+
+            <!-- Carousel controls -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- End Product Section -->
 
 
+
+
+      <!-- Start Product Section -->
+      <div class="product-section">
+        <!-- THIS IS EMPTY FOR DIVISION -->
+      </div>
+      <!-- End Product Section -->
 
       <?php include './includes/footer.php'; ?>
 
@@ -177,11 +238,49 @@ if (isset($_GET['product_id'])) {
     </html>
 
     <style>
-      .product-section .container {
-        background: rgb(255, 255, 255);
-        border-radius: 10px;
+      #productStyles {
+        background: #fff;
+        border-radius: 5px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        padding: 2rem;
+        padding: 1.5rem;
+        height: 100%;
+      }
+
+      #mainProductImage {
+        width: 100%;
+        transition: transform 0.3s ease;
+      }
+
+      /* Hidden zoomed image container */
+      #zoomedImage {
+        position: absolute;
+        /* Use absolute positioning */
+        width: 150px;
+        height: 150px;
+        background-color: rgba(255, 255, 255, 0.8);
+        display: none;
+        background-size: contain;
+        background-repeat: no-repeat;
+        pointer-events: none;
+        /* Prevent zoomed image from blocking clicks */
+        border-radius: 40%;
+        /* Circular effect */
+        border: 3px solid #000;
+        /* Border for better visibility */
+        transition: transform 0.1s ease;
+        z-index: 1000;
+        /* Make sure it's above other elements */
+      }
+
+      /* Thumbnail Image Styling */
+      .product-thumbnails img {
+        max-width: 100px;
+        margin-right: 10px;
+      }
+
+      /* Hover effect for thumbnails */
+      .product-thumbnails img:hover {
+        border: 2px solid #000;
       }
 
       .product-section h1 {
@@ -327,7 +426,7 @@ if (isset($_GET['product_id'])) {
 
         if (isLoggedIn) {
           // User is logged in, make an AJAX call to add to the server cart
-          fetch('/online_ordering/controllers/users/add_cart_process.php', {
+          fetch('/blutmedical/controllers/users/add_cart_process.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(cartData),
