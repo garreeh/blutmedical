@@ -13,7 +13,7 @@ if (isset($_GET['product_id'])) {
     $product = mysqli_fetch_assoc($result);
     $product_image = basename($product['product_image']);
     $image_url = './uploads/' . $product_image;
-    ?>
+?>
 
     <!doctype html>
     <html lang="en">
@@ -84,9 +84,8 @@ if (isset($_GET['product_id'])) {
                 <h1><?php echo htmlspecialchars($product['product_name']); ?></h1>
 
                 <hr>
-                <i class="fas fa-box"></i> In stock: <?php echo htmlspecialchars($product['product_stocks']); ?>
+                <i class="fas fa-box"></i> IN STOCK
                 <hr>
-
 
                 <?php
                 // Fetch variations for the specific product
@@ -94,10 +93,10 @@ if (isset($_GET['product_id'])) {
                 $result = mysqli_query($conn, $query);
 
                 $variations = [];
-                $initialPrice = 0;
+                $initialPrice = $product['product_sellingprice']; // Default to product price
                 if ($result && mysqli_num_rows($result) > 0) {
                   $variations = mysqli_fetch_all($result, MYSQLI_ASSOC);
-                  $initialPrice = $variations[0]['price']; // Use the price of the first variation
+                  $initialPrice = $variations[0]['price']; // Default to the price of the first variation
                 }
                 ?>
 
@@ -109,8 +108,12 @@ if (isset($_GET['product_id'])) {
                   <h4>Available Sizes:</h4>
                   <form id="sizeForm">
                     <?php foreach ($variations as $index => $variation) { ?>
-                      <button type="button" class="btn variation-toggle <?php echo $index === 0 ? 'active' : ''; ?>"
-                        data-bs-toggle="button" aria-pressed="<?php echo $index === 0 ? 'true' : 'false'; ?>" autocomplete="off"
+                      <button
+                        type="button"
+                        class="btn variation-toggle <?php echo $index === 0 ? 'active' : ''; ?>"
+                        data-bs-toggle="button"
+                        aria-pressed="<?php echo $index === 0 ? 'true' : 'false'; ?>"
+                        autocomplete="off"
                         data-value="<?php echo htmlspecialchars($variation['variation_id']); ?>"
                         data-price="<?php echo htmlspecialchars($variation['price']); ?>">
                         <?php echo htmlspecialchars($variation['value']); ?>
@@ -118,7 +121,10 @@ if (isset($_GET['product_id'])) {
                     <?php } ?>
 
                     <!-- Hidden input to store the selected variation -->
-                    <input type="hidden" name="selected_variation" id="selectedVariation"
+                    <input
+                      type="hidden"
+                      name="selected_variation"
+                      id="selectedVariation"
                       value="<?php echo $variations[0]['variation_id']; ?>">
                   </form>
                 <?php } ?>
@@ -129,11 +135,12 @@ if (isset($_GET['product_id'])) {
                 <div>
                   <div class="input-group" style="max-width: 13rem;">
                     <button class="btn btn-outline-secondary" type="button" id="btn-minus">-</button>
-                    <input type="number" id="quantity" class="form-control text-center" value="1" readonly>
+                    <input type="number" id="quantity" name="quantity" class="form-control text-center" value="1" readonly>
                     <button class="btn btn-outline-secondary" type="button" id="btn-plus">+</button>
                   </div>
                 </div>
 
+                <!-- Add to Cart Button -->
                 <button class="btn btn-primary btn-lg mt-4" id="addToCartBtn">
                   Add to Cart
                 </button>
@@ -181,7 +188,6 @@ if (isset($_GET['product_id'])) {
                   $product = $products[$i];
                   $product_image = basename($product['product_image']);
                   $image_url = './uploads/' . $product_image;
-                  $product_id = $product['product_id'];
                   $product_name = htmlspecialchars($product['product_name']);
                   $product_price = number_format($product['product_sellingprice'], 2);
 
@@ -337,6 +343,7 @@ if (isset($_GET['product_id'])) {
       }
     </style>
 
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
@@ -383,89 +390,92 @@ if (isset($_GET['product_id'])) {
         });
       });
 
-      document.querySelector('#addToCartBtn').addEventListener('click', function () {
-        var productId = <?php echo json_encode($product_id); ?>; // Safely output product ID
-        var quantity = parseInt(document.getElementById('quantity').value) || 1; // Default to 1 if no valid quantity
+      document.querySelector('#addToCartBtn').addEventListener('click', function() {
+        // Retrieve product ID securely from a hidden input or directly from PHP
+        const product_id = <?php echo isset($product_id) ? json_encode($product_id) : 'null'; ?>;
 
-        // Check if the selectedVariation element exists
-        var selectedVariationElement = document.getElementById('selectedVariation');
-        var selectedVariation = selectedVariationElement ? selectedVariationElement.value : null; // Set to null if no variation selected
+        // Debug to verify
+        console.log("Product ID:", product_id);
 
-        if (!productId) {
-          console.error("Product ID is missing!");
+        if (!product_id) {
+          console.error("Product ID is not defined!");
           Toastify({
-            text: 'Unable to add product to cart. Product ID is missing.',
+            text: "Product ID is missing.",
             duration: 3000,
             close: true,
             gravity: 'top',
             position: 'right',
-            backgroundColor: '#FF0000', // Red
+            backgroundColor: '#FF0000',
           }).showToast();
           return;
         }
+
+        // Retrieve quantity (default to 1 if invalid or empty)
+        var quantity = parseInt(document.getElementById('quantity').value) || 1;
+
+        // Retrieve variation if applicable
+        var selectedVariationElement = document.getElementById('selectedVariation');
+        var selectedVariation = selectedVariationElement ? selectedVariationElement.value : null;
 
         // Get the button and store original text
         var button = document.getElementById('addToCartBtn');
         var originalText = button.textContent;
 
-        // Change the text to "Adding to Cart..."
+        // Update button state
         button.textContent = 'Adding to Cart...';
-
-        // Disable the button during the process
         button.disabled = true;
 
         // Check if the user is logged in
         var isLoggedIn = <?php echo json_encode(isset($_SESSION['user_id'])); ?>;
 
-        // Prepare cart data
+        // Prepare data for AJAX
         var cartData = {
-          product_id: productId,
+          product_id: product_id,
           cart_quantity: quantity,
           variation_id: selectedVariation,
         };
 
         if (isLoggedIn) {
-          // User is logged in, make an AJAX call to add to the server cart
-          fetch('/blutmedical/controllers/users/add_cart_process.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(cartData),
-          })
-            .then((response) => response.json())
-            .then((res) => {
+          // User is logged in, perform AJAX call to add to the server cart
+          $.ajax({
+            url: '/blutmedical/controllers/users/add_cart_process.php',
+            type: 'POST',
+            data: cartData,
+            dataType: 'json',
+            success: function(response) {
               Toastify({
-                text: res.message || (res.success ? 'Added to cart successfully!' : 'Failed to add to cart.'),
+                text: response.message || (response.success ? 'Added to cart successfully!' : 'Failed to add to cart.'),
                 duration: 3000,
                 close: true,
                 gravity: 'top',
                 position: 'right',
-                backgroundColor: res.success ? '#4CAF50' : '#FF0000', // Green for success, Red for error
+                backgroundColor: response.success ? '#4CAF50' : '#FF0000',
               }).showToast();
 
-              // Update the cart badge after adding to the cart
-              updateCartBadge(); // Call to update the cart badge
-            })
-            .catch((error) => {
-              console.error('Error:', error);
+              // Update the cart badge
+              updateCartBadge();
+            },
+            error: function(xhr, status, error) {
+              console.error('AJAX Error:', error);
               Toastify({
                 text: 'An unexpected error occurred while adding to cart.',
                 duration: 3000,
                 close: true,
                 gravity: 'top',
                 position: 'right',
-                backgroundColor: '#FF0000', // Red
+                backgroundColor: '#FF0000',
               }).showToast();
-            })
-            .finally(() => {
-              // Restore the button text and enable the button again
+            },
+            complete: function() {
               button.textContent = originalText;
               button.disabled = false;
-            });
+            },
+          });
         } else {
           // User is not logged in, update the guest cart in localStorage
           var cart = JSON.parse(localStorage.getItem('guestCart')) || [];
           var existingProduct = cart.find(
-            (item) => item.product_id === productId && item.variation_id === selectedVariation
+            (item) => item.product_id === product_id && item.variation_id === selectedVariation
           );
 
           if (existingProduct) {
@@ -478,25 +488,22 @@ if (isset($_GET['product_id'])) {
 
           localStorage.setItem('guestCart', JSON.stringify(cart));
 
-          // Show success message
           Toastify({
             text: 'Added to cart as guest.',
             duration: 3000,
             close: true,
             gravity: 'top',
             position: 'right',
-            backgroundColor: '#4CAF50', // Green
+            backgroundColor: '#4CAF50',
           }).showToast();
 
-          // Update the cart badge after adding to the cart
-          updateCartBadge(); // Call to update the cart badge
+          // Update the cart badge
+          updateCartBadge();
 
-          // Restore the button text and enable the button again
           button.textContent = originalText;
           button.disabled = false;
         }
       });
-
     </script>
 
     <!-- Zoom JavaScript -->
@@ -510,7 +517,7 @@ if (isset($_GET['product_id'])) {
       var mainImage = document.getElementById('mainProductImage');
       var zoomedImage = document.getElementById('zoomedImage');
 
-      mainImage.addEventListener('mousemove', function (e) {
+      mainImage.addEventListener('mousemove', function(e) {
         var zoomScale = 1.5; // Scale factor
         var offsetX = e.offsetX;
         var offsetY = e.offsetY;
@@ -530,12 +537,12 @@ if (isset($_GET['product_id'])) {
         zoomedImage.style.top = zoomedImageY + 'px';
       });
 
-      mainImage.addEventListener('mouseleave', function () {
+      mainImage.addEventListener('mouseleave', function() {
         zoomedImage.style.display = 'none';
       });
     </script>
 
-    <?php
+<?php
   }
 }
 ?>
