@@ -11,7 +11,7 @@
  Target Server Version : 100432 (10.4.32-MariaDB)
  File Encoding         : 65001
 
- Date: 14/01/2025 10:19:14
+ Date: 14/01/2025 18:36:32
 */
 
 SET NAMES utf8mb4;
@@ -65,14 +65,13 @@ CREATE TABLE `cart`  (
   `delivery_guest_fullname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `delivery_guest_contact_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`cart_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 144 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 186 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of cart
 -- ----------------------------
-INSERT INTO `cart` VALUES (141, 1, 18, 0, 2, 'Cart', NULL, 218.00, NULL, NULL, NULL, '2025-01-13 20:14:29', '2025-01-13 20:14:36', NULL, NULL, NULL, NULL);
-INSERT INTO `cart` VALUES (142, 1, 17, 1, 1, 'Cart', NULL, 2.00, NULL, NULL, NULL, '2025-01-13 20:14:48', '2025-01-13 20:14:48', NULL, NULL, NULL, NULL);
-INSERT INTO `cart` VALUES (143, 1, 22, 0, 1, 'Cart', NULL, 188.00, NULL, NULL, NULL, '2025-01-13 20:23:08', '2025-01-13 20:23:08', NULL, NULL, NULL, NULL);
+INSERT INTO `cart` VALUES (182, 40, 22, 0, 3, 'Cart', NULL, 188.00, NULL, NULL, NULL, '2025-01-14 17:18:36', '2025-01-14 17:22:58', NULL, NULL, NULL, NULL);
+INSERT INTO `cart` VALUES (185, 1, 17, 1, 3, 'Cart', NULL, 6.00, NULL, NULL, NULL, '2025-01-14 18:06:42', '2025-01-14 18:06:49', NULL, NULL, NULL, NULL);
 
 -- ----------------------------
 -- Table structure for category
@@ -176,7 +175,7 @@ CREATE TABLE `product`  (
 -- ----------------------------
 -- Records of product
 -- ----------------------------
-INSERT INTO `product` VALUES (17, 26, 1, 'Scissor 12', 'Test Descriptionqweqwe', '../../uploads/showcase2.png', 'Scissor 12', 18, '', '1232312.123123', '2024-09-05 14:39:33', '2025-01-14 10:17:59');
+INSERT INTO `product` VALUES (17, 26, 1, 'Scissor 12', 'Test Descriptionqweqwe', '../../uploads/showcase2.png', 'Scissor 12', 18, '', '1232312.123123', '2024-09-05 14:39:33', '2025-01-14 11:23:54');
 INSERT INTO `product` VALUES (22, 26, 5, 'Scissor 3', 'Test Description', '../../uploads/showcase1.png', 'Scissor 3', 0, '177.00', '188.00', '2024-11-08 22:11:48', '2025-01-09 13:03:42');
 INSERT INTO `product` VALUES (23, 26, 6, 'Scissor 4', 'Test Description', '../../uploads/dreamy-watercolor-delicate-dusty-blue-heart-clipart-white-background_983420-312343.png', 'Noodles', 0, '77.00', '99.00', '2024-11-08 22:12:38', '2025-01-09 13:03:43');
 INSERT INTO `product` VALUES (24, 26, 5, 'Test Product', 'Test Test Description', '../../uploads/wilcon.jpg', 'Test Product', 0, '244.00', '257.00', '2025-01-06 11:55:33', '2025-01-09 13:03:45');
