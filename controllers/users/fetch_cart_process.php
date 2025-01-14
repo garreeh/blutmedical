@@ -2,73 +2,48 @@
 session_start();
 include '../../connections/connections.php';
 
-// Initialize an empty response array
-$response = array();
+// Initialize the response array
+$response = [
+    'success' => false,
+    'items' => [],
+    'total_items' => 0,
+    'total_price' => 0.0,
+    'message' => ''
+];
 
-if (isset($_SESSION['user_id'])) {
-    $user_id = $_SESSION['user_id'];
+try {
+    if (isset($_SESSION['user_id'])) {
+        // User is logged in, fetch data from the database
+        $user_id = $conn->real_escape_string($_SESSION['user_id']);
 
-    // Query to get cart items and related product details
-    $query = "SELECT * 
-              FROM cart
-              LEFT JOIN product ON cart.product_id = product.product_id
-              LEFT JOIN variations ON cart.variation_id = variations.variation_id
-              WHERE user_id = '$user_id' AND cart_status = 'Cart'";
+        $query = "SELECT product.*, cart.*, variations.`value`, variations.variation_id, variations.price
+                  FROM cart
+                  LEFT JOIN product ON cart.product_id = product.product_id
+                  LEFT JOIN variations ON cart.variation_id = variations.variation_id
+                  WHERE cart.user_id = '$user_id' AND cart.cart_status = 'Cart'";
 
-    $result = $conn->query($query);
-    $cart_items = array();
+        $result = $conn->query($query);
 
-    while ($row = $result->fetch_assoc()) {
-        $cart_items[] = $row;
-    }
-
-    $total_items = count($cart_items);
-    $total_price = 0;
-    foreach ($cart_items as $item) {
-        $total_price += $item['total_price'];
-    }
-
-    $response['success'] = true;
-    $response['items'] = $cart_items;
-    $response['total_items'] = $total_items;
-    $response['total_price'] = $total_price;
-} else {
-    // Fetch cart items from localStorage if not logged in
-    $guestCart = json_decode(file_get_contents('php://input'), true) ?? [];
-
-    if (!empty($guestCart)) {
-        $cart_items = array();
-        $total_price = 0;
-
-        foreach ($guestCart as $item) {
-            $productPrice = isset($item['product_sellingprice']) ? floatval($item['product_sellingprice']) : 0;
-            $cartQuantity = isset($item['cart_quantity']) ? intval($item['cart_quantity']) : 0;
-            $variationPrice = isset($item['price']) ? floatval($item['price']) : $productPrice;
-
-            $cart_items[] = array(
-                'product_id' => $item['product_id'],
-                'product_name' => $item['product_name'],
-                'product_image' => $item['product_image'],
-                'price' => $variationPrice,
-                'variation_id' => isset($item['variation_id']) ? $item['variation_id'] : null,
-                'value' => isset($item['value']) ? $item['value'] : '-',
-                'cart_quantity' => $cartQuantity,
-                'total_price' => $variationPrice * $cartQuantity
-            );
-
-            $total_price += $variationPrice * $cartQuantity;
+        if (!$result) {
+            throw new Exception("Database query failed: " . $conn->error);
         }
 
-        $total_items = count($cart_items);
+        $cart_items = [];
+        $total_price = 0.0;
+
+        while ($row = $result->fetch_assoc()) {
+            $cart_items[] = $row;
+            $total_price += $row['total_price'];
+        }
 
         $response['success'] = true;
         $response['items'] = $cart_items;
-        $response['total_items'] = $total_items;
+        $response['total_items'] = count($cart_items);
         $response['total_price'] = $total_price;
-    } else {
-        $response['success'] = false;
-        $response['message'] = 'Cart is empty';
     }
+} catch (Exception $e) {
+    $response['message'] = $e->getMessage();
 }
 
+// Return the response as JSON
 echo json_encode($response);

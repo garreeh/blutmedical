@@ -57,7 +57,7 @@ if (session_status() == PHP_SESSION_NONE) {
           </div>
 
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <div id="clockAndDate" class="h1 mb-0 font-weight-bold text-gray-800"></div>
+            <div id="clockAndDatee" class="h1 mb-0 font-weight-bold text-gray-800"></div>
           </div>
 
           <!-- Content Row -->

@@ -123,19 +123,26 @@ if (isset($_GET['product_id'])) {
                       aria-pressed="<?php echo $index === 0 ? 'true' : 'false'; ?>"
                       autocomplete="off"
                       data-value="<?php echo htmlspecialchars(trim($variation['value'])); ?>"
-                      data-price="<?php echo htmlspecialchars(trim($variation['price'])); ?>">
+                      data-price="<?php echo htmlspecialchars(trim($variation['price'])); ?>"
+                      data-id="<?php echo htmlspecialchars(trim($variation['variation_id'])); ?>"> <!-- Added data-id -->
                       <?php echo $variation['value']; ?>
                     </button>
                   <?php } ?>
 
                   <input
-                    type="text"
+                    type="hidden"
                     name="selected_variation"
-                    id="selectedVariation"
-                    value="<?php echo trim($variations[0]['value'] ?? '-'); ?>"> <!-- Default to '-' if empty or undefined -->
+                    id="selectedVariationId"
+                    value="<?php echo trim($variations[0]['variation_id'] ?? '-'); ?>">
 
                   <input
-                    type="text"
+                    type="hidden"
+                    name="selected_variation"
+                    id="selectedVariation"
+                    value="<?php echo trim($variations[0]['value'] ?? '-'); ?>">
+
+                  <input
+                    type="hidden"
                     name="selected_price"
                     id="selectedPrice"
                     value="<?php echo trim($variations[0]['price'] ?? '-'); ?>"> <!-- Default to '-' if empty or undefined -->
@@ -429,12 +436,15 @@ if (isset($_GET['product_id'])) {
         const productPrice = document.getElementById('productPrice');
         const selectedVariationInput = document.getElementById('selectedVariation');
         const selectedPriceInput = document.getElementById('selectedPrice');
+        const selectedVariationIdInput = document.getElementById('selectedVariationId'); // New input for variation_id
 
         buttons.forEach(button => {
           button.addEventListener('click', () => {
             // Untoggle all buttons
-            buttons.forEach(btn => btn.classList.remove('active'));
-            buttons.forEach(btn => btn.setAttribute('aria-pressed', 'false'));
+            buttons.forEach(btn => {
+              btn.classList.remove('active');
+              btn.setAttribute('aria-pressed', 'false');
+            });
 
             // Toggle the clicked button
             button.classList.add('active');
@@ -445,15 +455,19 @@ if (isset($_GET['product_id'])) {
             productPrice.textContent = parseFloat(price).toFixed(2);
 
             // Update the hidden input value for variation
-            const variationId = button.getAttribute('data-value');
-            selectedVariationInput.value = variationId;
+            const variationValue = button.getAttribute('data-value');
+            selectedVariationInput.value = variationValue;
 
             // Update the hidden input value for price
             selectedPriceInput.value = price;
 
+            // Update the hidden input value for variation_id
+            const variationId = button.getAttribute('data-id'); // Get the data-id
+            selectedVariationIdInput.value = variationId; // Set it in the hidden input
           });
         });
       });
+
 
 
 
@@ -483,8 +497,8 @@ if (isset($_GET['product_id'])) {
 
         var product_sellingprice = document.getElementById('product_sellingprice').value;
 
-        var selectedVariation = document.getElementById('selectedVariation').value || 'Testssetest';
-
+        var selectedVariation = document.getElementById('selectedVariation').value;
+        var selectedVariationId = document.getElementById('selectedVariationId').value || null;
         var product_name = document.getElementById('product_name').value;
         var product_image = document.getElementById('product_image').value;
 
@@ -504,6 +518,7 @@ if (isset($_GET['product_id'])) {
           product_id: product_id,
           price: selectedPrice || null,
           value: selectedVariation,
+          variation_id: selectedVariationId, // Add variation_id to cartData
           cart_quantity: quantity,
           product_name: product_name,
           product_image: product_image,
