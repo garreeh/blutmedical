@@ -55,7 +55,7 @@ if (isset($_POST['product_id'])) {
     while ($row = mysqli_fetch_assoc($result)) {
       $product_image = basename($row['product_image']);
       $image_url = '../../uploads/' . $product_image; // Construct the image URL
-      ?>
+?>
       <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-labelledby="requestModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-xl" role="document">
@@ -84,27 +84,16 @@ if (isset($_POST['product_id'])) {
                   </div>
                 </div>
 
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <label for="product_description">Product Description:</label>
-                    <input type="text" class="form-control" id="product_description" name="product_description"
-                      placeholder="Enter Product Description" value="<?php echo $row['product_description']; ?>" required>
-                  </div>
-                  <div class="form-group col-md-6">
-                    <label for="product_unitprice">Product Unit Price:</label>
-                    <input type="number" class="form-control" id="product_unitprice" name="product_unitprice"
-                      placeholder="Enter Product Unit Price" value="<?php echo $row['product_unitprice']; ?>" required>
-                  </div>
-                </div>
+
 
                 <div class="form-row">
                   <div class="form-group col-md-6">
-                    <label for="product_sellingprice">Product Selling Price:</label>
-                    <input type="number" class="form-control" id="product_sellingprice" name="product_sellingprice"
+                    <label for="product_sellingprice">Main Product Selling Price:</label>
+                    <input type="text" class="form-control" id="product_sellingprice_update" name="product_sellingprice"
                       placeholder="Enter Product Selling Price" value="<?php echo $row['product_sellingprice']; ?>" required>
                   </div>
                   <div class="form-group col-md-6">
-                    <label for="product_image">Product Image:</label>
+                    <label for="product_image">Main Product Image:</label>
                     <input type="file" class="form-control" id="product_image" name="fileToUpload">
                     <!-- Display existing image filename -->
                     <div class="file-info">
@@ -114,6 +103,14 @@ if (isset($_POST['product_id'])) {
                         <p>No image available.</p>
                       <?php endif; ?>
                     </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group col-md-12">
+                    <label for="product_description">Product Description:</label>
+                    <textarea class="form-control" id="product_description" name="product_description"
+                      placeholder="Enter Product Description" required><?php echo $row['product_description']; ?></textarea>
                   </div>
                 </div>
 
@@ -172,7 +169,7 @@ if (isset($_POST['product_id'])) {
         integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
 
       <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
           $('select').selectize({
             sortField: 'text'
           });
@@ -180,15 +177,23 @@ if (isset($_POST['product_id'])) {
       </script>
       <!-- END OF SELECT -->
 
-      <?php
+<?php
     }
   }
 }
 ?>
 
 <script>
-  $(document).ready(function () {
-    $('#editProductModal form').submit(function (event) {
+  document.getElementById('product_sellingprice_update').addEventListener('input', function(e) {
+    // Allow only numbers and dots, and ensure only one dot
+    this.value = this.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters except dot
+    if ((this.value.match(/\./g) || []).length > 1) {
+      this.value = this.value.slice(0, -1); // Remove the last character if there's more than one dot
+    }
+  });
+
+  $(document).ready(function() {
+    $('#editProductModal form').submit(function(event) {
       event.preventDefault(); // Prevent default form submission
 
       var $form = $(this);
@@ -208,7 +213,7 @@ if (isset($_POST['product_id'])) {
         data: formData,
         processData: false, // Prevent jQuery from automatically transforming the data into a query string
         contentType: false, // Let the browser set the content type for the FormData
-        success: function (response) {
+        success: function(response) {
           console.log(response); // Log the response for debugging
           response = JSON.parse(response);
           if (response.success) {
@@ -229,7 +234,7 @@ if (isset($_POST['product_id'])) {
             }).showToast();
           }
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
           console.error(xhr.responseText);
           Toastify({
             text: "Error occurred while editing product. Please try again later.",
@@ -237,7 +242,7 @@ if (isset($_POST['product_id'])) {
             backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
           }).showToast();
         },
-        complete: function () {
+        complete: function() {
           // Reset button text and re-enable it
           $saveButton.text('Save');
           $saveButton.prop('disabled', false);

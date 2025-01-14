@@ -107,5 +107,4 @@ if (session_status() == PHP_SESSION_NONE) {
 
   // Call the function to update the cart badge when the page loads
   updateCartBadge();
-
 </script>

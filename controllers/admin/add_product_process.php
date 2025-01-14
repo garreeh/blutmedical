@@ -52,14 +52,13 @@ if (isset($_POST['add_product'])) {
     $product_name = $conn->real_escape_string($_POST['product_name']);
     $product_sku = $conn->real_escape_string($_POST['product_sku']);
     $product_description = $conn->real_escape_string($_POST['product_description']);
-    $product_unitprice = $conn->real_escape_string($_POST['product_unitprice']);
     $product_sellingprice = $conn->real_escape_string($_POST['product_sellingprice']);
     $supplier_id = $conn->real_escape_string($_POST['supplier_id']);
     $category_id = $conn->real_escape_string($_POST['category_id']);
 
     // Construct SQL query
-    $sql = "INSERT INTO `product` (product_name, product_sku, product_description, product_unitprice, product_sellingprice, product_stocks, product_image, supplier_id, category_id)
-            VALUES ('$product_name', '$product_sku', '$product_description', '$product_unitprice', '$product_sellingprice', '0', '$target_file', '$supplier_id', '$category_id')";
+    $sql = "INSERT INTO `product` (product_name, product_sku, product_description, product_sellingprice, product_stocks, product_image, supplier_id, category_id)
+            VALUES ('$product_name', '$product_sku', '$product_description', '$product_sellingprice', '0', '$target_file', '$supplier_id', '$category_id')";
 
     // Execute SQL query
     if (mysqli_query($conn, $sql)) {
@@ -72,4 +71,3 @@ if (isset($_POST['add_product'])) {
     echo json_encode($response);
     exit();
 }
-?>

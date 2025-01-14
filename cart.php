@@ -52,71 +52,22 @@
   <div class="untree_co-section before-footer-section">
     <div class="container">
       <div class="row mb-5">
-        <form class="col-md-12" method="post">
+        <form class="col-md-12" method="post" id="cart-form">
           <div class="site-blocks-table">
             <table class="table">
               <thead>
                 <tr>
                   <th class="product-thumbnail">Image</th>
                   <th class="product-name">Product</th>
-                  <th class="product-price">Price</th>
+                  <th class="product-variation">Price</th>
+                  <th class="product-price">Variation</th>
                   <th class="product-quantity">Quantity</th>
                   <th class="product-total">Total</th>
                   <th class="product-remove">Remove</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td class="product-thumbnail">
-                    <img src="images/product-1.png" alt="Image" class="img-fluid">
-                  </td>
-                  <td class="product-name">
-                    <h2 class="h5 text-black">Product 1</h2>
-                  </td>
-                  <td>$49.00</td>
-                  <td>
-                    <div class="input-group mb-3 d-flex align-items-center quantity-container"
-                      style="max-width: 120px;">
-                      <div class="input-group-prepend">
-                        <button class="btn btn-outline-black decrease" type="button">&minus;</button>
-                      </div>
-                      <input type="text" class="form-control text-center quantity-amount" value="1" placeholder=""
-                        aria-label="Example text with button addon" aria-describedby="button-addon1">
-                      <div class="input-group-append">
-                        <button class="btn btn-outline-black increase" type="button">&plus;</button>
-                      </div>
-                    </div>
-
-                  </td>
-                  <td>$49.00</td>
-                  <td><a href="#" class="btn btn-black btn-sm">X</a></td>
-                </tr>
-
-                <tr>
-                  <td class="product-thumbnail">
-                    <img src="images/product-2.png" alt="Image" class="img-fluid">
-                  </td>
-                  <td class="product-name">
-                    <h2 class="h5 text-black">Product 2</h2>
-                  </td>
-                  <td>$49.00</td>
-                  <td>
-                    <div class="input-group mb-3 d-flex align-items-center quantity-container"
-                      style="max-width: 120px;">
-                      <div class="input-group-prepend">
-                        <button class="btn btn-outline-black decrease" type="button">&minus;</button>
-                      </div>
-                      <input type="text" class="form-control text-center quantity-amount" value="1" placeholder=""
-                        aria-label="Example text with button addon" aria-describedby="button-addon1">
-                      <div class="input-group-append">
-                        <button class="btn btn-outline-black increase" type="button">&plus;</button>
-                      </div>
-                    </div>
-
-                  </td>
-                  <td>$49.00</td>
-                  <td><a href="#" class="btn btn-black btn-sm">X</a></td>
-                </tr>
+              <tbody id="cart-items">
+                <!-- Dynamic content will be loaded here -->
               </tbody>
             </table>
           </div>
@@ -129,8 +80,6 @@
             <div class="col-md-6">
               <a class="btn btn-outline-black btn-sm btn-block" href="products.php">Continue Shopping</a>
             </div>
-          </div>
-          <div class="row">
           </div>
         </div>
         <div class="col-md-6 pl-5">
@@ -146,7 +95,7 @@
                   <span class="text-black">Subtotal</span>
                 </div>
                 <div class="col-md-6 text-right">
-                  <strong class="text-black">$230.00</strong>
+                  <strong class="text-black" id="cart-subtotal">$0.00</strong>
                 </div>
               </div>
               <div class="row mb-5">
@@ -154,14 +103,13 @@
                   <span class="text-black">Total</span>
                 </div>
                 <div class="col-md-6 text-right">
-                  <strong class="text-black">$230.00</strong>
+                  <strong class="text-black" id="cart-total">$0.00</strong>
                 </div>
               </div>
 
               <div class="row">
                 <div class="col-md-12">
-                  <button class="btn btn-black btn-lg py-3 btn-block" onclick="window.location='checkout.html'">Proceed
-                    To Checkout</button>
+                  <button class="btn btn-black btn-lg py-3 btn-block" id="checkout-button" style="display:none;" onclick="window.location='checkout.html'">Proceed To Checkout</button>
                 </div>
               </div>
             </div>
@@ -170,6 +118,7 @@
       </div>
     </div>
   </div>
+
 
 
 
@@ -185,3 +134,146 @@
 </body>
 
 </html>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+  function updateCart() {
+    var isLoggedIn = <?php echo json_encode(isset($_SESSION['user_id'])); ?>;
+    if (isLoggedIn) {
+
+      $.ajax({
+        url: '/blutmedical/controllers/users/fetch_cart_process.php',
+        method: 'GET',
+        dataType: 'json',
+        success: function(response) {
+          console.log('Cart Data:', response);
+
+          var cartContent = '';
+          var totalPrice = 0;
+
+          if (response.success) {
+            if (response.items.length > 0) {
+              $.each(response.items, function(index, item) {
+                var productPrice = parseFloat(item.total_price) || 0;
+                var cartQuantity = parseInt(item.cart_quantity, 10) || 0;
+                var baseURL = "/blutmedical/";
+
+                var variationPrice = item.variation_id ? parseFloat(item.price) : productPrice; // Check if variation_id exists
+                var variationValue = item.value !== null ? item.value : '-';
+
+                // Dynamically render each row
+                cartContent += '<tr>';
+                cartContent += '<td class="product-thumbnail"><img src="' + baseURL + item.product_image.replace(/^\.\.\//, baseURL + '') + '" alt="' + item.name + '" class="img-fluid"></td>';
+                cartContent += '<td>' + item.product_name + '</td>';
+                cartContent += '<td>₱ ' + variationPrice.toFixed(2) + '</td>'; // Display variation price if available, otherwise product price
+                cartContent += '<td>' + variationValue + '</td>';
+
+                cartContent += '<td>';
+                cartContent += '<div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">';
+                cartContent += '<div class="input-group-prepend">';
+                cartContent += '<button class="btn btn-outline-black decrease" type="button">&minus;</button>';
+                cartContent += '</div>';
+                cartContent += '<input type="text" class="form-control text-center quantity-amount" value="' + cartQuantity + '" readonly>';
+                cartContent += '<div class="input-group-append">';
+                cartContent += '<button class="btn btn-outline-black increase" type="button">&plus;</button>';
+                cartContent += '</div>';
+                cartContent += '</div>';
+                cartContent += '</td>';
+                cartContent += '<td>₱ ' + (variationPrice * cartQuantity).toFixed(2) + '</td>'; // Display total price with variation if available
+                cartContent += '<td><a href="#" class="btn btn-black btn-sm remove-item" data-product-id="' + item.product_id + '">X</a></td>';
+                cartContent += '</tr>';
+
+                totalPrice += variationPrice * cartQuantity; // Use variationPrice in total calculation if it exists
+              });
+
+              $('#cart-items').html(cartContent);
+              $('#cart-subtotal').text('₱ ' + totalPrice.toFixed(2));
+              $('#cart-total').text('₱ ' + (totalPrice + 35).toFixed(2));
+
+              if (response.items.length > 0) {
+                $('#checkout-button').show();
+              } else {
+                $('#checkout-button').hide();
+              }
+            } else {
+              cartContent = '<tr><td colspan="6" class="text-center">Cart is empty</td></tr>';
+              $('#cart-items').html(cartContent);
+              $('#cart-subtotal').text('₱ 0.00');
+              $('#cart-total').text('₱ 0.00');
+              $('#checkout-button').hide();
+            }
+
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error('AJAX Error:', error);
+        }
+      });
+    } else {
+      // Retrieve and parse the guest cart data from localStorage
+      var guestCart = JSON.parse(localStorage.getItem('guestCart')) || [];
+
+      if (guestCart.length > 0) {
+        var cartContent = '';
+        var totalPrice = 0;
+
+        $.each(guestCart, function(index, item) {
+
+          var productId = item.product_id;
+          var cartQuantity = parseInt(item.cart_quantity, 10) || 0;
+          var variationPrice = item.price !== '-' ? parseFloat(item.price) : parseFloat(item.product_sellingprice); // Check if price is not '-', otherwise use product_sellingprice
+          var variationValue = item.value !== null ? item.value : '-';
+
+          var baseURL = "/blutmedical/";
+
+          var cartContentRow = '<tr>';
+
+          cartContentRow += '<td class="product-thumbnail"><img src="' + baseURL + item.product_image.replace(/^\.\.\//, baseURL + '') + '" alt="' + item.product_image + '" class="img-fluid"></td>';
+          cartContentRow += '<td>' + item.product_name + '</td>';
+          cartContentRow += '<td>₱ ' + variationPrice.toFixed(2) + '</td>';
+          cartContentRow += '<td>' + (item.value !== null ? item.value : '-') + '</td>';
+          cartContentRow += '<td>';
+          cartContentRow += '<div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">';
+          cartContentRow += '<div class="input-group-prepend">';
+          cartContentRow += '<button class="btn btn-outline-black decrease" type="button">&minus;</button>';
+          cartContentRow += '</div>';
+          cartContentRow += '<input type="text" class="form-control text-center quantity-amount" value="' + cartQuantity + '" readonly>';
+          cartContentRow += '<div class="input-group-append">';
+          cartContentRow += '<button class="btn btn-outline-black increase" type="button">&plus;</button>';
+          cartContentRow += '</div>';
+          cartContentRow += '</div>';
+          cartContentRow += '</td>';
+          cartContentRow += '<td>₱ ' + (variationPrice * cartQuantity).toFixed(2) + '</td>';
+          cartContentRow += '<td><a href="#" class="btn btn-black btn-sm remove-item" data-product-id="' + productId + '">X</a></td>';
+          cartContentRow += '</tr>';
+
+          cartContent += cartContentRow;
+
+          totalPrice += variationPrice * cartQuantity;
+        });
+
+        $('#cart-items').html(cartContent);
+        $('#cart-subtotal').text('₱ ' + totalPrice.toFixed(2));
+        $('#cart-total').text('₱ ' + (totalPrice + 35).toFixed(2));
+
+        if (guestCart.length > 0) {
+          $('#checkout-button').show();
+        } else {
+          $('#checkout-button').hide();
+        }
+      } else {
+        $('#cart-items').html('<tr><td colspan="6" class="text-center">Cart is empty</td></tr>');
+        $('#cart-subtotal').text('₱ 0.00');
+        $('#cart-total').text('₱ 0.00');
+        $('#checkout-button').hide();
+      }
+
+    }
+  }
+
+
+  // Call the updateCart function to render the cart on page load
+  $(document).ready(function() {
+    updateCart();
+  });
+</script>

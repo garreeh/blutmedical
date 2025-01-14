@@ -27,27 +27,26 @@ if (isset($_POST['product_id'])) {
 
   if ($result) {
     while ($row = mysqli_fetch_assoc($result)) {
-      // Ensure only the filename is used
-      $product_image = basename($row['product_image']);
-      $image_url = '../../uploads/' . $product_image; // Construct the image URL
 ?>
-      <div class="modal fade" id="viewImageModal" tabindex="-1" role="dialog" aria-labelledby="viewImageModalLabel" aria-hidden="true">
+      <div class="modal fade" id="viewDescriptionModal" tabindex="-1" role="dialog" aria-labelledby="viewDescriptionModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Product Image</h5>
+              <h5 class="modal-title">Product Description</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
 
             <div class="modal-body text-center">
-              <?php if (!empty($product_image) && file_exists('../../uploads/' . $product_image)): ?>
-                <img src="<?php echo $image_url; ?>" alt="Product Image">
-              <?php else: ?>
-                <p>No image available.</p>
-              <?php endif; ?>
+              <div class="form-row">
+                <div class="form-group col-md-12">
+                  <textarea class="form-control" id="product_description" name="product_description"
+                    placeholder="Enter Product Description" rows="4" readonly><?php echo $row['product_description']; ?></textarea>
+                </div>
+              </div>
             </div>
+
           </div>
         </div>
       </div>

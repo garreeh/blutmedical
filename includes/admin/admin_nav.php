@@ -33,7 +33,7 @@ $result = mysqli_query($conn, $sql);
 
 if ($result) {
   while ($row = mysqli_fetch_assoc($result)) {
-    ?>
+?>
     <!DOCTYPE html>
     <html lang="en">
 
@@ -86,19 +86,19 @@ if ($result) {
         <?php endif; ?>
 
         <?php if ($row['deliveries_module'] == 1): ?>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link" href="/blutmedical/views/admin/deliveries_module.php">
               <i class="fas fa-fw fa-money-bill"></i>
               <span>Deliveries</span></a>
-          </li>
+          </li> -->
         <?php endif; ?>
 
         <?php if ($row['transaction_module'] == 1): ?>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link" href="/blutmedical/views/admin/transaction_module.php">
               <i class="fas fa-fw fa-money-bill"></i>
               <span>Transactions</span></a>
-          </li>
+          </li> -->
         <?php endif; ?>
 
         <!-- <li class="nav-item">
@@ -133,11 +133,11 @@ if ($result) {
           </li>
         <?php endif; ?>
         <?php if ($row['po_module'] == 1): ?>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link" href="/blutmedical/views/admin/purchase_module.php">
               <i class="fas fa-fw fa-cart-plus"></i>
               <span>Add Stocks</span></a>
-          </li>
+          </li> -->
         <?php endif; ?>
         <?php if ($row['inventory_module'] == 1): ?>
           <!-- Products Setup Collapse -->
@@ -213,7 +213,7 @@ if ($result) {
 
     </html>
 
-    <?php
+<?php
   }
 }
 ?>

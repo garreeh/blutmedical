@@ -34,29 +34,42 @@ $columns = array(
     ),
 
     array(
-        'db' => 'product_image',
+        'db' => 'product_description',
         'dt' => 3,
+        'field' => 'product_description',
+        'formatter' => function ($lab3, $row) {
+            // Return an HTML <img> tag with the image path
+            // $imageUrl = '../../uploads/' . basename($row['product_image']);
+            // return '<img src="' . $imageUrl . '" alt="Product Image" style="max-width: 100px; height: auto;">';
+            return '<a class="fetchDataProductDescription" href="#">View Details</a> ';
+        }
+    ),
+
+    array(
+        'db' => 'product_image',
+        'dt' => 4,
         'field' => 'product_image',
         'formatter' => function ($lab3, $row) {
             // Return an HTML <img> tag with the image path
             // $imageUrl = '../../uploads/' . basename($row['product_image']);
             // return '<img src="' . $imageUrl . '" alt="Product Image" style="max-width: 100px; height: auto;">';
-            return '<a class="fetchDataProductImage" href="#"> View Image</a> ';
+            return '<a class="fetchDataProductImage" href="#">View Image</a> ';
         }
     ),
 
     array(
-        'db' => 'product_stocks',
-        'dt' => 4,
-        'field' => 'product_stocks',
+        'db' => 'product_sellingprice',
+        'dt' => 5,
+        'field' => 'product_sellingprice',
         'formatter' => function ($lab2, $row) {
-            return $row['product_stocks'];
+            return '₱' . number_format($row['product_sellingprice'], 2);
         }
     ),
+
 
     array(
         'db' => 'product_id',
-        'dt' => 5,
+        'dt' => 6,
         'field' => 'product_id',
         'formatter' => function ($lab5, $row) {
             return '

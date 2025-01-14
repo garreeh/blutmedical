@@ -76,7 +76,6 @@ if (session_status() == PHP_SESSION_NONE) {
                         <th>ID</th>
                         <th>Fullname</th>
                         <th>Email</th>
-                        <th>Password</th>
                         <th>Account Status</th>
                         <th>Date Created</th>
                         <th>Date Updated</th>
@@ -155,7 +154,7 @@ if (session_status() == PHP_SESSION_NONE) {
   //Bridge for Modal Backend to Frontend
   $(document).ready(function() {
     // Function to handle click event on datatable rows
-    $('#users_table').on('click', 'tr td:nth-child(8) .fetchDataUser', function() {
+    $('#users_table').on('click', 'tr td:nth-child(7) .fetchDataUser', function() {
       var user_id = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
       console.log('Button clicked, User ID: ' + user_id);
 

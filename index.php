@@ -26,6 +26,7 @@
 
   <?php
   include './connections/connections.php';
+
   include './includes/navigation.php';
 
   ?>
@@ -34,7 +35,7 @@
   <div class="hero">
     <div class="container">
       <div class="row justify-content-between">
-        <div class="col-lg-5">
+        <div class="col-lg-7">
           <div class="intro-excerpt">
             <h1>Welcome to BLüT Medical
             </h1>
@@ -43,9 +44,9 @@
             <p><a href="products.php" class="btn btn-secondary me-2">Shop Now</a></p>
           </div>
         </div>
-        <div class="col-lg-7 d-none d-md-block">
+        <div class="col-lg-5 d-none d-md-block">
           <div class="hero-img-wrap">
-            <img src="assets/logo/sample.png" class="img-fluid">
+            <img src="assets/logo/blutfront.png" class="img-fluid" style="max-width: 75%;">
           </div>
         </div>
 
@@ -72,7 +73,7 @@
             $product_image = basename($row['product_image']);
             $image_url = './uploads/' . $product_image;
             $product_id = $row['product_id']; // Assuming the product_id is in the 'product_id' column
-            ?>
+        ?>
             <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-5">
               <a href="product_details.php?product_id=<?php echo $product_id; ?>" target="_blank">
                 <div class="product-item">
@@ -84,11 +85,11 @@
                     <?php echo htmlspecialchars($row['product_name']); ?>
                   </h3>
                   <strong class="product-price"
-                    style="font-size: 1.2rem; margin-top: auto;">₱<?php echo number_format($row['product_sellingprice'], 2); ?></strong>
+                    style="font-size: 1.2rem; margin-top: auto;">₱ <?php echo number_format($row['product_sellingprice'], 2); ?></strong>
                 </div>
               </a>
             </div>
-            <?php
+        <?php
           }
         }
         ?>

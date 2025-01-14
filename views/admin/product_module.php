@@ -79,8 +79,9 @@ if (session_status() == PHP_SESSION_NONE) {
                         <th>ID</th>
                         <th>SKU</th>
                         <th>Name</th>
+                        <th>Description</th>
                         <th>Image</th>
-                        <th>Stocks</th>
+                        <th>Selling Price</th>
                         <th>Manage</th>
                       </tr>
                     </thead>
@@ -158,7 +159,8 @@ if (session_status() == PHP_SESSION_NONE) {
   //Column 3
   $(document).ready(function() {
     // Function to handle click event on datatable rows
-    $('#product_table').on('click', 'tr td:nth-child(4) .fetchDataProductImage', function() {
+    $('#product_table').on('click', 'tr td:nth-child(5) .fetchDataProductImage', function() {
+      event.preventDefault();
       var product_id = $(this).closest('tr').find('td').first().text(); // Get the product_id from the clicked row
 
       $.ajax({
@@ -169,8 +171,32 @@ if (session_status() == PHP_SESSION_NONE) {
         },
         success: function(response) {
           $('#modalContainerProduct').html(response);
-          $('#editProductModal').modal('show');
-          console.log("#editProductModal" + product_id);
+          $('#viewImageModal').modal('show');
+          console.log("#viewImageModal" + product_id);
+        },
+        error: function(xhr, status, error) {
+          console.error(xhr.responseText);
+        }
+      });
+    });
+  });
+
+  $(document).ready(function() {
+    // Function to handle click event on datatable rows
+    $('#product_table').on('click', 'tr td:nth-child(4) .fetchDataProductDescription', function() {
+      event.preventDefault();
+      var product_id = $(this).closest('tr').find('td').first().text(); // Get the product_id from the clicked row
+
+      $.ajax({
+        url: './../../modals/product/modal_view_description_product.php', // Path to PHP script to fetch modal content
+        method: 'POST',
+        data: {
+          product_id: product_id
+        },
+        success: function(response) {
+          $('#modalContainerProduct').html(response);
+          $('#viewDescriptionModal').modal('show');
+          console.log("#viewDescriptionModal" + product_id);
         },
         error: function(xhr, status, error) {
           console.error(xhr.responseText);
@@ -182,7 +208,8 @@ if (session_status() == PHP_SESSION_NONE) {
   //Column 5
   $(document).ready(function() {
     // Function to handle click event on datatable rows
-    $('#product_table').on('click', 'tr td:nth-child(6) .fetchDataProduct', function() {
+    $('#product_table').on('click', 'tr td:nth-child(7) .fetchDataProduct', function() {
+      event.preventDefault();
       var product_id = $(this).closest('tr').find('td').first().text(); // Get the product_id from the clicked row
 
       $.ajax({
@@ -206,6 +233,7 @@ if (session_status() == PHP_SESSION_NONE) {
   $(document).ready(function() {
     // Function to handle click event on datatable rows
     $('#product_table').on('click', 'tr td:nth-child(6) .fetchDataProductDelete', function() {
+      event.preventDefault();
       var product_id = $(this).closest('tr').find('td').first().text(); // Get the product_id from the clicked row
 
       $.ajax({

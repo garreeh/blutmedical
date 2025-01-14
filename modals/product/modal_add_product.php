@@ -58,28 +58,24 @@ if ($result) {
             </div>
           </div>
 
+
           <div class="form-row">
             <div class="form-group col-md-6">
-              <label for="product_description">Product Description:</label>
-              <input type="text" class="form-control" id="product_description" name="product_description"
-                placeholder="Enter Product Description" required>
+              <label for="product_sellingprice">Main Product Selling Price:</label>
+              <input type="text" class="form-control" id="product_sellingprice" name="product_sellingprice"
+                placeholder="Enter Product Selling Price" required>
             </div>
             <div class="form-group col-md-6">
-              <label for="product_unitprice">Product Unit Price:</label>
-              <input type="number" class="form-control" id="product_unitprice" name="product_unitprice"
-                placeholder="Enter Product Unit Price" required>
+              <label for="product_image">Main Product Image:</label>
+              <input type="file" class="form-control" id="product_image" name="fileToUpload" required>
             </div>
           </div>
 
           <div class="form-row">
-            <div class="form-group col-md-6">
-              <label for="product_sellingprice">Product Selling Price:</label>
-              <input type="number" class="form-control" id="product_sellingprice" name="product_sellingprice"
-                placeholder="Enter Product Selling Price" required>
-            </div>
-            <div class="form-group col-md-6">
-              <label for="product_image">Product Image:</label>
-              <input type="file" class="form-control" id="product_image" name="fileToUpload" required>
+            <div class="form-group col-md-12">
+              <label for="product_description">Product Description:</label>
+              <textarea class="form-control" id="product_description" name="product_description"
+                placeholder="Enter Product Description" rows="4" required></textarea>
             </div>
           </div>
 
@@ -128,8 +124,16 @@ if ($result) {
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
 <script>
-  $(document).ready(function () {
-    $('#addProductModal form').submit(function (event) {
+  document.getElementById('product_sellingprice').addEventListener('input', function(e) {
+    // Allow only numbers and dots, and ensure only one dot
+    this.value = this.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters except dot
+    if ((this.value.match(/\./g) || []).length > 1) {
+      this.value = this.value.slice(0, -1); // Remove the last character if there's more than one dot
+    }
+  });
+
+  $(document).ready(function() {
+    $('#addProductModal form').submit(function(event) {
       event.preventDefault(); // Prevent default form submission
 
       // Store a reference to $(this)
@@ -150,7 +154,7 @@ if ($result) {
         data: formData,
         contentType: false,
         processData: false,
-        success: function (response) {
+        success: function(response) {
           // Handle success response
           console.log(response); // Log the response for debugging
           response = JSON.parse(response);
@@ -178,7 +182,7 @@ if ($result) {
             }).showToast();
           }
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
           // Handle error response
           console.error(xhr.responseText);
           Toastify({
@@ -187,7 +191,7 @@ if ($result) {
             backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
           }).showToast();
         },
-        complete: function () {
+        complete: function() {
           // Reset button text and re-enable it
           $addButton.text('Add');
           $addButton.prop('disabled', false);
@@ -195,7 +199,7 @@ if ($result) {
       });
     });
 
-    $('#addProductModal').on('hidden.bs.modal', function () {
+    $('#addProductModal').on('hidden.bs.modal', function() {
 
       // Reset the dropdowns to their default states
       $('#category_id')[0].selectize.clear();

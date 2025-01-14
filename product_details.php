@@ -12,6 +12,12 @@ if (isset($_GET['product_id'])) {
     // Fetch product details and variations
     $product = mysqli_fetch_assoc($result);
     $product_image = basename($product['product_image']);
+    $product_image_no_base = $product['product_image'];
+
+    $product_name = $product['product_name'];
+    $product_sellingprice = $product['product_sellingprice'];
+
+
     $image_url = './uploads/' . $product_image;
 ?>
 
@@ -106,28 +112,50 @@ if (isset($_GET['product_id'])) {
 
                 <?php if (!empty($variations)) { ?>
                   <h4>Available Sizes:</h4>
-                  <form id="sizeForm">
-                    <?php foreach ($variations as $index => $variation) { ?>
-                      <button
-                        type="button"
-                        class="btn variation-toggle <?php echo $index === 0 ? 'active' : ''; ?>"
-                        data-bs-toggle="button"
-                        aria-pressed="<?php echo $index === 0 ? 'true' : 'false'; ?>"
-                        autocomplete="off"
-                        data-value="<?php echo htmlspecialchars($variation['variation_id']); ?>"
-                        data-price="<?php echo htmlspecialchars($variation['price']); ?>">
-                        <?php echo htmlspecialchars($variation['value']); ?>
-                      </button>
-                    <?php } ?>
-
-                    <!-- Hidden input to store the selected variation -->
-                    <input
-                      type="hidden"
-                      name="selected_variation"
-                      id="selectedVariation"
-                      value="<?php echo $variations[0]['variation_id']; ?>">
-                  </form>
                 <?php } ?>
+
+                <form id="sizeForm">
+                  <?php foreach ($variations as $index => $variation) { ?>
+                    <button id="selectedValue"
+                      type="button"
+                      class="btn variation-toggle <?php echo $index === 0 ? 'active' : ''; ?>"
+                      data-bs-toggle="button"
+                      aria-pressed="<?php echo $index === 0 ? 'true' : 'false'; ?>"
+                      autocomplete="off"
+                      data-value="<?php echo htmlspecialchars(trim($variation['value'])); ?>"
+                      data-price="<?php echo htmlspecialchars(trim($variation['price'])); ?>">
+                      <?php echo $variation['value']; ?>
+                    </button>
+                  <?php } ?>
+
+                  <input
+                    type="text"
+                    name="selected_variation"
+                    id="selectedVariation"
+                    value="<?php echo trim($variations[0]['value'] ?? '-'); ?>"> <!-- Default to '-' if empty or undefined -->
+
+                  <input
+                    type="text"
+                    name="selected_price"
+                    id="selectedPrice"
+                    value="<?php echo trim($variations[0]['price'] ?? '-'); ?>"> <!-- Default to '-' if empty or undefined -->
+
+                  <input
+                    type="hidden"
+                    name="product_name"
+                    id="product_name"
+                    value="<?php echo $product_name; ?>">
+                  <input
+                    type="hidden"
+                    name="product_image"
+                    id="product_image"
+                    value="<?php echo $product_image_no_base; ?>">
+                  <input
+                    type="hidden"
+                    name="product_sellingprice"
+                    id="product_sellingprice"
+                    value="<?php echo $product_sellingprice; ?>">
+                </form>
 
                 <br>
 
@@ -187,22 +215,26 @@ if (isset($_GET['product_id'])) {
 
                   $product = $products[$i];
                   $product_image = basename($product['product_image']);
+
                   $image_url = './uploads/' . $product_image;
+                  $product_id_you = $product['product_id'];
+
                   $product_name = htmlspecialchars($product['product_name']);
                   $product_price = number_format($product['product_sellingprice'], 2);
 
-                  echo <<<HTML
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-5">
-              <a href="product_details.php?product_id={$product_id}" target="_blank">
-                <div class="product-item">
-                  <img src="{$image_url}" class="img-fluid product-thumbnail"
-                    style="height: 200px; width: 100%; object-fit: cover; border-radius: 10px;">
-                  <h3 class="product-title" style="font-size: 1rem; text-align: center; margin-top: 10px;">{$product_name}</h3>
-                  <strong class="product-price" style="font-size: 1.2rem; margin-top: auto;">₱{$product_price}</strong>
-                </div>
-              </a>
-            </div>
-            HTML;
+              ?>
+
+                  <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-5">
+                    <a href="product_details.php?product_id=<?php echo $product_id_you; ?>" target="_blank">
+                      <div class="product-item">
+                        <img src="<?php echo $image_url; ?>" class="img-fluid product-thumbnail"
+                          style="height: 200px; width: 100%; object-fit: cover; border-radius: 10px;">
+                        <h3 class="product-title" style="font-size: 1rem; text-align: center; margin-top: 10px;"><?php echo $product_name; ?></h3>
+                        <strong class="product-price" style="font-size: 1.2rem; margin-top: auto;">₱ <?php echo $product_price; ?></strong>
+                      </div>
+                    </a>
+                  </div>
+              <?php
 
                   // Close the row and carousel-item after every 4 products
                   if (($i + 1) % $productsPerSlide == 0 || $i == $totalProducts - 1) {
@@ -244,6 +276,34 @@ if (isset($_GET['product_id'])) {
     </html>
 
     <style>
+      .carousel-control-prev-icon,
+      .carousel-control-next-icon {
+        /* Set the arrow background to black */
+        background-image: none;
+        /* Remove the default icon */
+      }
+
+      .carousel-control-prev-icon::after,
+      .carousel-control-next-icon::after {
+        content: '';
+        /* Clear any default content */
+        display: inline-block;
+        border: solid black;
+        /* Set arrow color */
+        border-width: 0 5px 5px 0;
+        padding: 10px;
+      }
+
+      .carousel-control-prev-icon::after {
+        transform: rotate(135deg);
+        /* Left arrow */
+      }
+
+      .carousel-control-next-icon::after {
+        transform: rotate(-45deg);
+        /* Right arrow */
+      }
+
       #productStyles {
         background: #fff;
         border-radius: 5px;
@@ -368,6 +428,7 @@ if (isset($_GET['product_id'])) {
         const buttons = document.querySelectorAll('.variation-toggle');
         const productPrice = document.getElementById('productPrice');
         const selectedVariationInput = document.getElementById('selectedVariation');
+        const selectedPriceInput = document.getElementById('selectedPrice');
 
         buttons.forEach(button => {
           button.addEventListener('click', () => {
@@ -383,12 +444,18 @@ if (isset($_GET['product_id'])) {
             const price = button.getAttribute('data-price');
             productPrice.textContent = parseFloat(price).toFixed(2);
 
-            // Update the hidden input value
+            // Update the hidden input value for variation
             const variationId = button.getAttribute('data-value');
             selectedVariationInput.value = variationId;
+
+            // Update the hidden input value for price
+            selectedPriceInput.value = price;
+
           });
         });
       });
+
+
 
       document.querySelector('#addToCartBtn').addEventListener('click', function() {
         // Retrieve product ID securely from a hidden input or directly from PHP
@@ -412,10 +479,14 @@ if (isset($_GET['product_id'])) {
 
         // Retrieve quantity (default to 1 if invalid or empty)
         var quantity = parseInt(document.getElementById('quantity').value) || 1;
+        var selectedPrice = document.getElementById('selectedPrice').value || '-';
 
-        // Retrieve variation if applicable
-        var selectedVariationElement = document.getElementById('selectedVariation');
-        var selectedVariation = selectedVariationElement ? selectedVariationElement.value : null;
+        var product_sellingprice = document.getElementById('product_sellingprice').value;
+
+        var selectedVariation = document.getElementById('selectedVariation').value || 'Testssetest';
+
+        var product_name = document.getElementById('product_name').value;
+        var product_image = document.getElementById('product_image').value;
 
         // Get the button and store original text
         var button = document.getElementById('addToCartBtn');
@@ -431,8 +502,12 @@ if (isset($_GET['product_id'])) {
         // Prepare data for AJAX
         var cartData = {
           product_id: product_id,
+          price: selectedPrice || null,
+          value: selectedVariation,
           cart_quantity: quantity,
-          variation_id: selectedVariation,
+          product_name: product_name,
+          product_image: product_image,
+          product_sellingprice: product_sellingprice,
         };
 
         if (isLoggedIn) {
@@ -474,13 +549,13 @@ if (isset($_GET['product_id'])) {
         } else {
           // User is not logged in, update the guest cart in localStorage
           var cart = JSON.parse(localStorage.getItem('guestCart')) || [];
-          var existingProduct = cart.find(
-            (item) => item.product_id === product_id && item.variation_id === selectedVariation
+          var existingProductIndex = cart.findIndex(
+            (item) => item.product_id === product_id && item.value === selectedVariation
           );
 
-          if (existingProduct) {
+          if (existingProductIndex !== -1) {
             // Update quantity if the product already exists
-            existingProduct.cart_quantity += quantity;
+            cart[existingProductIndex].cart_quantity += quantity;
           } else {
             // Add new product
             cart.push(cartData);

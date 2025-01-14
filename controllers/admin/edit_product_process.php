@@ -82,7 +82,6 @@ if (isset($_POST['edit_product'])) {
     $product_name = $conn->real_escape_string($_POST['product_name']);
     $product_sku = $conn->real_escape_string($_POST['product_sku']);
     $product_description = $conn->real_escape_string($_POST['product_description']);
-    $product_unitprice = $conn->real_escape_string($_POST['product_unitprice']);
     $product_sellingprice = $conn->real_escape_string($_POST['product_sellingprice']);
     $category_id = $conn->real_escape_string($_POST['category_id']);
     $supplier_id = $conn->real_escape_string($_POST['supplier_id']);
@@ -90,9 +89,13 @@ if (isset($_POST['edit_product'])) {
 
     // Update SQL query with full path
     $sql = "UPDATE product SET 
-            product_name='$product_name', product_sku='$product_sku', product_description='$product_description', 
-            product_unitprice='$product_unitprice', product_sellingprice='$product_sellingprice', product_image='$new_filename',
-            category_id='$category_id', supplier_id='$supplier_id'
+            product_name='$product_name', 
+            product_sku='$product_sku', 
+            product_description='$product_description', 
+            product_sellingprice='$product_sellingprice', 
+            product_image='$new_filename',
+            category_id='$category_id', 
+            supplier_id='$supplier_id'
             WHERE product_id='$product_id'";
 
     if (mysqli_query($conn, $sql)) {
