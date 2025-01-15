@@ -39,7 +39,9 @@
           <div id="guest-details-section" style="display: none;">
             <hr>
 
-            <h5>Guest Details</h5>
+            <p style="margin-top: 10px; font-size: 12px; color: #555;">
+              Note: The PayPal button will remain disabled until all the below fields are filled in.
+            </p>
 
             <div class="form-group col-md-12" style="margin-bottom: 0.5rem;">
               <input type="text" class="form-control" id="delivery_guest_fullname" name="delivery_guest_fullname"
@@ -81,7 +83,7 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- <script>
+<script>
   $('#checkoutModal').on('hidden.bs.modal', function() {
     console.log('Modal is fully hidden now');
   });
@@ -119,9 +121,7 @@
 
       // Determine the URL based on payment category
       let url;
-      if (paymentCategory === 'Paypal') {
-        url = '/blutmedical/controllers/admin/checkout_guest_paypal_process.php';
-      } else if (paymentCategory === 'Cash on Delivery') {
+      if (paymentCategory === 'Cash on Delivery') {
         url = '/blutmedical/controllers/users/checkout_guest_process.php';
       } else {
         Toastify({
@@ -131,6 +131,8 @@
           position: 'right',
           backgroundColor: '#f44336', // Red for error
         }).showToast();
+        $button.text('Confirm Payment');
+
         return; // Exit if no payment method is selected
       }
 
@@ -171,6 +173,8 @@
             position: 'right',
             backgroundColor: '#f44336', // Red for error
           }).showToast();
+          $button.text('Confirm Payment');
+
           return;
         }
       }
@@ -236,9 +240,7 @@
       const paymentCategory = $('input[name="paymentCategory"]:checked').val();
 
       let url;
-      if (paymentCategory === 'Paypal') {
-        url = '/blutmedical/controllers/admin/checkout_paypal_process.php';
-      } else if (paymentCategory === 'Cash on Delivery') {
+      if (paymentCategory === 'Cash on Delivery') {
         url = '/blutmedical/controllers/users/checkout_process.php';
       } else {
         Toastify({
@@ -311,17 +313,39 @@
     });
   }
 
-  // Handle form submission
-</script> -->
+  function checkFormFields() {
+    const fullname = $('#delivery_guest_fullname').val();
+    const address = $('#delivery_address').val();
+    const contactNumber = $('#delivery_guest_contact_number').val();
+    const email = $('#delivery_guest_email').val();
 
-<script>
-  const userId = <?= isset($_SESSION['user_id']) ? json_encode($_SESSION['user_id']) : 'null' ?>;
+    // Enable/Disable the submit button based on field values
+    if (fullname && address && contactNumber && email) {
+      $('#paypal-button-container').css('pointer-events', 'auto'); // Enable PayPal container clicks
+      $('#paypal-button-container').css('opacity', '1'); // Reset opacity
+    } else {
+      $('#paypal-button-container').css('pointer-events', 'none'); // Disable PayPal container clicks
+      $('#paypal-button-container').css('opacity', '0.5'); // Optional: to visually indicate it's disabled
+    }
+  }
 
+  // Monitor input fields for changes
+  $('#delivery_guest_fullname, #delivery_address, #delivery_guest_contact_number, #delivery_guest_email').on('input', function() {
+    checkFormFields(); // Recheck fields whenever user inputs something
+  });
+
+  // Initial check in case the form is pre-filled or already has data
+  checkFormFields();
+
+  //Paypal Checkout here do not remove
   $('input[name="paymentCategory"]').on('change', function() {
     const selectedPayment = $(this).val();
 
     if (selectedPayment === 'Paypal') {
       $('#paypal-button-container').show(); // Show PayPal button container
+
+
+
       $('#submitCheckout').hide(); // Hide the Confirm Payment button
       renderPayPalButton(); // Render the PayPal button
     } else {
@@ -332,7 +356,11 @@
   });
 
   function renderPayPalButton() {
+
+
+
     $('#paypal-button-container').empty(); // Clear existing button to avoid duplicates
+
 
     paypal.Buttons({
       createOrder: function(data, actions) {
@@ -355,12 +383,6 @@
             price: item.price,
           });
         });
-
-        // Prepare formData
-        const formData = {
-          localStorageItems: localStorageItems,
-          totalAmount: totalAmount.toFixed(2) // Convert total to 2 decimal places
-        };
 
         return actions.order.create({
           purchase_units: [{
@@ -399,10 +421,19 @@
             totalAmount: totalAmount.toFixed(2),
             orderID: data.orderID,
             payerID: details.payer.payer_id,
-            paypalPayerName: details.payer.name.given_name, // PayPal payer first name
-            paypalPayerEmail: details.payer.email_address // PayPal payer email
+            paypalPayerName: details.payer.name.given_name + ' ' + details.payer.name.surname,
+            paypalPayerEmail: details.payer.email_address,
+            paypalPayerContact: details.payer.phone ? details.payer.phone.phone_number.national_number : null,
+            paypalPayerAddress: details.payer.address ? details.payer.address.address_line_1 + ', ' + details.payer.address.admin_area_2 + ', ' + details.payer.address.country_code : null,
+            transaction_id: details.id // PayPal transaction ID
           };
 
+          if (!userId) {
+            formData.fullname = $('#delivery_guest_fullname').val();
+            formData.address = $('#delivery_address').val();
+            formData.contact_number = $('#delivery_guest_contact_number').val();
+            formData.email = $('#delivery_guest_email').val();
+          }
 
           $.ajax({
             type: 'POST',
@@ -427,7 +458,7 @@
 
                 $('#checkoutModal').modal('hide');
                 // Optionally, clear the localStorage after successful checkout
-                // localStorage.removeItem('guestCart');
+                localStorage.removeItem('guestCart');
               } else {
                 Toastify({
                   text: response.message || 'An error occurred.',
@@ -458,127 +489,4 @@
       }
     }).render('#paypal-button-container'); // Render the PayPal button
   }
-
-
-
-
-  $('#submitCheckout').on('click', function(e) {
-    e.preventDefault();
-    var $button = $(this); // Cache the button element
-
-    // Show 'Saving...' when the button is clicked
-    $button.text('Saving...'); // Change button text
-    // Get selected payment category
-    const paymentCategory = $('input[name="paymentCategory"]:checked').val();
-
-    // Determine the URL based on payment category
-    let url;
-    if (paymentCategory === 'Cash on Delivery') {
-      url = '/blutmedical/controllers/users/checkout_guest_process.php';
-    } else {
-      Toastify({
-        text: 'Please select a payment method.',
-        duration: 3000,
-        gravity: 'top',
-        position: 'right',
-        backgroundColor: '#f44336', // Red for error
-      }).showToast();
-      $button.text('Confirm Payment');
-
-      return; // Exit if no payment method is selected
-    }
-
-    // Retrieve localStorage contents
-    const cartData = JSON.parse(localStorage.getItem('guestCart')) || [];
-    let localStorageItems = [];
-
-    cartData.forEach(item => {
-      localStorageItems.push({
-        product_id: item.product_id,
-        cart_quantity: item.cart_quantity,
-        variation_id: item.variation_id,
-        product_sellingprice: item.product_sellingprice,
-        price: item.price,
-
-      });
-    });
-
-    // Gather form data
-    const formData = {
-      payment_category: paymentCategory,
-      localStorageItems: localStorageItems
-    };
-
-    // If user is a guest, add guest details to form data
-    // if (!userId) {
-    //   formData.fullname = $('#delivery_guest_fullname').val();
-    //   formData.address = $('#delivery_address').val();
-    //   formData.contact_number = $('#delivery_guest_contact_number').val();
-    //   formData.email = $('#delivery_guest_email').val();
-
-    //   // Validate guest details
-    //   if (!formData.fullname || !formData.address || !formData.contact_number || !formData.email) {
-    //     Toastify({
-    //       text: 'Please fill out all guest details.',
-    //       duration: 3000,
-    //       gravity: 'top',
-    //       position: 'right',
-    //       backgroundColor: '#f44336', // Red for error
-    //     }).showToast();
-    //     return;
-    //   }
-    // }
-    $.ajax({
-      type: 'POST',
-      url: url,
-      data: JSON.stringify(formData), // JSON.stringify encodes the formData into a string
-      contentType: 'application/json', // Set header to send JSON
-      dataType: 'json',
-      success: function(response) {
-        if (response.status === 'success') {
-          Toastify({
-            text: response.message,
-            duration: 3000,
-            gravity: 'top',
-            position: 'right',
-            backgroundColor: '#4CAF50', // Green for success
-          }).showToast();
-
-          setTimeout(function() {
-            updateCart();
-            updateCartBadge();
-          }, 500); // Give the DOM time to update
-
-          $('#checkoutModal').modal('hide');
-          // Optionally, clear the localStorage after successful checkout
-          // localStorage.removeItem('guestCart');
-        } else {
-          Toastify({
-            text: response.message || 'An error occurred.',
-            duration: 3000,
-            gravity: 'top',
-            position: 'right',
-            backgroundColor: '#f44336', // Red for error
-          }).showToast();
-        }
-        $button.text('Confirm Payment');
-      },
-      error: function(xhr, status, error) {
-        console.error('XHR Status:', status); // Log the status
-        console.error('Error:', error); // Log the actual error
-        console.error('Server Response:', xhr.responseText); // Log the server response text
-
-        Toastify({
-          text: 'Something went wrong. Please try again.',
-          duration: 3000,
-          gravity: 'top',
-          position: 'right',
-          backgroundColor: '#f44336', // Red for error
-        }).showToast();
-
-        $button.text('Confirm Payment');
-      },
-
-    });
-  });
 </script>

@@ -11,7 +11,7 @@
  Target Server Version : 100432 (10.4.32-MariaDB)
  File Encoding         : 65001
 
- Date: 15/01/2025 16:19:36
+ Date: 15/01/2025 18:34:52
 */
 
 SET NAMES utf8mb4;
@@ -62,18 +62,32 @@ CREATE TABLE `cart`  (
   `updated_at` timestamp NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
   `delivery_rider_id` int NULL DEFAULT NULL,
   `delivery_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `delivery_guest_fullname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `delivery_guest_fullname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `delivery_guest_contact_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `delivery_guest_email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `paypal_order_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `paypal_payer_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  PRIMARY KEY (`cart_id`, `payment_status`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 248 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+  `paypal_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `paypal_email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `paypal_contact_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `paypal_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `paypal_transaction_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`cart_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 261 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of cart
 -- ----------------------------
-INSERT INTO `cart` VALUES (247, NULL, 23, 0, 3, 'Processing', NULL, 297.00, 'Cash on Delivery', 'Unpaid', NULL, '2025-01-15 16:18:40', '2025-01-15 16:18:40', NULL, '', '', '', '', NULL, NULL);
+INSERT INTO `cart` VALUES (251, NULL, 23, 0, 4, 'Processing', NULL, 396.00, 'Paypal', 'Paid', NULL, '2025-01-15 16:30:19', '2025-01-15 16:30:19', NULL, '', '', '', '', '13A38016AN694935W', 'ZX3VYU72AS23A', 'Garry', 'sb-h8enp28879896@personal.example.com', '', NULL, NULL);
+INSERT INTO `cart` VALUES (252, NULL, 23, 0, 4, 'Processing', NULL, 396.00, 'Paypal', 'Paid', NULL, '2025-01-15 16:31:20', '2025-01-15 16:31:20', NULL, '', '', '', '', '6JV91527B5696872N', 'ZX3VYU72AS23A', 'Garry Gajultos', 'sb-h8enp28879896@personal.example.com', '', NULL, NULL);
+INSERT INTO `cart` VALUES (253, NULL, 23, 0, 4, 'Processing', NULL, 396.00, 'Paypal', 'Paid', NULL, '2025-01-15 16:34:58', '2025-01-15 16:34:58', NULL, '', '', '', '', '9DE454854S2630331', 'ZX3VYU72AS23A', 'Garry Gajultos', 'sb-h8enp28879896@personal.example.com', '', 'undefined, undefined, US', NULL);
+INSERT INTO `cart` VALUES (254, NULL, 23, 0, 4, 'Processing', NULL, 396.00, 'Paypal', 'Paid', NULL, '2025-01-15 16:41:38', '2025-01-15 16:41:38', NULL, '', '', '', '', '6MJ156945D761810S', 'ZX3VYU72AS23A', 'Garry Gajultos', 'sb-h8enp28879896@personal.example.com', '', 'undefined, undefined, US', NULL);
+INSERT INTO `cart` VALUES (255, NULL, 23, 0, 4, 'Processing', NULL, 396.00, 'Paypal', 'Paid', NULL, '2025-01-15 17:29:32', '2025-01-15 17:29:32', NULL, '', '', '', '', '2VN33157JB1597526', 'ZX3VYU72AS23A', 'Garry Gajultos', 'sb-h8enp28879896@personal.example.com', '', '2VN33157JB1597526', 'undefined, undefined, US');
+INSERT INTO `cart` VALUES (256, NULL, 23, 0, 4, 'Processing', NULL, 396.00, 'Paypal', 'Paid', NULL, '2025-01-15 18:16:00', '2025-01-15 18:16:00', NULL, '123', '123', '123', '123', '0SM16419A6347334E', 'ZX3VYU72AS23A', 'Garry Gajultos', 'sb-h8enp28879896@personal.example.com', '', 'undefined, undefined, US', '0SM16419A6347334E');
+INSERT INTO `cart` VALUES (257, NULL, 23, 0, 4, 'Processing', NULL, 396.00, 'Paypal', 'Paid', NULL, '2025-01-15 18:22:49', '2025-01-15 18:22:49', NULL, 'qwe', 'qwe', 'qwe', 'qwe', '0RU179607G342633A', 'GSB7BWJ6F8CX4', 'Gary Gary', 'gajultos.garrydev@gmail.com', '', 'undefined, undefined, PH', '0RU179607G342633A');
+INSERT INTO `cart` VALUES (258, NULL, 23, 0, 4, 'Processing', NULL, 396.00, 'Paypal', 'Paid', NULL, '2025-01-15 18:29:06', '2025-01-15 18:29:06', NULL, '123', '123', '123', '123', '5HT25218D40423707', 'ZX3VYU72AS23A', 'Garry Gajultos', 'sb-h8enp28879896@personal.example.com', '', 'undefined, undefined, US', '5HT25218D40423707');
+INSERT INTO `cart` VALUES (259, NULL, 17, 1, 1, 'Processing', NULL, 2.00, 'Paypal', 'Paid', NULL, '2025-01-15 18:30:20', '2025-01-15 18:30:20', NULL, 'qwe', 'qwe', 'qwe', 'qwe', '83C35062BP799142V', '8RB9985KB7364', 'Test Test', 'pendragonitteam@gmail.com', '', 'undefined, undefined, PH', '83C35062BP799142V');
+INSERT INTO `cart` VALUES (260, NULL, 23, 0, 1, 'Processing', NULL, 99.00, 'Cash on Delivery', 'Unpaid', NULL, '2025-01-15 18:31:52', '2025-01-15 18:31:52', NULL, '2', '1', '3', '4', NULL, NULL, NULL, NULL, '', NULL, NULL);
 
 -- ----------------------------
 -- Table structure for category
