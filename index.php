@@ -248,41 +248,6 @@
 
   ?>
 
-
-
 </body>
 
 </html>
-
-<!-- <script>
-  // Get all the plus and minus buttons and product quantity inputs
-  const minusButtons = document.querySelectorAll('.btn-minus');
-  const plusButtons = document.querySelectorAll('.btn-plus');
-  const quantityInputs = document.querySelectorAll('.product-quantity');
-
-  // Function to update quantity based on button click
-  function updateQuantity() {
-    minusButtons.forEach((button, index) => {
-      button.addEventListener('click', () => {
-        let currentValue = parseInt(quantityInputs[index].value);
-        if (currentValue > 1) {
-          quantityInputs[index].value = currentValue - 1; // Decrease quantity
-        }
-      });
-    });
-
-    plusButtons.forEach((button, index) => {
-      button.addEventListener('click', () => {
-        let currentValue = parseInt(quantityInputs[index].value);
-        quantityInputs[index].value = currentValue + 1; // Increase quantity
-      });
-    });
-  }
-
-  // Initialize the quantity functionality
-  updateQuantity();
-
-
-
-
-</script> -->

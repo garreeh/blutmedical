@@ -3,14 +3,11 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="checkoutModalLabel">Checkout</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+        <p class="modal-title" id="checkoutModalLabel">Checkout</p>
       </div>
       <div class="modal-body">
         <!-- Order Summary Section -->
-        <h2>Order Summary</h2>
+        <h5>Order Summary</h5>
         <table class="table">
           <thead>
             <tr>
@@ -25,7 +22,7 @@
           </tbody>
         </table>
         <div class="text-right">
-          <h1>Total: <span id="total-amount">₱ 0.00</span></h1>
+          <h3>Total: <span id="total-amount">₱ 0.00</span></h3>
         </div>
         <hr>
 
@@ -34,20 +31,554 @@
           <div class="form-group">
             <label for="payment-category">Select Payment Method:</label>
             <div>
-              <label><input type="radio" name="paymentCategory" value="GCash"> Gcash</label>
-              <label><input type="radio" name="paymentCategory" value="Cash On Delivery"> Cash on Delivery (COD)</label>
+              <label><input type="radio" name="paymentCategory" value="Paypal"> Paypal</label>
+              <label><input type="radio" name="paymentCategory" value="Cash on Delivery"> Cash on Delivery (COD)</label>
             </div>
           </div>
-          <div class="form-group" id="proof-of-payment-field" style="display: none;">
-            <label for="proofOfPayment">Upload Proof of Payment (GCash):</label>
-            <input type="file" id="proofOfPayment" name="proofOfPayment" class="form-control-file" required>
+
+          <div id="guest-details-section" style="display: none;">
+            <hr>
+
+            <h5>Guest Details</h5>
+
+            <div class="form-group col-md-12" style="margin-bottom: 0.5rem;">
+              <input type="text" class="form-control" id="delivery_guest_fullname" name="delivery_guest_fullname"
+                placeholder="Enter Fullname">
+            </div>
+
+            <div class="form-group col-md-12" style="margin-bottom: 0.5rem;">
+              <input type="text" class="form-control" id="delivery_address" name="delivery_address" placeholder="Enter Full Address">
+            </div>
+
+            <div class="form-group col-md-12" style="margin-bottom: 0.5rem;">
+              <input type="text" class="form-control" id="delivery_guest_contact_number" name="delivery_guest_contact_number"
+                placeholder="Enter Contact Number">
+            </div>
+
+            <div class="form-group col-md-12" style="margin-bottom: 0.5rem;">
+              <input type="email" class="form-control" id="delivery_guest_email" name="delivery_guest_email"
+                placeholder="Enter Email">
+            </div>
           </div>
+          <div id="paypal-button-container" style="display: none;"></div>
+
+
+
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary" id="submitCheckout">Confirm Payment</button>
+        <button type="submit" class="btn btn-info btn-sm py-1" id="submitCheckout">Confirm Payment</button>
+        <button type="button" class="btn btn-secondary btn-sm py-1" data-dismiss="modal">Close</button>
+
       </div>
     </div>
   </div>
 </div>
+
+<!-- <script src="https://www.paypal.com/sdk/js?client-id=AYwMIA4BQ3ThhTRprUJQMbfrjA4ZyiXwaMh5mZ28cKJAo_wngfye9Bsq1JK4SbJhuWxn0MNx6iynWRzR&currency=PHP"></script> -->
+
+<script src="https://www.paypal.com/sdk/js?client-id=AfcJOedIT9WM3IBgUd8D4uEiAXppkMsftrR2DRtcm8CUco5sptEShId2hujHrtNd_FK7gzOyzbV53zsX"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- <script>
+  $('#checkoutModal').on('hidden.bs.modal', function() {
+    console.log('Modal is fully hidden now');
+  });
+  const userId = <?= isset($_SESSION['user_id']) ? json_encode($_SESSION['user_id']) : 'null' ?>;
+  // Toggle guest details section
+  if (!userId) {
+    // Show guest details for guests
+    $('#guest-details-section').show();
+
+    // Require guest details fields
+    $('#delivery_guest_fullname, #delivery_address, #delivery_guest_contact_number, #delivery_guest_email').prop(
+      'required',
+      true
+    );
+  } else {
+    // Hide guest details for logged-in users
+    $('#guest-details-section').hide();
+
+    // Remove 'required' attribute for guest details fields
+    $('#delivery_guest_fullname, #delivery_address, #delivery_guest_contact_number, #delivery_guest_email').prop(
+      'required',
+      false
+    );
+  }
+
+  if (!userId) {
+    $('#submitCheckout').on('click', function(e) {
+      e.preventDefault();
+      var $button = $(this); // Cache the button element
+
+      // Show 'Saving...' when the button is clicked
+      $button.text('Saving...'); // Change button text
+      // Get selected payment category
+      const paymentCategory = $('input[name="paymentCategory"]:checked').val();
+
+      // Determine the URL based on payment category
+      let url;
+      if (paymentCategory === 'Paypal') {
+        url = '/blutmedical/controllers/admin/checkout_guest_paypal_process.php';
+      } else if (paymentCategory === 'Cash on Delivery') {
+        url = '/blutmedical/controllers/users/checkout_guest_process.php';
+      } else {
+        Toastify({
+          text: 'Please select a payment method.',
+          duration: 3000,
+          gravity: 'top',
+          position: 'right',
+          backgroundColor: '#f44336', // Red for error
+        }).showToast();
+        return; // Exit if no payment method is selected
+      }
+
+      // Retrieve localStorage contents
+      const cartData = JSON.parse(localStorage.getItem('guestCart')) || [];
+      let localStorageItems = [];
+
+      cartData.forEach(item => {
+        localStorageItems.push({
+          product_id: item.product_id,
+          cart_quantity: item.cart_quantity,
+          variation_id: item.variation_id,
+          product_sellingprice: item.product_sellingprice,
+          price: item.price,
+
+        });
+      });
+
+      // Gather form data
+      const formData = {
+        payment_category: paymentCategory,
+        localStorageItems: localStorageItems
+      };
+
+      // If user is a guest, add guest details to form data
+      if (!userId) {
+        formData.fullname = $('#delivery_guest_fullname').val();
+        formData.address = $('#delivery_address').val();
+        formData.contact_number = $('#delivery_guest_contact_number').val();
+        formData.email = $('#delivery_guest_email').val();
+
+        // Validate guest details
+        if (!formData.fullname || !formData.address || !formData.contact_number || !formData.email) {
+          Toastify({
+            text: 'Please fill out all guest details.',
+            duration: 3000,
+            gravity: 'top',
+            position: 'right',
+            backgroundColor: '#f44336', // Red for error
+          }).showToast();
+          return;
+        }
+      }
+      $.ajax({
+        type: 'POST',
+        url: url,
+        data: JSON.stringify(formData), // JSON.stringify encodes the formData into a string
+        contentType: 'application/json', // Set header to send JSON
+        dataType: 'json',
+        success: function(response) {
+          if (response.status === 'success') {
+            Toastify({
+              text: response.message,
+              duration: 3000,
+              gravity: 'top',
+              position: 'right',
+              backgroundColor: '#4CAF50', // Green for success
+            }).showToast();
+
+            setTimeout(function() {
+              updateCart();
+              updateCartBadge();
+            }, 500); // Give the DOM time to update
+
+            $('#checkoutModal').modal('hide');
+            // Optionally, clear the localStorage after successful checkout
+            localStorage.removeItem('guestCart');
+          } else {
+            Toastify({
+              text: response.message || 'An error occurred.',
+              duration: 3000,
+              gravity: 'top',
+              position: 'right',
+              backgroundColor: '#f44336', // Red for error
+            }).showToast();
+          }
+          $button.text('Confirm Payment');
+        },
+        error: function(xhr, status, error) {
+          console.error('XHR Status:', status); // Log the status
+          console.error('Error:', error); // Log the actual error
+          console.error('Server Response:', xhr.responseText); // Log the server response text
+
+          Toastify({
+            text: 'Something went wrong. Please try again.',
+            duration: 3000,
+            gravity: 'top',
+            position: 'right',
+            backgroundColor: '#f44336', // Red for error
+          }).showToast();
+
+          $button.text('Confirm Payment');
+        },
+
+      });
+    });
+  } else {
+    $('#submitCheckout').click(function(e) {
+      e.preventDefault(); // Prevent default form submission
+      // Serialize form data
+      var formData = new FormData($('#checkoutForm')[0]);
+
+      const paymentCategory = $('input[name="paymentCategory"]:checked').val();
+
+      let url;
+      if (paymentCategory === 'Paypal') {
+        url = '/blutmedical/controllers/admin/checkout_paypal_process.php';
+      } else if (paymentCategory === 'Cash on Delivery') {
+        url = '/blutmedical/controllers/users/checkout_process.php';
+      } else {
+        Toastify({
+          text: 'Please select a payment method.',
+          duration: 3000,
+          gravity: 'top',
+          position: 'right',
+          backgroundColor: '#f44336', // Red for error
+        }).showToast();
+        return; // Exit if no payment method is selected
+      }
+
+      // Send the form data via AJAX
+      $.ajax({
+        type: 'POST',
+        url: url,
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function(response) {
+          if (typeof response === 'string') {
+            try {
+              response = JSON.parse(response);
+            } catch (e) {
+              console.error("Response is not valid JSON:", response);
+              Toastify({
+                text: "Invalid response format.",
+                duration: 3000,
+                backgroundColor: "#dc3545" // Red for error
+              }).showToast();
+              return;
+            }
+          }
+
+          if (response.success) {
+            Toastify({
+              text: response.message,
+              duration: 2000,
+              backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)" // Green for success
+            }).showToast();
+
+            // Close modal and reset form
+            $('#checkoutModal').modal('hide');
+            $('.modal-backdrop').remove();
+            $('#checkoutForm').trigger('reset');
+            $('#proof-of-payment-field').hide();
+
+            // Refresh the cart
+            updateCart();
+            updateCartBadge();
+
+          } else {
+            Toastify({
+              text: response.message,
+              duration: 2000,
+              backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)" // Red for error
+            }).showToast();
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error('AJAX Error:', status, error);
+          Toastify({
+            text: "An error occurred while processing your request.",
+            duration: 3000,
+            backgroundColor: "#dc3545", // Red for error
+            close: true
+          }).showToast();
+        }
+      });
+    });
+  }
+
+  // Handle form submission
+</script> -->
+
+<script>
+  const userId = <?= isset($_SESSION['user_id']) ? json_encode($_SESSION['user_id']) : 'null' ?>;
+
+  $('input[name="paymentCategory"]').on('change', function() {
+    const selectedPayment = $(this).val();
+
+    if (selectedPayment === 'Paypal') {
+      $('#paypal-button-container').show(); // Show PayPal button container
+      $('#submitCheckout').hide(); // Hide the Confirm Payment button
+      renderPayPalButton(); // Render the PayPal button
+    } else {
+      $('#paypal-button-container').hide(); // Hide PayPal button container
+      $('#submitCheckout').show(); // Hide the Confirm Payment button
+
+    }
+  });
+
+  function renderPayPalButton() {
+    $('#paypal-button-container').empty(); // Clear existing button to avoid duplicates
+
+    paypal.Buttons({
+      createOrder: function(data, actions) {
+        // Retrieve and process cart data from localStorage
+        const cartData = JSON.parse(localStorage.getItem('guestCart')) || [];
+        let totalAmount = 0; // Initialize totalAmount to 0
+        let localStorageItems = [];
+
+        cartData.forEach(item => {
+          const price = item.variation_id === '-' ?
+            parseFloat(item.product_sellingprice) :
+            parseFloat(item.price);
+          totalAmount += price * item.cart_quantity;
+
+          localStorageItems.push({
+            product_id: item.product_id,
+            cart_quantity: item.cart_quantity,
+            variation_id: item.variation_id,
+            product_sellingprice: item.product_sellingprice,
+            price: item.price,
+          });
+        });
+
+        // Prepare formData
+        const formData = {
+          localStorageItems: localStorageItems,
+          totalAmount: totalAmount.toFixed(2) // Convert total to 2 decimal places
+        };
+
+        return actions.order.create({
+          purchase_units: [{
+            amount: {
+              value: totalAmount.toFixed(2) // Convert total to 2 decimal places
+            }
+          }]
+        });
+      },
+
+      onApprove: function(data, actions) {
+        return actions.order.capture().then(function(details) {
+          console.log('Transaction completed: ', details);
+          const cartData = JSON.parse(localStorage.getItem('guestCart')) || [];
+          let totalAmount = 0; // Initialize totalAmount to 0
+          let localStorageItems = [];
+
+          cartData.forEach(item => {
+            const price = item.variation_id === '-' ?
+              parseFloat(item.product_sellingprice) :
+              parseFloat(item.price);
+            totalAmount += price * item.cart_quantity;
+
+            localStorageItems.push({
+              product_id: item.product_id,
+              cart_quantity: item.cart_quantity,
+              variation_id: item.variation_id,
+              product_sellingprice: item.product_sellingprice,
+              price: item.price,
+            });
+          });
+
+          // Prepare formData
+          const formData = {
+            localStorageItems: localStorageItems,
+            totalAmount: totalAmount.toFixed(2),
+            orderID: data.orderID,
+            payerID: details.payer.payer_id,
+            paypalPayerName: details.payer.name.given_name, // PayPal payer first name
+            paypalPayerEmail: details.payer.email_address // PayPal payer email
+          };
+
+
+          $.ajax({
+            type: 'POST',
+            url: '/blutmedical/controllers/users/checkout_guest_paypal_process.php',
+            data: JSON.stringify(formData), // Send the correct formData here
+            contentType: 'application/json', // Set header to send JSON
+            dataType: 'json',
+            success: function(response) {
+              if (response.status === 'success') {
+                Toastify({
+                  text: response.message,
+                  duration: 3000,
+                  gravity: 'top',
+                  position: 'right',
+                  backgroundColor: '#4CAF50', // Green for success
+                }).showToast();
+
+                setTimeout(function() {
+                  updateCart();
+                  updateCartBadge();
+                }, 500); // Give the DOM time to update
+
+                $('#checkoutModal').modal('hide');
+                // Optionally, clear the localStorage after successful checkout
+                // localStorage.removeItem('guestCart');
+              } else {
+                Toastify({
+                  text: response.message || 'An error occurred.',
+                  duration: 3000,
+                  gravity: 'top',
+                  position: 'right',
+                  backgroundColor: '#f44336', // Red for error
+                }).showToast();
+              }
+            },
+            error: function(xhr, status, error) {
+              console.error('XHR Status:', status); // Log the status
+              console.error('Error:', error); // Log the actual error
+              console.error('Server Response:', xhr.responseText); // Log the server response text
+
+              Toastify({
+                text: 'Something went wrong. Please try again.',
+                duration: 3000,
+                gravity: 'top',
+                position: 'right',
+                backgroundColor: '#f44336', // Red for error
+              }).showToast();
+
+              $button.text('Confirm Payment');
+            },
+          });
+        });
+      }
+    }).render('#paypal-button-container'); // Render the PayPal button
+  }
+
+
+
+
+  $('#submitCheckout').on('click', function(e) {
+    e.preventDefault();
+    var $button = $(this); // Cache the button element
+
+    // Show 'Saving...' when the button is clicked
+    $button.text('Saving...'); // Change button text
+    // Get selected payment category
+    const paymentCategory = $('input[name="paymentCategory"]:checked').val();
+
+    // Determine the URL based on payment category
+    let url;
+    if (paymentCategory === 'Cash on Delivery') {
+      url = '/blutmedical/controllers/users/checkout_guest_process.php';
+    } else {
+      Toastify({
+        text: 'Please select a payment method.',
+        duration: 3000,
+        gravity: 'top',
+        position: 'right',
+        backgroundColor: '#f44336', // Red for error
+      }).showToast();
+      $button.text('Confirm Payment');
+
+      return; // Exit if no payment method is selected
+    }
+
+    // Retrieve localStorage contents
+    const cartData = JSON.parse(localStorage.getItem('guestCart')) || [];
+    let localStorageItems = [];
+
+    cartData.forEach(item => {
+      localStorageItems.push({
+        product_id: item.product_id,
+        cart_quantity: item.cart_quantity,
+        variation_id: item.variation_id,
+        product_sellingprice: item.product_sellingprice,
+        price: item.price,
+
+      });
+    });
+
+    // Gather form data
+    const formData = {
+      payment_category: paymentCategory,
+      localStorageItems: localStorageItems
+    };
+
+    // If user is a guest, add guest details to form data
+    // if (!userId) {
+    //   formData.fullname = $('#delivery_guest_fullname').val();
+    //   formData.address = $('#delivery_address').val();
+    //   formData.contact_number = $('#delivery_guest_contact_number').val();
+    //   formData.email = $('#delivery_guest_email').val();
+
+    //   // Validate guest details
+    //   if (!formData.fullname || !formData.address || !formData.contact_number || !formData.email) {
+    //     Toastify({
+    //       text: 'Please fill out all guest details.',
+    //       duration: 3000,
+    //       gravity: 'top',
+    //       position: 'right',
+    //       backgroundColor: '#f44336', // Red for error
+    //     }).showToast();
+    //     return;
+    //   }
+    // }
+    $.ajax({
+      type: 'POST',
+      url: url,
+      data: JSON.stringify(formData), // JSON.stringify encodes the formData into a string
+      contentType: 'application/json', // Set header to send JSON
+      dataType: 'json',
+      success: function(response) {
+        if (response.status === 'success') {
+          Toastify({
+            text: response.message,
+            duration: 3000,
+            gravity: 'top',
+            position: 'right',
+            backgroundColor: '#4CAF50', // Green for success
+          }).showToast();
+
+          setTimeout(function() {
+            updateCart();
+            updateCartBadge();
+          }, 500); // Give the DOM time to update
+
+          $('#checkoutModal').modal('hide');
+          // Optionally, clear the localStorage after successful checkout
+          // localStorage.removeItem('guestCart');
+        } else {
+          Toastify({
+            text: response.message || 'An error occurred.',
+            duration: 3000,
+            gravity: 'top',
+            position: 'right',
+            backgroundColor: '#f44336', // Red for error
+          }).showToast();
+        }
+        $button.text('Confirm Payment');
+      },
+      error: function(xhr, status, error) {
+        console.error('XHR Status:', status); // Log the status
+        console.error('Error:', error); // Log the actual error
+        console.error('Server Response:', xhr.responseText); // Log the server response text
+
+        Toastify({
+          text: 'Something went wrong. Please try again.',
+          duration: 3000,
+          gravity: 'top',
+          position: 'right',
+          backgroundColor: '#f44336', // Red for error
+        }).showToast();
+
+        $button.text('Confirm Payment');
+      },
+
+    });
+  });
+</script>

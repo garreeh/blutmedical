@@ -11,7 +11,7 @@
  Target Server Version : 100432 (10.4.32-MariaDB)
  File Encoding         : 65001
 
- Date: 14/01/2025 18:36:32
+ Date: 15/01/2025 16:19:36
 */
 
 SET NAMES utf8mb4;
@@ -56,7 +56,7 @@ CREATE TABLE `cart`  (
   `proof_of_payment` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `total_price` decimal(11, 2) NULL DEFAULT NULL,
   `payment_method` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `payment_status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `payment_status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `reference_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp,
   `updated_at` timestamp NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
@@ -64,14 +64,16 @@ CREATE TABLE `cart`  (
   `delivery_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `delivery_guest_fullname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `delivery_guest_contact_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  PRIMARY KEY (`cart_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 186 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+  `delivery_guest_email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `paypal_order_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `paypal_payer_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`cart_id`, `payment_status`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 248 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of cart
 -- ----------------------------
-INSERT INTO `cart` VALUES (182, 40, 22, 0, 3, 'Cart', NULL, 188.00, NULL, NULL, NULL, '2025-01-14 17:18:36', '2025-01-14 17:22:58', NULL, NULL, NULL, NULL);
-INSERT INTO `cart` VALUES (185, 1, 17, 1, 3, 'Cart', NULL, 6.00, NULL, NULL, NULL, '2025-01-14 18:06:42', '2025-01-14 18:06:49', NULL, NULL, NULL, NULL);
+INSERT INTO `cart` VALUES (247, NULL, 23, 0, 3, 'Processing', NULL, 297.00, 'Cash on Delivery', 'Unpaid', NULL, '2025-01-15 16:18:40', '2025-01-15 16:18:40', NULL, '', '', '', '', NULL, NULL);
 
 -- ----------------------------
 -- Table structure for category
@@ -243,7 +245,7 @@ CREATE TABLE `supplier`  (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp,
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`supplier_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 31 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 42 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of supplier
@@ -253,6 +255,17 @@ INSERT INTO `supplier` VALUES (27, 'Razzon', '2', 2, 2323, 'test1@gmail.com', '2
 INSERT INTO `supplier` VALUES (28, 'Puregold', '123', 123, 1, 'test1@gmail.com', '123', '2024-09-06 21:19:57', '2024-11-08 22:44:37');
 INSERT INTO `supplier` VALUES (29, 'SM SUPERMARKET', 'Supplier2', 0, 123123, 'gajultos.garry123@gmail.com', '123', '2024-09-06 22:19:56', '2024-11-08 21:57:10');
 INSERT INTO `supplier` VALUES (30, 'STARMALL', 'Test', 123, 123, 'test1@gmail.com', '23', '2024-10-12 11:05:22', '2024-11-08 22:44:40');
+INSERT INTO `supplier` VALUES (31, '1', '2', 3, 4, '5@gmail.com', '4', '2025-01-15 11:39:09', '2025-01-15 11:39:09');
+INSERT INTO `supplier` VALUES (32, '1', '2', 3, 4, '5@gmail.com', '6', '2025-01-15 11:39:35', '2025-01-15 11:39:35');
+INSERT INTO `supplier` VALUES (33, '1', '2', 3, 1, 'kingaxie31@gmail.com', '3', '2025-01-15 11:40:41', '2025-01-15 11:40:41');
+INSERT INTO `supplier` VALUES (34, '1', '2', 3, 6, '5@gmail.com', '4', '2025-01-15 11:41:19', '2025-01-15 11:41:19');
+INSERT INTO `supplier` VALUES (35, '1', '2', 3, 6, '5@gmail.com', '4', '2025-01-15 11:42:02', '2025-01-15 11:42:02');
+INSERT INTO `supplier` VALUES (36, '1', '2', 3, 4, '5@gmail.com', '6', '2025-01-15 11:43:22', '2025-01-15 11:43:22');
+INSERT INTO `supplier` VALUES (37, '1', '2', 3, 4, 'kingaxie31@gmail.com', '1', '2025-01-15 11:43:43', '2025-01-15 11:43:43');
+INSERT INTO `supplier` VALUES (38, '1', '2', 3, 4, '5@gmail.com', '6', '2025-01-15 11:44:08', '2025-01-15 11:44:08');
+INSERT INTO `supplier` VALUES (39, '1', '2', 3, 4, '5@gmail.com', '6', '2025-01-15 11:44:22', '2025-01-15 11:44:22');
+INSERT INTO `supplier` VALUES (40, '12', '2', 1, 1, 'pendragonitteam@gmail.com', '1', '2025-01-15 11:47:02', '2025-01-15 11:47:02');
+INSERT INTO `supplier` VALUES (41, '1', '12', 3, 4, 'agbalahadia@scpa.com.ph', '1', '2025-01-15 11:47:26', '2025-01-15 11:47:26');
 
 -- ----------------------------
 -- Table structure for users

@@ -109,7 +109,11 @@
 
               <div class="row">
                 <div class="col-md-12">
-                  <button class="btn btn-black btn-lg py-3 btn-block" id="checkout-button" style="display:none;" onclick="window.location='checkout.html'">Proceed To Checkout</button>
+                  <?php include './modals/checkout_modal.php' ?>
+
+
+                  <button class="btn btn-black btn-lg py-3 btn-block" data-toggle="modal" data-target="#checkoutModal" id="checkout-button" style="display:none;">Proceed To Checkout</button>
+                  <!-- <button class="btn btn-primary" type="submit" data-toggle="modal" data-target="#checkoutModal" id="checkout-button">Checkout <i class="fa fa-check"></i></button> -->
                 </div>
               </div>
             </div>
@@ -130,11 +134,12 @@
   ?>
 
 
-
 </body>
 
 </html>
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
@@ -448,11 +453,6 @@
       // Refresh the cart for guest users
       updateCart();
 
-
-
-
-
-
     }
   }
 
@@ -469,9 +469,94 @@
     updateCartQuantity(productId, variationId, 'decrease');
   });
 
-
   // Call the updateCart function to render the cart on page load
   $(document).ready(function() {
     updateCart();
+  });
+
+  $('#checkoutModal').on('show.bs.modal', function() {
+    var isLoggedIn = <?php echo json_encode(isset($_SESSION['user_id'])); ?>;
+
+    if (isLoggedIn) {
+      // Fetch cart items from the server
+      $.ajax({
+        type: 'POST',
+        url: '/blutmedical/controllers/users/fetch_cart_last_process.php',
+        dataType: 'json',
+        success: function(response) {
+          if (response.success) {
+            var cartItemsHtml = '';
+            var totalPrice = 0;
+
+            // Loop through cart items and create table rows
+            response.cartItems.forEach(function(item) {
+              var productPrice = parseFloat(item.product_sellingprice) || 0;
+              var cartQuantity = parseInt(item.cart_quantity, 10) || 0;
+              var variationId = item.variation_id;
+              var productId = item.product_id;
+              var baseURL = "/blutmedical/";
+
+              var variationPrice = item.variation_id === 0 ? productPrice : (item.variation_id ? parseFloat(item.price) : productPrice); // Check if variation_id exists
+
+              var variationValue = item.value !== null ? item.value : '-';
+
+              var itemTotal = variationPrice * cartQuantity; // Add shipping cost
+
+              cartItemsHtml += '<tr>';
+              cartItemsHtml += '<td>' + item.product_name + '</td>';
+              cartItemsHtml += '<td>' + cartQuantity + '</td>';
+              cartItemsHtml += '<td>₱ ' + variationPrice.toFixed(2) + '</td>';
+              cartItemsHtml += '<td>₱ ' + itemTotal.toFixed(2) + '</td>';
+              cartItemsHtml += '</tr>';
+
+              totalPrice += itemTotal;
+            });
+
+            // Update the cart content and total price in the modal
+            $('#order-summary').html(cartItemsHtml);
+            $('#total-amount').text('₱ ' + totalPrice.toFixed(2));
+          } else {
+            alert('Error fetching cart items');
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error('Error fetching cart:', error);
+          alert('An error occurred while fetching the cart.');
+        }
+      });
+    } else {
+      // Fetch cart items from localStorage
+      var cart = JSON.parse(localStorage.getItem('guestCart')) || [];
+      var cartItemsHtml = '';
+      var totalPrice = 0;
+
+      // Loop through localStorage cart items and create table rows
+      cart.forEach(function(item) {
+        var productPrice = parseFloat(item.product_sellingprice) || 0;
+        var cartQuantity = parseInt(item.cart_quantity, 10) || 0;
+        var variationId = item.variation_id;
+        var productId = item.product_id;
+        var baseURL = "/blutmedical/";
+
+        var variationPrice = item.variation_id === '-' ? productPrice : (item.variation_id ? parseFloat(item.price) : productPrice); // Check if variation_id exists
+
+        var variationValue = item.value !== null ? item.value : '-';
+
+        var itemTotal = cartQuantity * variationPrice; // Add shipping cost
+
+        cartItemsHtml += '<tr>';
+        cartItemsHtml += '<td>' + item.product_name + '</td>';
+        cartItemsHtml += '<td>' + cartQuantity + '</td>';
+        cartItemsHtml += '<td>₱ ' + variationPrice.toFixed(2) + '</td>';
+        cartItemsHtml += '<td>₱ ' + itemTotal.toFixed(2) + '</td>';
+        cartItemsHtml += '</tr>';
+
+        totalPrice += itemTotal;
+      });
+
+      // Update the cart content and total price in the modal
+      $('#order-summary').html(cartItemsHtml);
+      $('#total-amount').text('₱ ' + totalPrice.toFixed(2));
+    }
   });
 </script>

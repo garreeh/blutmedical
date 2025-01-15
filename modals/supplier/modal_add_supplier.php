@@ -70,8 +70,8 @@
 
 
 <script>
-  $(document).ready(function () {
-    $('#addSupplierModal form').submit(function (event) {
+  $(document).ready(function() {
+    $('#addSupplierModal form').submit(function(event) {
       event.preventDefault(); // Prevent default form submission
 
       // Store a reference to $(this)
@@ -90,7 +90,7 @@
         type: 'POST',
         url: '/blutmedical/controllers/admin/add_supplier_process.php',
         data: formData,
-        success: function (response) {
+        success: function(response) {
           // Handle success response
           console.log(response); // Log the response for debugging
           response = JSON.parse(response);
@@ -118,7 +118,7 @@
             }).showToast();
           }
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
           // Handle error response
           console.error(xhr.responseText);
           Toastify({
@@ -127,7 +127,7 @@
             backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
           }).showToast();
         },
-        complete: function () {
+        complete: function() {
           // Reset button text and re-enable it
           $addButton.text('Add');
           $addButton.prop('disabled', false);
