@@ -1,5 +1,6 @@
 <?php
 include '../../connections/connections.php';
+session_start();
 
 // PayPal API credentials (get these from PayPal developer dashboard)
 $paypalClientId = 'AfcJOedIT9WM3IBgUd8D4uEiAXppkMsftrR2DRtcm8CUco5sptEShId2hujHrtNd_FK7gzOyzbV53zsX';
@@ -32,57 +33,54 @@ if ($httpStatus == 200) {
 $requestBody = file_get_contents('php://input');
 $data = json_decode($requestBody, true);
 
-// Validate the payment response
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  try {
-    // Decode the incoming JSON request data
-    $jsonData = file_get_contents('php://input');
-    if (!$jsonData) {
-      throw new Exception('No data received.');
-    }
 
-    $formData = json_decode($jsonData, true);
-    if (is_null($formData) || !isset($formData['localStorageItems'])) {
-      throw new Exception('Missing required data');
-    }
+$response = array('success' => false, 'message' => '');
 
-    $cartData = $formData['localStorageItems'];
-    $delivery_guest_fullname = isset($formData['fullname']) ? $formData['fullname'] : null;
-    $delivery_address = isset($formData['address']) ? $formData['address'] : null;
-    $delivery_guest_contact_number = isset($formData['contact_number']) ? $formData['contact_number'] : null;
-    $delivery_guest_email = isset($formData['email']) ? $formData['email'] : null;
-    $paypal_order_id = $formData['orderID'];  // This comes from the payload
-    $paypal_payer_id = $formData['payerID'];  // This comes from the payload
-    $paypal_name = $formData['paypalPayerName'];  // This comes from the payload
-    $paypal_email = $formData['paypalPayerEmail'];  // This comes from the payload
-    $paypal_contact_number = $formData['paypalPayerContact'];  // This comes from the payload
-    $paypal_address = $formData['paypalPayerAddress'];  // This comes from the payload
-    $paypal_transaction_id = $formData['transaction_id'];  // This comes from the payload
-
-
-
-    // Handle localStorage data
-    foreach ($cartData as $item) {
-      $product_id = $item['product_id'];
-      $cart_quantity = $item['cart_quantity'];
-      $variation_id = $item['variation_id'];
-      $productPrice = ($variation_id === '-') ? $item['product_sellingprice'] : $item['price'];
-      $productTotalPrice = $productPrice * $cart_quantity;
-
-      // Insert into cart table
-      $sql = "INSERT INTO cart (product_id, cart_quantity, variation_id, total_price, cart_status, payment_method, delivery_guest_fullname, delivery_address, delivery_guest_contact_number, delivery_guest_email, payment_status, paypal_order_id, paypal_payer_id, paypal_name, paypal_email, paypal_contact_number, paypal_address, paypal_transaction_id) 
-                        VALUES ('$product_id', '$cart_quantity', '$variation_id', '$productTotalPrice', 'Processing', 'Paypal', '$delivery_guest_fullname', '$delivery_address', '$delivery_guest_contact_number', '$delivery_guest_email', 'Paid', '$paypal_order_id', '$paypal_payer_id', '$paypal_name', '$paypal_email', '$paypal_contact_number', '$paypal_address', '$paypal_transaction_id')";
-
-      if (!mysqli_query($conn, $sql)) {
-        throw new Exception('Error saving cart: ' . mysqli_error($conn));
-      }
-    }
-
-    echo json_encode(['status' => 'success', 'message' => 'Items saved to cart successfully!']);
-  } catch (Exception $e) {
-    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
-  }
-} else {
-  // Log payment status if not approved
-  error_log("Unhandled Payment Status: {$data['state']}", 3, 'ipn_error.log');
+// Ensure user is logged in
+if (!isset($_SESSION['user_id'])) {
+  $response['message'] = 'User not logged in';
+  echo json_encode($response);
+  exit;
 }
+
+$user_id = $_SESSION['user_id'];
+$paymentMethod = $_POST['paymentCategory'];
+
+// Start a transaction to ensure data integrity
+mysqli_begin_transaction($conn);
+
+try {
+  // Retrieve cart items for stock update (only those in 'Cart' status for the logged-in user)
+  $cartItemsSql = "SELECT product_id, cart_quantity FROM cart 
+                     WHERE user_id = '$user_id' AND cart_status = 'Cart'";
+  $result = mysqli_query($conn, $cartItemsSql);
+  if (!$result || mysqli_num_rows($result) === 0) {
+    // throw new Exception('No items in the cart to checkout.');
+  }
+
+  // Update the cart status for all items in 'Cart' for the current user
+  $updateCartSql = "UPDATE cart SET 
+                      cart_status = 'Processing', 
+                      payment_method = '$paymentMethod',
+                      payment_status = 'Unpaid'
+                      WHERE user_id = '$user_id' AND cart_status = 'Cart'";
+
+  // Execute the cart status update for all items
+  if (!mysqli_query($conn, $updateCartSql)) {
+    throw new Exception('Failed to update cart status for all items');
+  }
+
+  // Commit the transaction
+  mysqli_commit($conn);
+
+  // Success response
+  $response['success'] = true;
+  $response['message'] = 'Checkout successful for all items in the cart';
+} catch (Exception $e) {
+  // Rollback the transaction on error
+  mysqli_rollback($conn);
+  $response['message'] = $e->getMessage();
+}
+
+// Output the JSON response
+echo json_encode($response);
