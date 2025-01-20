@@ -3,9 +3,9 @@
   aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header">
+      <!-- <div class="modal-header">
         <p class="modal-title" id="checkoutModalLabel">Checkout</p>
-      </div>
+      </div> -->
       <div class="modal-body">
         <!-- Order Summary Section -->
         <h5>Order Summary</h5>

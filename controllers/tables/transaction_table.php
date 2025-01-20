@@ -15,11 +15,12 @@ $columns = array(
 	),
 
 	array(
-		'db' => 'reference_no',
+		'db' => 'paypal_order_id',
 		'dt' => 1,
-		'field' => 'reference_no',
+		'field' => 'paypal_order_id',
 		'formatter' => function ($lab1, $row) {
-			return $row['reference_no'];
+			return empty($row['paypal_order_id']) ? '-' : $row['paypal_order_id'];
+
 		}
 	),
 
@@ -28,7 +29,8 @@ $columns = array(
 		'dt' => 2,
 		'field' => 'user_fullname',
 		'formatter' => function ($lab2, $row) {
-			return $row['user_fullname'];
+			return empty($row['user_fullname']) ? $row['delivery_guest_fullname'] : $row['user_fullname'];
+
 		}
 	),
 
@@ -37,22 +39,28 @@ $columns = array(
 		'dt' => 3,
 		'field' => 'cart_status',
 		'formatter' => function ($lab3, $row) {
-			return $row['cart_status'];
+
+			$cart_status = $row['cart_status'];
+
+			// Define styles for different statuses
+			$style = '';
+			if ($cart_status === 'Processing') {
+				$style = 'background-color: lightyellow; border-radius: 5px; padding: 5px;';
+			} elseif ($cart_status === 'Shipped') {
+				$style = 'background-color: lightyellow; border-radius: 5px; padding: 5px;';
+			} elseif ($cart_status === 'Delivered') {
+				$style = 'background-color: lightgreen; border-radius: 5px; padding: 5px;';
+			}
+
+			return "<span style=\"$style\">{$cart_status}</span>";
 		}
 	),
 
-	array(
-		'db' => 'total_price',
-		'dt' => 4,
-		'field' => 'total_price',
-		'formatter' => function ($lab4, $row) {
-			return $row['total_price'];
-		}
-	),
+
 
 	array(
 		'db' => 'payment_method',
-		'dt' => 5,
+		'dt' => 4,
 		'field' => 'payment_method',
 		'formatter' => function ($lab4, $row) {
 			return $row['payment_method'];
@@ -60,16 +68,21 @@ $columns = array(
 	),
 
 	array(
-		'db' => 'proof_of_payment',
-		'dt' => 6,
-		'field' => 'proof_of_payment',
+		'db' => 'cart_id',
+		'dt' => 5,
+		'field' => 'cart_id',
 		'formatter' => function ($lab4, $row) {
-			// Check if the value is null or empty
-			if (empty($lab4)) {
-				return 'COD';
-			} else {
-				return '<a class="ProofData" href="#"> View Image</a>';
-			}
+			return '<a class="fetchCustomerDetails" href="#"> Click to View</a> ';
+
+		}
+	),
+
+	array(
+		'db' => 'total_price',
+		'dt' => 6,
+		'field' => 'total_price',
+		'formatter' => function ($lab4, $row) {
+			return $row['total_price'];
 		}
 	),
 
@@ -83,11 +96,11 @@ $columns = array(
 	),
 
 	array(
-		'db' => 'cart.delivery_rider_id',
+		'db' => 'delivery_guest_fullname',
 		'dt' => 8,
-		'field' => 'delivery_rider_id',
+		'field' => 'delivery_guest_fullname',
 		'formatter' => function ($lab5, $row) {
-			return $row['delivery_rider_id'];
+			return $row['delivery_guest_fullname'];
 		}
 	),
 );

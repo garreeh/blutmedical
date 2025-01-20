@@ -2,38 +2,48 @@
 session_start();
 include '../../connections/connections.php';
 
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(array('success' => false, 'message' => 'Not logged in.'));
-    exit();
+// Initialize the response array
+$response = [
+    'success' => false,
+    'items' => [],
+    'total_items' => 0,
+    'total_price' => 0.0,
+    'message' => ''
+];
+
+try {
+    if (isset($_SESSION['user_id'])) {
+        // User is logged in, fetch data from the database
+        $user_id = $conn->real_escape_string($_SESSION['user_id']);
+
+        $query = "SELECT product.*, cart.*, variations.`value`, variations.variation_id, variations.price
+                  FROM cart
+                  LEFT JOIN product ON cart.product_id = product.product_id
+                  LEFT JOIN variations ON cart.variation_id = variations.variation_id
+                  WHERE cart.user_id = '$user_id' AND cart_status IN ('Processing', 'Shipped')";
+
+        $result = $conn->query($query);
+
+        if (!$result) {
+            throw new Exception("Database query failed: " . $conn->error);
+        }
+
+        $cart_items = [];
+        $total_price = 0.0;
+
+        while ($row = $result->fetch_assoc()) {
+            $cart_items[] = $row;
+            $total_price += $row['total_price'];
+        }
+
+        $response['success'] = true;
+        $response['items'] = $cart_items;
+        $response['total_items'] = count($cart_items);
+        $response['total_price'] = $total_price;
+    }
+} catch (Exception $e) {
+    $response['message'] = $e->getMessage();
 }
 
-$user_id = $_SESSION['user_id'];
-
-// Query to get cart items and related product details
-$query = "SELECT *
-          FROM cart c
-          LEFT JOIN product p ON c.product_id = p.product_id
-          WHERE c.user_id = '$user_id' AND c.cart_status IN ('Processing', 'Out For Delivery')";
-
-$result = $conn->query($query);
-$cart_items = array();
-
-while ($row = $result->fetch_assoc()) {
-    $cart_items[] = $row;
-}
-
-$total_items = count($cart_items);
-$total_price = 0;
-foreach ($cart_items as $item) {
-    $total_price += $item['cart_quantity'] * $item['product_sellingprice'];
-}
-
-$response = array(
-    'success' => true,
-    'items' => $cart_items,
-    'total_items' => $total_items,
-    'total_price' => $total_price
-);
-
+// Return the response as JSON
 echo json_encode($response);
-?>

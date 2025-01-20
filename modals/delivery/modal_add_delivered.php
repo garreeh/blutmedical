@@ -27,7 +27,7 @@ if ($result) {
   <div class="modal-dialog modal-l" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="addDeliveredModalLabel">Deliveries</h5>
+        <h5 class="modal-title" id="addDeliveredModalLabel">Order</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -36,14 +36,14 @@ if ($result) {
       <div class="modal-body">
         <form method="post" enctype="multipart/form-data">
           <div class="form-group col-md-12">
-            <h3>Do you want to Tag as Delivered?</h3>
+            <h3>Do you want to Tag as <strong>Shipped</strong>?</h3>
 
           </div>
 
           <!-- Add a hidden input field to submit the form with the button click -->
           <input type="hidden" name="cart_id" id="cart_id" value="">
 
-          <input type="hidden" name="tag_as_delivered" value="1">
+          <input type="hidden" name="tag_as_shipped" value="1">
 
           <div class="modal-footer">
             <button type="submit" class="btn btn-primary" id="addDeliveryRiderButton">Yes</button>

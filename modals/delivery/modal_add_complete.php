@@ -2,7 +2,7 @@
 include './../../connections/connections.php';
 
 // Fetch user types from the database
-$sql = "SELECT * FROM users WHERE user_type_id = 4";
+$sql = "SELECT * FROM users";
 $result = mysqli_query($conn, $sql);
 
 $user_names = [];
@@ -22,12 +22,12 @@ if ($result) {
   }
 </style>
 
-<div class="modal fade" id="addDeliveryModal" tabindex="-1" role="dialog" aria-labelledby="addDeliveryModalLabel"
+<div class="modal fade" id="addDeliveredModal" tabindex="-1" role="dialog" aria-labelledby="addDeliveredModalLabel"
   aria-hidden="true">
   <div class="modal-dialog modal-l" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="addDeliveryModalLabel">Assign Delivery</h5>
+        <h5 class="modal-title" id="addDeliveredModalLabel">Order</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -36,25 +36,18 @@ if ($result) {
       <div class="modal-body">
         <form method="post" enctype="multipart/form-data">
           <div class="form-group col-md-12">
-            <label for="user_id">Assign Delivery Rider:</label>
-            <select class="form-control" id="user_id" name="user_id" required>
-              <option value="">Select Delivery Rider</option>
-              <?php foreach ($user_names as $user_rows): ?>
-                <option value="<?php echo $user_rows['user_id']; ?>">
-                  <?php echo $user_rows['user_fullname']; ?>
-                </option>
-              <?php endforeach; ?>
-            </select>
+            <h3>Do you want to Tag as <strong>Delivered</strong> and <strong>Paid</strong>?</h3>
+
           </div>
 
           <!-- Add a hidden input field to submit the form with the button click -->
           <input type="hidden" name="cart_id" id="cart_id" value="">
 
-          <input type="hidden" name="add_delivery_rider" value="1">
+          <input type="hidden" name="tag_as_complete" value="1">
 
           <div class="modal-footer">
-            <button type="submit" class="btn btn-primary" id="addDeliveryRiderButton">Add</button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary" id="addDeliveryRiderButton">Yes</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
           </div>
         </form>
       </div>
@@ -64,7 +57,7 @@ if ($result) {
 
 <script>
   $(document).ready(function () {
-    $('#addDeliveryModal form').submit(function (event) {
+    $('#addDeliveredModal form').submit(function (event) {
       event.preventDefault(); // Prevent default form submission
 
       // Store a reference to $(this)
@@ -75,13 +68,13 @@ if ($result) {
 
       // Change button text to "Adding..." and disable it
       var $addButton = $('#addDeliveryRiderButton');
-      $addButton.text('Adding...');
+      $addButton.text('Tagging...');
       $addButton.prop('disabled', true);
 
       // Send AJAX request
       $.ajax({
         type: 'POST',
-        url: '/blutmedical/controllers/admin/update_order_process.php',
+        url: '/blutmedical/controllers/admin/tag_as_complete_process.php',
         data: formData,
         success: function (response) {
           // Handle success response
@@ -98,7 +91,7 @@ if ($result) {
             $form.trigger('reset');
 
             // Optionally, close the modal
-            $('#addDeliveryModal').modal('hide');
+            $('#addDeliveredModal').modal('hide');
             window.reloadDataTable();
 
           } else {
@@ -120,7 +113,7 @@ if ($result) {
         },
         complete: function () {
           // Reset button text and re-enable it
-          $addButton.text('Add');
+          $addButton.text('Yes');
           $addButton.prop('disabled', false);
         }
       });

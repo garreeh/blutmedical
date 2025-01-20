@@ -19,7 +19,7 @@
 
   <!-- Bootstrap CSS -->
   <?php include 'assets.php'; ?>
-  <title>Furni Free Bootstrap 5 Template for Furniture and Interior Design Websites by Untree.co </title>
+  <title>Blüt Medical | Contact us</title>
 </head>
 
 <body>
@@ -38,15 +38,14 @@
         <div class="col-lg-5">
           <div class="intro-excerpt">
             <h1>Contact</h1>
-            <p class="mb-4">Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate
-              velit imperdiet dolor tempor tristique.</p>
-            <p><a href="" class="btn btn-secondary me-2">Shop Now</a><a href="#"
-                class="btn btn-white-outline">Explore</a></p>
+            <p class="mb-4">We are a provider of innovative premium quality products that will elevate any medical
+              practice be it for veterinarians or human doctors.</p>
+            <p><a href="products.php" class="btn btn-secondary me-2">Shop Now</a></p>
           </div>
         </div>
-        <div class="col-lg-7">
+        <div class="col-lg-5 d-none d-md-block">
           <div class="hero-img-wrap">
-            <img src="images/couch.png" class="img-fluid">
+            <img src="assets/logo/blutfront.png" class="img-fluid" style="max-width: 75%;">
           </div>
         </div>
       </div>
@@ -77,7 +76,7 @@
                     </svg>
                   </div> <!-- /.icon -->
                   <div class="service-contents">
-                    <p>43 Raymouth Rd. Baltemoer, London 3910</p>
+                    <p>107A Kalayaan avenue, Diliman, Quezon City, 1101 Metro Manila</p>
                   </div> <!-- /.service-contents-->
                 </div> <!-- /.service -->
               </div>
@@ -93,7 +92,7 @@
                     </svg>
                   </div> <!-- /.icon -->
                   <div class="service-contents">
-                    <p>info@yourdomain.com</p>
+                    <p>admin@blutmedical.com</p>
                   </div> <!-- /.service-contents-->
                 </div> <!-- /.service -->
               </div>
@@ -109,39 +108,46 @@
                     </svg>
                   </div> <!-- /.icon -->
                   <div class="service-contents">
-                    <p>+1 294 3925 3939</p>
+                    <p>+639264753651</p>
                   </div> <!-- /.service-contents-->
                 </div> <!-- /.service -->
               </div>
             </div>
 
-            <form>
+            <form id="contactForm">
               <div class="row">
                 <div class="col-6">
                   <div class="form-group">
-                    <label class="text-black" for="fname">First name</label>
-                    <input type="text" class="form-control" id="fname">
+                    <label class="text-black" for="fname">First Name</label>
+                    <input type="text" class="form-control" id="fname" name="fname" required>
                   </div>
                 </div>
                 <div class="col-6">
                   <div class="form-group">
-                    <label class="text-black" for="lname">Last name</label>
-                    <input type="text" class="form-control" id="lname">
+                    <label class="text-black" for="lname">Last Name</label>
+                    <input type="text" class="form-control" id="lname" name="lname" required>
                   </div>
                 </div>
               </div>
+
               <div class="form-group">
-                <label class="text-black" for="email">Email address</label>
-                <input type="email" class="form-control" id="email">
+                <label class="text-black" for="email">Email Address</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+              </div>
+
+              <div class="form-group">
+                <label class="text-black" for="contact">Contact #</label>
+                <input type="text" class="form-control" id="contact" name="contact" required>
               </div>
 
               <div class="form-group mb-5">
                 <label class="text-black" for="message">Message</label>
-                <textarea name="" class="form-control" id="message" cols="30" rows="5"></textarea>
+                <textarea class="form-control" id="message" name="message" cols="30" rows="5" required></textarea>
               </div>
 
-              <button type="submit" class="btn btn-primary-hover-outline">Send Message</button>
+              <button type="submit" class="btn btn-primary-hover-outline" id="sendEmailMessage">Send Message</button>
             </form>
+
 
           </div>
 
@@ -168,3 +174,76 @@
 </body>
 
 </html>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<script>
+  document.getElementById('contact').addEventListener('input', function (e) {
+    this.value = this.value.replace(/[^0-9.]/g, ''); // Allow only numbers and dots
+  });
+
+
+  $(document).ready(function () {
+    $('#contactForm').submit(function (event) {
+      event.preventDefault(); // Prevent default form submission (important!)
+
+      // Serialize form data
+      var formData = $(this).serialize();
+
+      // Change button text to "Sending..." and disable it
+      var $sendButton = $('#sendEmailMessage');
+      $sendButton.text('Sending...');
+      $sendButton.prop('disabled', true);
+
+      // Send AJAX request
+      $.ajax({
+        type: 'POST',
+        url: '/blutmedical/controllers/send_email_process.php',
+        data: formData,
+        success: function (response) {
+          // Parse JSON response
+          try {
+            response = JSON.parse(response);
+            if (response.success) {
+              Toastify({
+                text: response.message,
+                duration: 2000,
+                backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)"
+              }).showToast();
+
+              // Reset the form
+              $('#contactForm').trigger('reset');
+            } else {
+              Toastify({
+                text: response.message,
+                duration: 2000,
+                backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
+              }).showToast();
+            }
+          } catch (e) {
+            console.error("Invalid JSON response:", response);
+            Toastify({
+              text: "An error occurred. Please try again.",
+              duration: 2000,
+              backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
+            }).showToast();
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error("AJAX error:", xhr.responseText);
+          Toastify({
+            text: "An error occurred while processing your request. Please try again later.",
+            duration: 2000,
+            backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
+          }).showToast();
+        },
+        complete: function () {
+          // Reset button text and re-enable it
+          $sendButton.text('Send Message');
+          $sendButton.prop('disabled', false);
+        }
+      });
+    });
+  });
+</script>

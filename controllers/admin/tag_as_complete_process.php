@@ -1,7 +1,7 @@
 <?php
 include '../../connections/connections.php';
 
-if (isset($_POST['tag_as_shipped'])) {
+if (isset($_POST['tag_as_complete'])) {
 
   // Get cart_id and user_id
   $cart_id = $conn->real_escape_string($_POST['cart_id']);
@@ -9,14 +9,14 @@ if (isset($_POST['tag_as_shipped'])) {
   // Construct SQL query for UPDATE
   $sql = "UPDATE `cart` 
           SET 
-              cart_status = 'Shipped',
+              cart_status = 'Delivered',
               payment_status = 'Paid'
           WHERE cart_id = '$cart_id'";
 
   // Execute SQL query
   if (mysqli_query($conn, $sql)) {
     // User updated successfully
-    $response = array('success' => true, 'message' => 'Shipped successfully!');
+    $response = array('success' => true, 'message' => 'Delivered successfully!');
     echo json_encode($response);
     exit();
   } else {

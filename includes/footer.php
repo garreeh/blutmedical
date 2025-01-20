@@ -7,7 +7,7 @@
     </div> -->
 
     <div class="row g-5 mb-5">
-      <div class="col-lg-4">
+      <div class="col-lg-6">
         <p class="mb-4">Donec facilisis quam ut purus rutrum lobortis. Donec vitae odio quis nisl dapibus malesuada.
           Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. Pellentesque habitant</p>
 
@@ -19,7 +19,7 @@
         </ul>
       </div>
 
-      <div class="col-lg-8">
+      <div class="col-lg-6">
         <div class="row links-wrap">
           <div class="col-6 col-sm-6 col-md-3">
             <ul class="list-unstyled">

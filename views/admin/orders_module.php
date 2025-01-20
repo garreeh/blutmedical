@@ -25,10 +25,14 @@ if (session_status() == PHP_SESSION_NONE) {
   <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
   <link href="./../../assets/admin/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+    rel="stylesheet">
   <link href="./../../assets/admin/css/sb-admin-2.min.css" rel="stylesheet">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css"
+    integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
 
 </head>
 
@@ -71,14 +75,14 @@ if (session_status() == PHP_SESSION_NONE) {
                     <thead>
                       <tr>
                         <th>ID</th>
-                        <th>Ref No.</th>
+                        <th>Ref No Paypal.</th>
                         <th>Customer Name</th>
                         <th>Status</th>
-                        <th>Total Payment</th>
                         <th>Payment Method</th>
-                        <th>Proof of Payment</th>
+                        <th>Customer Details</th>
 
-                        <th>Date Created</th>
+                        <th>Total Payment</th>
+
                         <th>Manage</th>
 
                       </tr>
@@ -114,11 +118,14 @@ if (session_status() == PHP_SESSION_NONE) {
   <script type="text/javascript" src="./../../assets/datatables/datatables.min.js"></script>
 
   <!-- COPY THESE WHOLE CODE WHEN IMPORT SELECT -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js" integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js"
+    integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css"
+    integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
 
   <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
       $('select').selectize({
         sortField: 'text'
       });
@@ -132,13 +139,13 @@ if (session_status() == PHP_SESSION_NONE) {
 </html>
 
 <script>
-  $('#sidebarToggle').click(function() {
+  $('#sidebarToggle').click(function () {
     $('#order_table').css('width', '100%');
     // console.log(table) //This is for testing only
   });
 
   //Table for Transactions
-  $(document).ready(function() {
+  $(document).ready(function () {
     var order_table = $('#order_table').DataTable({
       "pagingType": "numbers",
       "processing": true,
@@ -146,57 +153,83 @@ if (session_status() == PHP_SESSION_NONE) {
       "ajax": "./../../controllers/tables/orders_table.php",
     });
 
-    window.reloadDataTable = function() {
+    window.reloadDataTable = function () {
       order_table.ajax.reload();
     };
 
   });
 
-  $(document).ready(function() {
+  $(document).ready(function () {
     // Function to handle click event on datatable rows
-    $('#order_table').on('click', 'tr td:nth-child(7) .ProofData', function() {
+    $('#order_table').on('click', 'tr td:nth-child(6) .fetchCustomerDetails', function () {
+      event.preventDefault();
       var cart_id = $(this).closest('tr').find('td').first().text(); // Get the cart_id from the clicked row
 
       $.ajax({
-        url: './../../modals/order/proof_modal.php', // Path to PHP script to fetch modal content
+        url: './../../modals/order/customer_details_modal.php', // Path to PHP script to fetch modal content
         method: 'POST',
         data: {
           cart_id: cart_id
         },
-        success: function(response) {
+        success: function (response) {
           $('#modalContainerProvider').html(response);
           $('#showPhoto').modal('show');
           $('#cart_id').val(cart_id); // Set the cart_id here
           console.log("#showPhoto: " + cart_id);
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.error(xhr.responseText);
         }
       });
     });
   });
 
-  $(document).ready(function() {
+  $(document).ready(function () {
     // Function to handle click event on datatable rows
-    $('#order_table').on('click', 'tr td:nth-child(9) .fetchDataDelivery', function() {
+    $('#order_table').on('click', 'tr td:nth-child(8) .fetchDataFinish', function () {
+      event.preventDefault();
       var cart_id = $(this).closest('tr').find('td').first().text(); // Get the cart_id from the clicked row
 
       $.ajax({
-        url: './../../modals/delivery/modal_add_delivery.php', // Path to PHP script to fetch modal content
+        url: './../../modals/delivery/modal_add_delivered.php', // Path to PHP script to fetch modal content
         method: 'POST',
         data: {
           cart_id: cart_id
         },
-        success: function(response) {
+        success: function (response) {
           $('#modalContainerProvider').html(response);
-          $('#addDeliveryModal').modal('show');
+          $('#addDeliveredModal').modal('show');
           $('#cart_id').val(cart_id); // Set the cart_id here
-          console.log("#addDeliveryModal: " + cart_id);
+          console.log("#addDeliveredModal: " + cart_id);
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.error(xhr.responseText);
         }
       });
     });
   });
+
+  // $(document).ready(function () {
+  //   // Function to handle click event on datatable rows
+  //   $('#order_table').on('click', 'tr td:nth-child(8) .fetchDataDelivery', function () {
+  //     var cart_id = $(this).closest('tr').find('td').first().text(); // Get the cart_id from the clicked row
+
+  //     $.ajax({
+  //       url: './../../modals/delivery/modal_add_delivery.php', // Path to PHP script to fetch modal content
+  //       method: 'POST',
+  //       data: {
+  //         cart_id: cart_id
+  //       },
+  //       success: function (response) {
+  //         $('#modalContainerProvider').html(response);
+  //         $('#addDeliveryModal').modal('show');
+  //         $('#cart_id').val(cart_id); // Set the cart_id here
+  //         console.log("#addDeliveryModal: " + cart_id);
+  //       },
+  //       error: function (xhr, status, error) {
+  //         console.error(xhr.responseText);
+  //       }
+  //     });
+  //   });
+  // });
 </script>

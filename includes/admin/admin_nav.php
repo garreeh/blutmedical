@@ -33,7 +33,7 @@ $result = mysqli_query($conn, $sql);
 
 if ($result) {
   while ($row = mysqli_fetch_assoc($result)) {
-?>
+    ?>
     <!DOCTYPE html>
     <html lang="en">
 
@@ -86,19 +86,19 @@ if ($result) {
         <?php endif; ?>
 
         <?php if ($row['deliveries_module'] == 1): ?>
-          <!-- <li class="nav-item">
+          <li class="nav-item">
             <a class="nav-link" href="/blutmedical/views/admin/deliveries_module.php">
               <i class="fas fa-fw fa-money-bill"></i>
-              <span>Deliveries</span></a>
-          </li> -->
+              <span>Shipped Orders</span></a>
+          </li>
         <?php endif; ?>
 
         <?php if ($row['transaction_module'] == 1): ?>
-          <!-- <li class="nav-item">
+          <li class="nav-item">
             <a class="nav-link" href="/blutmedical/views/admin/transaction_module.php">
               <i class="fas fa-fw fa-money-bill"></i>
               <span>Transactions</span></a>
-          </li> -->
+          </li>
         <?php endif; ?>
 
         <!-- <li class="nav-item">
@@ -154,7 +154,7 @@ if ($result) {
                 <a class="collapse-item" href="/blutmedical/views/admin/category_module.php">Category</a>
                 <a class="collapse-item" href="/blutmedical/views/admin/product_module.php">Products</a>
                 <a class="collapse-item" href="/blutmedical/views/admin/variation_module.php">Variation</a>
-                <a class="collapse-item" href="/blutmedical/views/admin/upload_image_module.php">Image Upload</a>
+                <a class="collapse-item" href="/blutmedical/views/admin/upload_image_module.php">Upload Image</a>
 
 
               </div>
@@ -180,9 +180,9 @@ if ($result) {
             <div id="collapse4" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
               <div class="bg-white py-2 collapse-inner rounded">
                 <!-- <h6 class="collapse-header">Setup:</h6> -->
-                <a class="collapse-item" href="/blutmedical/views/admin/user_type_module.php">Add User Type</a>
-                <a class="collapse-item" href="/blutmedical/views/admin/user_module.php">Add User</a>
-                <a class="collapse-item" href="/blutmedical/views/admin/customer_module.php">Customers</a>
+                <a class="collapse-item" href="/blutmedical/views/admin/user_type_module.php">User Type List</a>
+                <a class="collapse-item" href="/blutmedical/views/admin/user_module.php">Users List</a>
+                <!-- <a class="collapse-item" href="/blutmedical/views/admin/customer_module.php">Customers</a> -->
               </div>
             </div>
           </li>
@@ -213,7 +213,7 @@ if ($result) {
 
     </html>
 
-<?php
+    <?php
   }
 }
 ?>

@@ -26,7 +26,9 @@ if (session_status() == PHP_SESSION_NONE) {
 
 
   <link href="./../../assets/admin/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+    rel="stylesheet">
   <link href="./../../assets/admin/css/sb-admin-2.min.css" rel="stylesheet">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
@@ -71,13 +73,13 @@ if (session_status() == PHP_SESSION_NONE) {
                     <thead>
                       <tr>
                         <th>ID</th>
-                        <th>Ref No.</th>
+                        <th>Ref No Paypal.</th>
                         <th>Customer Name</th>
                         <th>Status</th>
-                        <th>Total Payment</th>
                         <th>Payment Method</th>
-                        <th>Proof of Payment</th>
-                        <th>Date Created</th>
+                        <th>Customer Details</th>
+                        <th>Total Payment</th>
+                        <th>Transaction Date</th>
                       </tr>
                     </thead>
                   </table>
@@ -118,13 +120,13 @@ if (session_status() == PHP_SESSION_NONE) {
 </html>
 
 <script>
-  $('#sidebarToggle').click(function() {
+  $('#sidebarToggle').click(function () {
     $('#transaction_table').css('width', '100%');
     // console.log(table) //This is for testing only
   });
 
   //Table for Transactions
-  $(document).ready(function() {
+  $(document).ready(function () {
     var transaction_table = $('#transaction_table').DataTable({
       "pagingType": "numbers",
       "processing": true,
@@ -132,30 +134,31 @@ if (session_status() == PHP_SESSION_NONE) {
       "ajax": "./../../controllers/tables/transaction_table.php",
     });
 
-    window.reloadDataTable = function() {
+    window.reloadDataTable = function () {
       transaction_table.ajax.reload();
     };
 
   });
 
-  $(document).ready(function() {
+  $(document).ready(function () {
     // Function to handle click event on datatable rows
-    $('#transaction_table').on('click', 'tr td:nth-child(7) .ProofData', function() {
+    $('#transaction_table').on('click', 'tr td:nth-child(6) .fetchCustomerDetails', function () {
+      event.preventDefault();
       var cart_id = $(this).closest('tr').find('td').first().text(); // Get the cart_id from the clicked row
 
       $.ajax({
-        url: './../../modals/order/proof_modal.php', // Path to PHP script to fetch modal content
+        url: './../../modals/order/customer_details_modal.php', // Path to PHP script to fetch modal content
         method: 'POST',
         data: {
           cart_id: cart_id
         },
-        success: function(response) {
+        success: function (response) {
           $('#modalContainerProvider').html(response);
           $('#showPhoto').modal('show');
           $('#cart_id').val(cart_id); // Set the cart_id here
           console.log("#showPhoto: " + cart_id);
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.error(xhr.responseText);
         }
       });

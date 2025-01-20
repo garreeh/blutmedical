@@ -18,6 +18,7 @@ if (isset($_POST['product_id']) && isset($_POST['variation_id'])) {
         WHERE user_id = '$user_id' 
           AND product_id = '$product_id' 
           AND variation_id = '$variation_id'
+          AND cart_status = 'Cart'
     ";
 
     if ($conn->query($delete_query)) {

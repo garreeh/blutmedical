@@ -48,19 +48,23 @@ if (session_status() == PHP_SESSION_NONE) {
           </a>
           <?php if (isset($_SESSION['user_id'])): ?>
             <ul class="dropdown-menu" aria-labelledby="userDropdown">
+              <li></li>
+              <li><a class="dropdown-item" href="/blutmedical/client_orders_module.php">My Orders</a></li>
+
+              <li><a class="dropdown-item" href="/blutmedical/completed_orders_module.php">Completed Orders</a></li>
               <li><a class="dropdown-item" href="/blutmedical/controllers/logout_process.php">Sign-out</a></li>
             </ul>
           <?php else: ?>
             <ul class="dropdown-menu" aria-labelledby="userDropdown">
-              <li><a class="dropdown-item" href="views/login.php">Log In</a></li>
-              <li><a class="dropdown-item" href="views/register.php">Register</a></li>
+              <li><a class="dropdown-item" href="/blutmedical/views/login.php">Log In</a></li>
+              <li><a class="dropdown-item" href="/blutmedical/views/register.php">Register</a></li>
             </ul>
           <?php endif; ?>
         </li>
 
         <!-- Cart Icon -->
         <li>
-          <a class="nav-link position-relative" href="cart.php">
+          <a class="nav-link position-relative" href="/blutmedical/cart.php">
             <i class="fa-solid fa-cart-shopping"></i>
             <span id="cart-badge"
               class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
