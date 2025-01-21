@@ -56,6 +56,7 @@ if (session_status() == PHP_SESSION_NONE) {
             </ul>
           <?php else: ?>
             <ul class="dropdown-menu" aria-labelledby="userDropdown">
+              <li></li>
               <li><a class="dropdown-item" href="/blutmedical/views/login.php">Log In</a></li>
               <li><a class="dropdown-item" href="/blutmedical/views/register.php">Register</a></li>
             </ul>

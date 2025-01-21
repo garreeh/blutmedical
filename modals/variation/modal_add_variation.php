@@ -32,6 +32,13 @@ if ($product_id) {
         <form method="post" enctype="multipart/form-data">
           <div class="form-row">
             <div class="form-group col-md-12">
+              <label for="value">Variation Name:</label>
+              <input type="text" class="form-control" id="value" name="value" placeholder="Enter variation value"
+                required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-12">
               <input type="hidden" class="form-control" id="product_id" name="product_id" placeholder="Enter Product ID"
                 value="<?php echo $product_id ?>" required>
             </div>
@@ -42,13 +49,7 @@ if ($product_id) {
             </div>
           </div>
 
-          <div class="form-row">
-            <div class="form-group col-md-12">
-              <label for="value">Value:</label>
-              <input type="text" class="form-control" id="value" name="value" placeholder="Enter variation value"
-                required>
-            </div>
-          </div>
+
 
           <!-- Add a hidden input field to submit the form with the button click -->
           <input type="hidden" name="add_variation" value="1">
@@ -69,8 +70,8 @@ if ($product_id) {
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
 <script>
-  $(document).ready(function () {
-    $('#addVariationModel form').submit(function (event) {
+  $(document).ready(function() {
+    $('#addVariationModel form').submit(function(event) {
       event.preventDefault(); // Prevent default form submission
 
       // Store a reference to $(this)
@@ -91,7 +92,7 @@ if ($product_id) {
         data: formData,
         contentType: false,
         processData: false,
-        success: function (response) {
+        success: function(response) {
           // Handle success response
           console.log(response); // Log the response for debugging
           response = JSON.parse(response);
@@ -105,7 +106,6 @@ if ($product_id) {
             // Optionally, reset the form
             $form.trigger('reset');
 
-            $('#product_id')[0].selectize.clear();
             // Optionally, close the modal
             $('#addVariationModel').modal('hide');
             window.reloadDataTable();
@@ -117,7 +117,7 @@ if ($product_id) {
             }).showToast();
           }
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
           // Handle error response
           console.error(xhr.responseText);
           Toastify({
@@ -126,18 +126,12 @@ if ($product_id) {
             backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
           }).showToast();
         },
-        complete: function () {
+        complete: function() {
           // Reset button text and re-enable it
           $addButton.text('Add');
           $addButton.prop('disabled', false);
         }
       });
-    });
-
-    $('#addVariationModel').on('hidden.bs.modal', function () {
-
-      $('#product_id')[0].selectize.clear();
-
     });
   });
 </script>
