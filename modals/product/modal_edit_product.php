@@ -213,7 +213,7 @@ if (isset($_POST['product_id'])) {
                         <?php foreach ($images as $image) : ?>
                           <div class="form-row">
                             <!-- This should likely reflect a proper value if `product_image_id` is defined -->
-                            <input type="text" name="product_image_id[]" value="<?php echo $image['product_image_id']; ?>">
+                            <input type="hidden" name="product_image_id[]" value="<?php echo $image['product_image_id']; ?>">
 
 
                             <div class="form-group col-md-11">
@@ -233,9 +233,6 @@ if (isset($_POST['product_id'])) {
                           </div>
                         <?php endforeach; ?>
                       <?php endif; ?>
-
-
-
 
                       <button type="button" class="btn btn-secondary" id="add-image-button_update">+ Add Image</button>
                     </div>
@@ -304,6 +301,15 @@ if (isset($_POST['product_id'])) {
     // newVariation.querySelector('.remove-variation').addEventListener('click', function() {
     //   newVariation.remove();
     // });
+    const priceInputs = document.querySelectorAll('.variation-price');
+    priceInputs.forEach(function(priceInput) {
+      priceInput.addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters except dot
+        if ((this.value.match(/\./g) || []).length > 1) {
+          this.value = this.value.slice(0, -1); // Remove the last character if there's more than one dot
+        }
+      });
+    });
   });
 
   // Remove Variation Functionality
@@ -348,12 +354,22 @@ if (isset($_POST['product_id'])) {
 
   // Varation Remove AJAX
   document.getElementById('product_sellingprice_update').addEventListener('input', function(e) {
-    // Allow only numbers and dots, and ensure only one dot
     this.value = this.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters except dot
     if ((this.value.match(/\./g) || []).length > 1) {
       this.value = this.value.slice(0, -1); // Remove the last character if there's more than one dot
     }
   });
+
+  document.querySelectorAll('.variation-price').forEach(function(priceInput) {
+    priceInput.addEventListener('input', function(e) {
+      this.value = this.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters except dot
+      if ((this.value.match(/\./g) || []).length > 1) {
+        this.value = this.value.slice(0, -1); // Remove the last character if there's more than one dot
+      }
+    });
+  });
+
+
 
   // Other Image Remove AJAX
   $(document).off('click', '.remove-image').on('click', '.remove-image', function() {
@@ -423,7 +439,7 @@ if (isset($_POST['product_id'])) {
   });
 
 
-
+  // Variation Remove AJAX
   $(document).off('click', '.remove-variation').on('click', '.remove-variation', function() {
     var variation_id = $(this).data('id');
 
@@ -484,7 +500,7 @@ if (isset($_POST['product_id'])) {
     }
   });
 
-
+  // Submit Button AJAX
   $(document).ready(function() {
     // Form submission handling
     $('#editProductModal form').submit(function(event) {
