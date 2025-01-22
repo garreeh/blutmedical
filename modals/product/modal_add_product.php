@@ -104,6 +104,27 @@ if ($result) {
               </select>
             </div>
           </div>
+          <hr>
+
+          <div class="form-row">
+            <div class="form-group col-md-12">
+              <label>Variations :</label>
+              <div id="variations-container">
+                <!-- Placeholder for variations -->
+              </div>
+              <button type="button" class="btn btn-secondary mt-2" id="add-variation-button">+ Add Variation</button>
+            </div>
+          </div>
+          <hr>
+          <div class="form-row">
+            <div class="form-group col-md-12">
+              <label>Other Product Images:</label>
+              <div id="images-container">
+                <!-- Placeholder for additional images -->
+              </div>
+              <button type="button" class="btn btn-secondary mt-2" id="add-image-button">+ Add Image</button>
+            </div>
+          </div>
 
           <!-- Add a hidden input field to submit the form with the button click -->
           <input type="hidden" name="add_product" value="1">
@@ -124,6 +145,67 @@ if ($result) {
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
 <script>
+  document.getElementById('add-variation-button').addEventListener('click', function() {
+    const container = document.getElementById('variations-container');
+
+    const row = document.createElement('div');
+    row.className = 'form-row mt-2';
+
+    // Variation name field
+    const variationNameCol = document.createElement('div');
+    variationNameCol.className = 'form-group col-md-6';
+    variationNameCol.innerHTML = `
+    <input type="text" class="form-control" name="value[]" placeholder="Enter Variation Name" required>
+  `;
+
+    // Variation price field
+    const variationPriceCol = document.createElement('div');
+    variationPriceCol.className = 'form-group col-md-6';
+    variationPriceCol.innerHTML = `
+    <input type="text" class="form-control variation-price" name="price[]" placeholder="Enter Variation Price" required>
+  `;
+
+    row.appendChild(variationNameCol);
+    row.appendChild(variationPriceCol);
+
+    container.appendChild(row);
+
+    // Add the event listener for the newly created price input
+    const priceInput = row.querySelector('.variation-price');
+    priceInput.addEventListener('input', restrictPriceInput);
+  });
+
+  // Function to restrict input to numbers and a single dot
+  function restrictPriceInput(e) {
+    this.value = this.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters except dot
+    if ((this.value.match(/\./g) || []).length > 1) {
+      this.value = this.value.slice(0, -1); // Remove the last character if there's more than one dot
+    }
+  }
+
+  // Attach to existing inputs (if any)
+  document.querySelectorAll('.variation-price').forEach(function(input) {
+    input.addEventListener('input', restrictPriceInput);
+  });
+
+
+  document.getElementById('add-image-button').addEventListener('click', function() {
+    const container = document.getElementById('images-container');
+
+    const row = document.createElement('div');
+    row.className = 'form-row mt-2';
+
+    const imageCol = document.createElement('div');
+    imageCol.className = 'form-group col-md-12';
+    imageCol.innerHTML = `
+      <input type="file" class="form-control" name="productImagePath[]" required>
+    `;
+
+    row.appendChild(imageCol);
+
+    container.appendChild(row);
+  });
+
   document.getElementById('product_sellingprice').addEventListener('input', function(e) {
     // Allow only numbers and dots, and ensure only one dot
     this.value = this.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters except dot
@@ -131,6 +213,7 @@ if ($result) {
       this.value = this.value.slice(0, -1); // Remove the last character if there's more than one dot
     }
   });
+
 
   $(document).ready(function() {
     $('#addProductModal form').submit(function(event) {

@@ -86,7 +86,6 @@ if (isset($_POST['edit_product'])) {
     $category_id = $conn->real_escape_string($_POST['category_id']);
     $supplier_id = $conn->real_escape_string($_POST['supplier_id']);
 
-
     // Update SQL query with full path
     $sql = "UPDATE product SET 
             product_name='$product_name', 
@@ -99,6 +98,77 @@ if (isset($_POST['edit_product'])) {
             WHERE product_id='$product_id'";
 
     if (mysqli_query($conn, $sql)) {
+        // Updating Variations
+        if (isset($_POST['value']) && isset($_POST['price'])) {
+            $variation_names = $_POST['value'];
+            $variation_prices = $_POST['price'];
+            $variation_ids = isset($_POST['variation_id']) ? $_POST['variation_id'] : [];
+
+            foreach ($variation_names as $index => $variation_name) {
+                $variation_id = isset($variation_ids[$index]) ? $variation_ids[$index] : null;
+                $variation_name = $conn->real_escape_string($variation_name);
+                $variation_price = $conn->real_escape_string($variation_prices[$index]);
+
+                if ($variation_id) {
+                    // Update existing variation
+                    $sql_variation = "UPDATE `variations` SET `value`='$variation_name', price='$variation_price' WHERE variation_id='$variation_id'";
+                } else {
+                    // Insert new variation
+                    $sql_variation = "INSERT INTO `variations` (product_id, `value`, price) VALUES ('$product_id', '$variation_name', '$variation_price')";
+                }
+                mysqli_query($conn, $sql_variation);
+            }
+        }
+
+
+        // Updating Images
+        if (!empty($_FILES["productImagePath"]["name"])) {
+            foreach ($_FILES["productImagePath"]["name"] as $key => $image_name) {
+                $image_id = isset($_POST['product_image_id'][$key]) ? $_POST['product_image_id'][$key] : null;
+                $additional_filename = $_FILES["productImagePath"]["name"][$key];
+                $additional_target_file = $target_dir . basename($additional_filename);
+
+                $imageFileType = strtolower(pathinfo($additional_target_file, PATHINFO_EXTENSION));
+
+                // Skip invalid file types
+                if (
+                    $imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+                    && $imageFileType != "gif" && $imageFileType != "pdf"
+                ) {
+                    continue; // Skip invalid files
+                }
+
+                // Check if there's an existing file to delete
+                if ($image_id) {
+                    // Fetch current file path for this image ID
+                    $current_file_query = "SELECT product_image_path FROM `product_image` WHERE product_image_id = '$image_id'";
+                    $result = mysqli_query($conn, $current_file_query);
+                    $current_file = mysqli_fetch_assoc($result)['product_image_path'];
+
+                    if (!empty($current_file) && file_exists($current_file)) {
+                        unlink($current_file); // Remove the old file
+                    }
+
+                    // Update existing image in the database
+                    $sql_images = "UPDATE `product_image` SET product_image_path='$additional_target_file' WHERE product_image_id='$image_id'";
+                } else {
+                    // Insert new image into the database
+                    $sql_images = "INSERT INTO `product_image` (product_id, product_image_path) VALUES ('$product_id', '$additional_target_file')";
+                }
+
+                // Attempt to execute SQL and upload file
+                if (move_uploaded_file($_FILES["productImagePath"]["tmp_name"][$key], $additional_target_file)) {
+                    if (mysqli_query($conn, $sql_images)) {
+                        $response['success'] = true;
+                        $response['message'] = 'Product updated successfully!';
+                    } else {
+                        $response['message'] = 'Error updating product: ' . mysqli_error($conn);
+                    }
+                }
+            }
+        }
+
+
         $response['success'] = true;
         $response['message'] = 'Product updated successfully!';
     } else {

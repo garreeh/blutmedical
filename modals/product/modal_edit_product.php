@@ -51,9 +51,30 @@ if (isset($_POST['product_id'])) {
   $sql = "SELECT * FROM product WHERE product_id = '$product_id'";
   $result = mysqli_query($conn, $sql);
 
+  $sql = "SELECT * FROM variations WHERE product_id = '$product_id'";
+  $result_variations = mysqli_query($conn, $sql);
+
+  $variations = [];
+  if ($result_variations) {
+    while ($row = mysqli_fetch_assoc($result_variations)) {
+      $variations[] = $row;
+    }
+  }
+
+  $sql = "SELECT * FROM product_image WHERE product_id = '$product_id'";
+  $result_images = mysqli_query($conn, $sql);
+
+  $images = [];
+  if ($result_images) {
+    while ($row = mysqli_fetch_assoc($result_images)) {
+      $images[] = $row;
+    }
+  }
+
   if ($result) {
     while ($row = mysqli_fetch_assoc($result)) {
       $product_image = basename($row['product_image']);
+
       $image_url = '../../uploads/' . $product_image; // Construct the image URL
 ?>
       <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-labelledby="requestModalLabel"
@@ -145,9 +166,81 @@ if (isset($_POST['product_id'])) {
                       ?>
                     </select>
                   </div>
-
                 </div>
 
+                <hr>
+                <div class="form-row">
+                  <div class="form-group col-md-12">
+                    <label>Variations :</label>
+
+                    <div id="variations-container_update">
+                      <?php if (!empty($variations)) : ?>
+                        <?php foreach ($variations as $variation) : ?>
+                          <div class="form-row mt-2">
+                            <input type="hidden" name="variation_id[]" value="<?php echo $variation['variation_id']; ?>">
+
+                            <div class="form-group col-md-5">
+                              <label>Variation Name:</label>
+
+                              <input type="text" class="form-control" name="value[]" value="<?php echo $variation['value']; ?>" placeholder="Enter Variation Name" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                              <label>Variation Price:</label>
+                              <input type="text" class="form-control variation-price" name="price[]" value="<?php echo $variation['price']; ?>" placeholder="Enter Variation Price" required>
+                            </div>
+                            <div class="form-group col-md-1">
+                              <label></label>
+
+                              <button type="button" class="btn btn-danger remove-variation" data-id="<?php echo $variation['variation_id']; ?>">Remove</button>
+
+                            </div>
+                          </div>
+                        <?php endforeach; ?>
+                      <?php endif; ?>
+                      <button type="button" class="btn btn-secondary" id="add-variation-button_update">+ Add Variation</button>
+                    </div>
+                  </div>
+                </div>
+
+
+                <hr>
+                <div class="form-row">
+                  <div class="form-group col-md-12">
+                    <label>Other Product Images:</label>
+
+                    <div id="images-container_update">
+                      <?php if (!empty($images)) : ?>
+                        <?php foreach ($images as $image) : ?>
+                          <div class="form-row">
+                            <!-- This should likely reflect a proper value if `product_image_id` is defined -->
+                            <input type="text" name="product_image_id[]" value="<?php echo $image['product_image_id']; ?>">
+
+
+                            <div class="form-group col-md-11">
+                              <input type="file" class="form-control" name="productImagePath[]" />
+                              <div class="file-info">
+                                <?php if (!empty($image['product_image_path']) && file_exists($image['product_image_path'])): ?>
+                                  <p><strong>Current Image:</strong> <?php echo $image['product_image_path']; ?></p>
+                                <?php else: ?>
+                                  <p>No image available.</p>
+                                <?php endif; ?>
+                              </div>
+                            </div>
+                            <div class="form-group col-md-1">
+                              <button type="button" class="btn btn-danger remove-image" data-id="<?php echo $image['product_image_id']; ?>">Remove</button>
+
+                            </div>
+                          </div>
+                        <?php endforeach; ?>
+                      <?php endif; ?>
+
+
+
+
+                      <button type="button" class="btn btn-secondary" id="add-image-button_update">+ Add Image</button>
+                    </div>
+                  </div>
+                </div>
                 <!-- Add a hidden input field to submit the form with the button click -->
                 <input type="hidden" name="edit_product" value="1">
 
@@ -184,6 +277,76 @@ if (isset($_POST['product_id'])) {
 ?>
 
 <script>
+  // Add Variation Functionality
+  document.getElementById('add-variation-button_update').addEventListener('click', function() {
+    const container = document.getElementById('variations-container_update');
+
+    const newVariation = document.createElement('div');
+    newVariation.classList.add('form-row', 'mt-2');
+    newVariation.innerHTML = `
+    <div class="form-group col-md-5">
+      <label>Variation Name:</label>
+      <input type="text" class="form-control" name="value[]" placeholder="Enter Variation Name" required>
+    </div>
+    <div class="form-group col-md-6">
+      <label>Variation Price:</label>
+      <input type="text" class="form-control variation-price" name="price[]" placeholder="Enter Variation Price" required>
+    </div>
+    <div class="form-group col-md-1">
+      <label></label>
+      <button type="button" class="btn btn-danger remove-variation">Remove</button>
+    </div>
+  `;
+
+    container.appendChild(newVariation);
+
+    // Add event listener to newly added Remove button
+    // newVariation.querySelector('.remove-variation').addEventListener('click', function() {
+    //   newVariation.remove();
+    // });
+  });
+
+  // Remove Variation Functionality
+  document.querySelectorAll('.remove-variation').forEach(function(button) {
+    button.addEventListener('click', function() {
+      this.parentElement.parentElement.remove();
+    });
+  });
+
+  // Add Image Functionality
+  document.getElementById('add-image-button_update').addEventListener('click', function() {
+    const container = document.getElementById('images-container_update');
+
+    const newImage = document.createElement('div');
+    newImage.classList.add('form-row');
+    newImage.innerHTML = `
+    <div class="form-group col-md-11">
+      <input type="file" class="form-control" name="productImagePath[]" />
+      <div class="file-info">
+        <p>No image available.</p>
+      </div>
+    </div>
+    <div class="form-group col-md-1">
+      <button type="button" class="btn btn-danger remove-image">Remove</button>
+    </div>
+  `;
+
+    container.appendChild(newImage);
+
+    // Add event listener to newly added Remove button
+    newImage.querySelector('.remove-image').addEventListener('click', function() {
+      newImage.remove();
+    });
+  });
+
+  // Remove Image Functionality
+  document.querySelectorAll('.remove-image').forEach(function(button) {
+    button.addEventListener('click', function() {
+      this.parentElement.parentElement.remove();
+    });
+  });
+
+  // Varation Remove AJAX
   document.getElementById('product_sellingprice_update').addEventListener('input', function(e) {
     // Allow only numbers and dots, and ensure only one dot
     this.value = this.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters except dot
@@ -192,7 +355,138 @@ if (isset($_POST['product_id'])) {
     }
   });
 
+  // Other Image Remove AJAX
+  $(document).off('click', '.remove-image').on('click', '.remove-image', function() {
+    var product_image_id = $(this).data('id');
+    var $btn = $(this); // Reference to the button
+    if (product_image_id) {
+      $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> <span class="sr-only">Loading...</span>');
+      // Send the image_id to the backend via AJAX for deletion
+      $.ajax({
+        type: 'POST',
+        url: '/blutmedical/controllers/admin/remove_product_image_process.php',
+
+        data: {
+          remove_image_id: [product_image_id]
+        },
+        success: function(response) {
+          try {
+            response = JSON.parse(response);
+
+            if (response.success) {
+              Toastify({
+                text: 'Image removed successfully!',
+                duration: 2000,
+                backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)"
+              }).showToast();
+
+              // Remove the corresponding <div> from the UI
+              $(this).closest('.image-container').remove(); // Fix: `this` needs to reference the current `remove-image` element
+            } else {
+              Toastify({
+                text: response.message,
+                duration: 2000,
+                backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
+              }).showToast();
+            }
+          } catch (error) {
+            console.error('Error parsing response JSON:', error);
+            Toastify({
+              text: "An error occurred while processing the image removal.",
+              duration: 2000,
+              backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
+            }).showToast();
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error(xhr.responseText);
+          Toastify({
+            text: "Error occurred while removing image. Please try again later.",
+            duration: 2000,
+            backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
+          }).showToast();
+        },
+        complete: function() {
+          // Hide spinner and re-enable the button after the request is complete
+          $btn.prop('disabled', false).html('Remove');
+        }
+      });
+    } else {
+      // If no `image_id`, simply perform the deletion without AJAX
+      $(this).closest('.image-container').remove();
+      Toastify({
+        text: 'Image removed successfully!',
+        duration: 2000,
+        backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)"
+      }).showToast();
+    }
+  });
+
+
+
+  $(document).off('click', '.remove-variation').on('click', '.remove-variation', function() {
+    var variation_id = $(this).data('id');
+
+    if (variation_id) {
+      // Send the variation_id to the backend via AJAX for deletion
+      $.ajax({
+        type: 'POST',
+        url: '/blutmedical/controllers/admin/remove_varation_process.php',
+        data: {
+          remove_variation_id: [variation_id]
+        },
+        success: function(response) {
+          try {
+            response = JSON.parse(response);
+
+            if (response.success) {
+              Toastify({
+                text: 'Variation removed successfully!',
+                duration: 2000,
+                backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)"
+              }).showToast();
+
+              // Remove the corresponding <div> from the UI
+              $(this).closest('.form-row').remove(); // Fix: `this` needs to reference the current `remove-variation` element
+            } else {
+              Toastify({
+                text: response.message,
+                duration: 2000,
+                backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
+              }).showToast();
+            }
+          } catch (error) {
+            console.error('Error parsing response JSON:', error);
+            Toastify({
+              text: "An error occurred while processing the variation removal.",
+              duration: 2000,
+              backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
+            }).showToast();
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error(xhr.responseText);
+          Toastify({
+            text: "Error occurred while removing variation. Please try again later.",
+            duration: 2000,
+            backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
+          }).showToast();
+        }
+      });
+    } else {
+      // If no `variation_id`, simply perform the deletion without AJAX
+      $(this).closest('.form-row').remove();
+      Toastify({
+        text: 'Variation removed successfully!',
+        duration: 2000,
+        backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)"
+      }).showToast();
+    }
+  });
+
+
   $(document).ready(function() {
+    // Form submission handling
     $('#editProductModal form').submit(function(event) {
       event.preventDefault(); // Prevent default form submission
 
@@ -206,7 +500,7 @@ if (isset($_POST['product_id'])) {
       $saveButton.text('Saving...');
       $saveButton.prop('disabled', true);
 
-      // Send AJAX request
+      // Send AJAX request for product form submission
       $.ajax({
         type: 'POST',
         url: '/blutmedical/controllers/admin/edit_product_process.php',
@@ -214,21 +508,29 @@ if (isset($_POST['product_id'])) {
         processData: false, // Prevent jQuery from automatically transforming the data into a query string
         contentType: false, // Let the browser set the content type for the FormData
         success: function(response) {
-          console.log(response); // Log the response for debugging
-          response = JSON.parse(response);
-          if (response.success) {
-            Toastify({
-              text: response.message,
-              duration: 2000,
-              backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)"
-            }).showToast();
+          try {
+            response = JSON.parse(response); // Ensure response is fully parsed
 
-            $('#editProductModal').modal('hide');
-            window.reloadDataTable();
+            if (response.success) {
+              Toastify({
+                text: response.message,
+                duration: 2000,
+                backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)"
+              }).showToast();
 
-          } else {
+              $('#editProductModal').modal('hide');
+              window.reloadDataTable();
+            } else {
+              Toastify({
+                text: response.message,
+                duration: 2000,
+                backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
+              }).showToast();
+            }
+          } catch (error) {
+            console.error('Error parsing response JSON:', error);
             Toastify({
-              text: response.message,
+              text: "An error occurred while processing the product update.",
               duration: 2000,
               backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
             }).showToast();
@@ -248,8 +550,6 @@ if (isset($_POST['product_id'])) {
           $saveButton.prop('disabled', false);
         }
       });
-
-
     });
   });
 </script>

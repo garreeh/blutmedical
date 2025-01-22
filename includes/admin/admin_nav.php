@@ -33,7 +33,7 @@ $result = mysqli_query($conn, $sql);
 
 if ($result) {
   while ($row = mysqli_fetch_assoc($result)) {
-    ?>
+?>
     <!DOCTYPE html>
     <html lang="en">
 
@@ -153,8 +153,8 @@ if ($result) {
                 <a class="collapse-item" href="/blutmedical/views/admin/supplier_module.php">Suppliers</a>
                 <a class="collapse-item" href="/blutmedical/views/admin/category_module.php">Category</a>
                 <a class="collapse-item" href="/blutmedical/views/admin/product_module.php">Products</a>
-                <a class="collapse-item" href="/blutmedical/views/admin/variation_module.php">Variation</a>
-                <a class="collapse-item" href="/blutmedical/views/admin/upload_image_module.php">Upload Image</a>
+                <!-- <a class="collapse-item" href="/blutmedical/views/admin/variation_module.php">Variation</a> -->
+                <!-- <a class="collapse-item" href="/blutmedical/views/admin/upload_image_module.php">Upload Image</a> -->
 
 
               </div>
@@ -213,7 +213,7 @@ if ($result) {
 
     </html>
 
-    <?php
+<?php
   }
 }
 ?>

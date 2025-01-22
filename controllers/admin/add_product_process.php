@@ -8,41 +8,28 @@ if (isset($_POST['add_product'])) {
     $response = array('success' => false, 'message' => '');
 
     $target_dir = "../../uploads/";
-    $target_filename = basename($_FILES["fileToUpload"]["name"]);
-    $target_file = $target_dir . $target_filename;
-    $uploadOk = 1;
-    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+    $uploaded_main_file = "";
+    $additional_files_uploaded = [];
 
-    // Create target directory if it doesn't exist (this is not needed in your case)
-    if (!file_exists($target_dir)) {
-        mkdir($target_dir, 0777, true);
-    }
+    // Handle the main product image (single file)
+    if (!empty($_FILES["fileToUpload"]["name"])) {
+        $main_filename = $_FILES["fileToUpload"]["name"];
+        $main_target_file = $target_dir . $main_filename;
+        $main_imageFileType = strtolower(pathinfo($main_target_file, PATHINFO_EXTENSION));
 
-    // Other checks and upload logic
-    if (file_exists($target_file)) {
-        $response['message'] = "Sorry, file already exists.";
-        $uploadOk = 0;
-    }
+        // Validate file types
+        if (!in_array($main_imageFileType, ['jpg', 'jpeg', 'png', 'gif', 'pdf'])) {
+            $response['message'] = "Sorry, only JPG, JPEG, PNG, GIF, and PDF files are allowed for the main product image.";
+            echo json_encode($response);
+            exit();
+        }
 
-    // Allow certain file formats
-    if (
-        $imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
-        && $imageFileType != "gif" && $imageFileType != "JPG" && $imageFileType != "PDF" && $imageFileType != "pdf"
-    ) {
-        $response['message'] = "Sorry, only JPG, JPEG, PNG, GIF, and PDF files are allowed.";
-        $uploadOk = 0;
-    }
-
-    // Check if $uploadOk is set to 0 by an error
-    if ($uploadOk == 0) {
-        $response['message'] = "Sorry, your file was not uploaded.";
-        echo json_encode($response);
-        exit();
-    } else {
-        if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-            $response['message'] = "The file " . basename($_FILES["fileToUpload"]["name"]) . " has been uploaded.";
+        // Attempt file upload for the main product image
+        if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $main_target_file)) {
+            $uploaded_main_file = basename($main_filename); // Save the file name
+            $main_picture = $target_dir . $uploaded_main_file;
         } else {
-            $response['message'] = "Sorry, there was an error uploading your file.";
+            $response['message'] = "Sorry, there was an error uploading the main product image.";
             echo json_encode($response);
             exit();
         }
@@ -56,14 +43,53 @@ if (isset($_POST['add_product'])) {
     $supplier_id = $conn->real_escape_string($_POST['supplier_id']);
     $category_id = $conn->real_escape_string($_POST['category_id']);
 
-    // Construct SQL query
+    // Insert product into the `product` table
     $sql = "INSERT INTO `product` (product_name, product_sku, product_description, product_sellingprice, product_stocks, product_image, supplier_id, category_id)
-            VALUES ('$product_name', '$product_sku', '$product_description', '$product_sellingprice', '0', '$target_file', '$supplier_id', '$category_id')";
+            VALUES ('$product_name', '$product_sku', '$product_description', '$product_sellingprice', '0', '$main_picture', '$supplier_id', '$category_id')";
 
-    // Execute SQL query
     if (mysqli_query($conn, $sql)) {
+        $product_id = $conn->insert_id; // Get the last inserted product ID
         $response['success'] = true;
         $response['message'] = 'Product added successfully!';
+
+        // Handle product variations
+        if (isset($_POST['value']) && isset($_POST['price'])) {
+            $variation_names = $_POST['value'];
+            $variation_prices = $_POST['price'];
+
+            foreach ($variation_names as $index => $variation_name) {
+                $variation_name = $conn->real_escape_string($variation_name);
+                $variation_price = $conn->real_escape_string($variation_prices[$index]);
+
+                $sql_variation = "INSERT INTO `variations` (product_id, `value`, price)
+                          VALUES ('$product_id', '$variation_name', '$variation_price')";
+                mysqli_query($conn, $sql_variation);
+            }
+        }
+
+        // Handle additional product images (if any)
+        if (!empty($_FILES["productImagePath"]["name"])) {
+            foreach ($_FILES["productImagePath"]["name"] as $key => $image_name) {
+                // Ensure each file has its own name
+                $additional_filename = $_FILES["productImagePath"]["name"][$key];
+                $additional_target_file = $target_dir . basename($additional_filename);
+
+                $imageFileType = strtolower(pathinfo($additional_target_file, PATHINFO_EXTENSION));
+
+                // Validate file types
+                if (!in_array($imageFileType, ['jpg', 'jpeg', 'png', 'gif', 'pdf'])) {
+                    continue; // Skip invalid files
+                }
+
+                // Attempt upload
+                if (move_uploaded_file($_FILES["productImagePath"]["tmp_name"][$key], $additional_target_file)) {
+                    // Insert image into `product_images` table
+                    $sql_images = "INSERT INTO `product_image` (product_id, product_image_path) 
+                                   VALUES ('$product_id', '$additional_target_file')";
+                    mysqli_query($conn, $sql_images);
+                }
+            }
+        }
     } else {
         $response['message'] = 'Error adding product: ' . mysqli_error($conn);
     }

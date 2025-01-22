@@ -66,4 +66,3 @@ if (isset($_POST['add_product_image'])) {
   echo json_encode($response);
   exit();
 }
-?>
