@@ -76,7 +76,7 @@ if (isset($_POST['product_id'])) {
       $product_image = basename($row['product_image']);
 
       $image_url = '../../uploads/' . $product_image; // Construct the image URL
-?>
+      ?>
       <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-labelledby="requestModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-xl" role="document">
@@ -174,30 +174,34 @@ if (isset($_POST['product_id'])) {
                     <label>Variations :</label>
 
                     <div id="variations-container_update">
-                      <?php if (!empty($variations)) : ?>
-                        <?php foreach ($variations as $variation) : ?>
+                      <?php if (!empty($variations)): ?>
+                        <?php foreach ($variations as $variation): ?>
                           <div class="form-row mt-2">
                             <input type="hidden" name="variation_id[]" value="<?php echo $variation['variation_id']; ?>">
 
                             <div class="form-group col-md-5">
                               <label>Variation Name:</label>
 
-                              <input type="text" class="form-control" name="value[]" value="<?php echo $variation['value']; ?>" placeholder="Enter Variation Name" required>
+                              <input type="text" class="form-control" name="value[]" value="<?php echo $variation['value']; ?>"
+                                placeholder="Enter Variation Name" required>
                             </div>
                             <div class="form-group col-md-6">
                               <label>Variation Price:</label>
-                              <input type="text" class="form-control variation-price" name="price[]" value="<?php echo $variation['price']; ?>" placeholder="Enter Variation Price" required>
+                              <input type="text" class="form-control variation-price" name="price[]"
+                                value="<?php echo $variation['price']; ?>" placeholder="Enter Variation Price" required>
                             </div>
                             <div class="form-group col-md-1">
                               <label></label>
 
-                              <button type="button" class="btn btn-danger remove-variation" data-id="<?php echo $variation['variation_id']; ?>">Remove</button>
+                              <button type="button" class="btn btn-danger remove-variation"
+                                data-id="<?php echo $variation['variation_id']; ?>">Remove</button>
 
                             </div>
                           </div>
                         <?php endforeach; ?>
                       <?php endif; ?>
-                      <button type="button" class="btn btn-secondary" id="add-variation-button_update">+ Add Variation</button>
+                      <button type="button" class="btn btn-secondary" id="add-variation-button_update">+ Add
+                        Variation</button>
                     </div>
                   </div>
                 </div>
@@ -209,8 +213,8 @@ if (isset($_POST['product_id'])) {
                     <label>Other Product Images:</label>
 
                     <div id="images-container_update">
-                      <?php if (!empty($images)) : ?>
-                        <?php foreach ($images as $image) : ?>
+                      <?php if (!empty($images)): ?>
+                        <?php foreach ($images as $image): ?>
                           <div class="form-row">
                             <!-- This should likely reflect a proper value if `product_image_id` is defined -->
                             <input type="hidden" name="product_image_id[]" value="<?php echo $image['product_image_id']; ?>">
@@ -227,7 +231,8 @@ if (isset($_POST['product_id'])) {
                               </div>
                             </div>
                             <div class="form-group col-md-1">
-                              <button type="button" class="btn btn-danger remove-image" data-id="<?php echo $image['product_image_id']; ?>">Remove</button>
+                              <button type="button" class="btn btn-danger remove-image"
+                                data-id="<?php echo $image['product_image_id']; ?>">Remove</button>
 
                             </div>
                           </div>
@@ -259,7 +264,7 @@ if (isset($_POST['product_id'])) {
         integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
 
       <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
           $('select').selectize({
             sortField: 'text'
           });
@@ -267,7 +272,7 @@ if (isset($_POST['product_id'])) {
       </script>
       <!-- END OF SELECT -->
 
-<?php
+      <?php
     }
   }
 }
@@ -275,7 +280,7 @@ if (isset($_POST['product_id'])) {
 
 <script>
   // Add Variation Functionality
-  document.getElementById('add-variation-button_update').addEventListener('click', function() {
+  document.getElementById('add-variation-button_update').addEventListener('click', function () {
     const container = document.getElementById('variations-container_update');
 
     const newVariation = document.createElement('div');
@@ -302,8 +307,8 @@ if (isset($_POST['product_id'])) {
     //   newVariation.remove();
     // });
     const priceInputs = document.querySelectorAll('.variation-price');
-    priceInputs.forEach(function(priceInput) {
-      priceInput.addEventListener('input', function(e) {
+    priceInputs.forEach(function (priceInput) {
+      priceInput.addEventListener('input', function (e) {
         this.value = this.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters except dot
         if ((this.value.match(/\./g) || []).length > 1) {
           this.value = this.value.slice(0, -1); // Remove the last character if there's more than one dot
@@ -313,14 +318,14 @@ if (isset($_POST['product_id'])) {
   });
 
   // Remove Variation Functionality
-  document.querySelectorAll('.remove-variation').forEach(function(button) {
-    button.addEventListener('click', function() {
+  document.querySelectorAll('.remove-variation').forEach(function (button) {
+    button.addEventListener('click', function () {
       this.parentElement.parentElement.remove();
     });
   });
 
   // Add Image Functionality
-  document.getElementById('add-image-button_update').addEventListener('click', function() {
+  document.getElementById('add-image-button_update').addEventListener('click', function () {
     const container = document.getElementById('images-container_update');
 
     const newImage = document.createElement('div');
@@ -340,28 +345,28 @@ if (isset($_POST['product_id'])) {
     container.appendChild(newImage);
 
     // Add event listener to newly added Remove button
-    newImage.querySelector('.remove-image').addEventListener('click', function() {
+    newImage.querySelector('.remove-image').addEventListener('click', function () {
       newImage.remove();
     });
   });
 
   // Remove Image Functionality
-  document.querySelectorAll('.remove-image').forEach(function(button) {
-    button.addEventListener('click', function() {
+  document.querySelectorAll('.remove-image').forEach(function (button) {
+    button.addEventListener('click', function () {
       this.parentElement.parentElement.remove();
     });
   });
 
   // Varation Remove AJAX
-  document.getElementById('product_sellingprice_update').addEventListener('input', function(e) {
+  document.getElementById('product_sellingprice_update').addEventListener('input', function (e) {
     this.value = this.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters except dot
     if ((this.value.match(/\./g) || []).length > 1) {
       this.value = this.value.slice(0, -1); // Remove the last character if there's more than one dot
     }
   });
 
-  document.querySelectorAll('.variation-price').forEach(function(priceInput) {
-    priceInput.addEventListener('input', function(e) {
+  document.querySelectorAll('.variation-price').forEach(function (priceInput) {
+    priceInput.addEventListener('input', function (e) {
       this.value = this.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters except dot
       if ((this.value.match(/\./g) || []).length > 1) {
         this.value = this.value.slice(0, -1); // Remove the last character if there's more than one dot
@@ -372,7 +377,7 @@ if (isset($_POST['product_id'])) {
 
 
   // Other Image Remove AJAX
-  $(document).off('click', '.remove-image').on('click', '.remove-image', function() {
+  $(document).off('click', '.remove-image').on('click', '.remove-image', function () {
     var product_image_id = $(this).data('id');
     var $btn = $(this); // Reference to the button
     if (product_image_id) {
@@ -385,7 +390,7 @@ if (isset($_POST['product_id'])) {
         data: {
           remove_image_id: [product_image_id]
         },
-        success: function(response) {
+        success: function (response) {
           try {
             response = JSON.parse(response);
 
@@ -414,7 +419,7 @@ if (isset($_POST['product_id'])) {
             }).showToast();
           }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.error(xhr.responseText);
           Toastify({
             text: "Error occurred while removing image. Please try again later.",
@@ -422,7 +427,7 @@ if (isset($_POST['product_id'])) {
             backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
           }).showToast();
         },
-        complete: function() {
+        complete: function () {
           // Hide spinner and re-enable the button after the request is complete
           $btn.prop('disabled', false).html('Remove');
         }
@@ -440,7 +445,7 @@ if (isset($_POST['product_id'])) {
 
 
   // Variation Remove AJAX
-  $(document).off('click', '.remove-variation').on('click', '.remove-variation', function() {
+  $(document).off('click', '.remove-variation').on('click', '.remove-variation', function () {
     var variation_id = $(this).data('id');
 
     if (variation_id) {
@@ -451,7 +456,7 @@ if (isset($_POST['product_id'])) {
         data: {
           remove_variation_id: [variation_id]
         },
-        success: function(response) {
+        success: function (response) {
           try {
             response = JSON.parse(response);
 
@@ -480,7 +485,7 @@ if (isset($_POST['product_id'])) {
             }).showToast();
           }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.error(xhr.responseText);
           Toastify({
             text: "Error occurred while removing variation. Please try again later.",
@@ -501,9 +506,9 @@ if (isset($_POST['product_id'])) {
   });
 
   // Submit Button AJAX
-  $(document).ready(function() {
+  $(document).ready(function () {
     // Form submission handling
-    $('#editProductModal form').submit(function(event) {
+    $('#editProductModal form').submit(function (event) {
       event.preventDefault(); // Prevent default form submission
 
       var $form = $(this);
@@ -523,7 +528,7 @@ if (isset($_POST['product_id'])) {
         data: formData,
         processData: false, // Prevent jQuery from automatically transforming the data into a query string
         contentType: false, // Let the browser set the content type for the FormData
-        success: function(response) {
+        success: function (response) {
           try {
             response = JSON.parse(response); // Ensure response is fully parsed
 
@@ -552,7 +557,7 @@ if (isset($_POST['product_id'])) {
             }).showToast();
           }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.error(xhr.responseText);
           Toastify({
             text: "Error occurred while editing product. Please try again later.",
@@ -560,7 +565,7 @@ if (isset($_POST['product_id'])) {
             backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
           }).showToast();
         },
-        complete: function() {
+        complete: function () {
           // Reset button text and re-enable it
           $saveButton.text('Save');
           $saveButton.prop('disabled', false);

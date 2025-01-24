@@ -62,7 +62,7 @@ $columns = array(
         'dt' => 5,
         'field' => 'product_sellingprice',
         'formatter' => function ($lab2, $row) {
-            return '₱' . number_format($row['product_sellingprice'], 2);
+            return '₱ ' . number_format($row['product_sellingprice'], 2);
         }
     ),
 

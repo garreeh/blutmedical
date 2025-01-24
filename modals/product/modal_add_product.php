@@ -145,7 +145,9 @@ if ($result) {
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
 <script>
-  document.getElementById('add-variation-button').addEventListener('click', function() {
+  // Add Variation functionality with remove button
+  const addVariationButton = document.getElementById('add-variation-button');
+  addVariationButton.addEventListener('click', function () {
     const container = document.getElementById('variations-container');
 
     const row = document.createElement('div');
@@ -153,7 +155,7 @@ if ($result) {
 
     // Variation name field
     const variationNameCol = document.createElement('div');
-    variationNameCol.className = 'form-group col-md-6';
+    variationNameCol.className = 'form-group col-md-5';
     variationNameCol.innerHTML = `
     <input type="text" class="form-control" name="value[]" placeholder="Enter Variation Name" required>
   `;
@@ -165,14 +167,28 @@ if ($result) {
     <input type="text" class="form-control variation-price" name="price[]" placeholder="Enter Variation Price" required>
   `;
 
+    // Remove button
+    const removeCol = document.createElement('div');
+    removeCol.className = 'form-group col-md-1';
+    removeCol.innerHTML = `
+    <button type="button" class="btn btn-danger btn-block remove-add-variation">Remove</button>
+  `;
+
     row.appendChild(variationNameCol);
     row.appendChild(variationPriceCol);
+    row.appendChild(removeCol);
 
     container.appendChild(row);
 
     // Add the event listener for the newly created price input
     const priceInput = row.querySelector('.variation-price');
     priceInput.addEventListener('input', restrictPriceInput);
+
+    // Add event listener for remove button
+    const removeButton = row.querySelector('.remove-add-variation');
+    removeButton.addEventListener('click', function () {
+      container.removeChild(row);
+    });
   });
 
   // Function to restrict input to numbers and a single dot
@@ -184,29 +200,45 @@ if ($result) {
   }
 
   // Attach to existing inputs (if any)
-  document.querySelectorAll('.variation-price').forEach(function(input) {
+  document.querySelectorAll('.variation-price').forEach(function (input) {
     input.addEventListener('input', restrictPriceInput);
   });
 
-
-  document.getElementById('add-image-button').addEventListener('click', function() {
+  // Add Image functionality with remove button
+  const addImageButton = document.getElementById('add-image-button');
+  addImageButton.addEventListener('click', function () {
     const container = document.getElementById('images-container');
 
     const row = document.createElement('div');
     row.className = 'form-row mt-2';
 
     const imageCol = document.createElement('div');
-    imageCol.className = 'form-group col-md-12';
+    imageCol.className = 'form-group col-md-11';
     imageCol.innerHTML = `
-      <input type="file" class="form-control" name="productImagePath[]" required>
-    `;
+    <input type="file" class="form-control" name="productImagePath[]" required>
+  `;
+
+    // Remove button
+    const removeCol = document.createElement('div');
+    removeCol.className = 'form-group col-md-1';
+    removeCol.innerHTML = `
+    <button type="button" class="btn btn-danger btn-block remove-add-image">Remove</button>
+  `;
 
     row.appendChild(imageCol);
+    row.appendChild(removeCol);
 
     container.appendChild(row);
+
+    // Add event listener for remove button
+    const removeButton = row.querySelector('.remove-add-image');
+    removeButton.addEventListener('click', function () {
+      container.removeChild(row);
+    });
   });
 
-  document.getElementById('product_sellingprice').addEventListener('input', function(e) {
+
+  document.getElementById('product_sellingprice').addEventListener('input', function (e) {
     // Allow only numbers and dots, and ensure only one dot
     this.value = this.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters except dot
     if ((this.value.match(/\./g) || []).length > 1) {
@@ -215,8 +247,8 @@ if ($result) {
   });
 
 
-  $(document).ready(function() {
-    $('#addProductModal form').submit(function(event) {
+  $(document).ready(function () {
+    $('#addProductModal form').submit(function (event) {
       event.preventDefault(); // Prevent default form submission
 
       // Store a reference to $(this)
@@ -237,7 +269,7 @@ if ($result) {
         data: formData,
         contentType: false,
         processData: false,
-        success: function(response) {
+        success: function (response) {
           // Handle success response
           console.log(response); // Log the response for debugging
           response = JSON.parse(response);
@@ -265,7 +297,7 @@ if ($result) {
             }).showToast();
           }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           // Handle error response
           console.error(xhr.responseText);
           Toastify({
@@ -274,7 +306,7 @@ if ($result) {
             backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
           }).showToast();
         },
-        complete: function() {
+        complete: function () {
           // Reset button text and re-enable it
           $addButton.text('Add');
           $addButton.prop('disabled', false);
@@ -282,7 +314,7 @@ if ($result) {
       });
     });
 
-    $('#addProductModal').on('hidden.bs.modal', function() {
+    $('#addProductModal').on('hidden.bs.modal', function () {
 
       // Reset the dropdowns to their default states
       $('#category_id')[0].selectize.clear();
