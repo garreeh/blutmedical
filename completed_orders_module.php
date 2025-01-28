@@ -133,7 +133,7 @@
         url: '/blutmedical/controllers/users/fetch_complete_process.php',
         method: 'GET',
         dataType: 'json',
-        success: function (response) {
+        success: function(response) {
           console.log('Cart Data:', response);
 
           var cartContent = '';
@@ -141,7 +141,7 @@
 
           if (response.success) {
             if (response.items.length > 0) {
-              $.each(response.items, function (index, item) {
+              $.each(response.items, function(index, item) {
                 var productPrice = parseFloat(item.product_sellingprice) || 0;
                 var cartQuantity = parseInt(item.cart_quantity, 10) || 0;
                 var variationId = item.variation_id;
@@ -153,9 +153,17 @@
 
                 // Convert to a Date object
                 const updatedAt = new Date(item.updated_at);
-                const dateOptions = { month: 'long', day: 'numeric', year: 'numeric' };
+                const dateOptions = {
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric'
+                };
                 const formattedDate = updatedAt.toLocaleDateString('en-US', dateOptions);
-                const timeOptions = { hour: 'numeric', minute: 'numeric', hour12: true };
+                const timeOptions = {
+                  hour: 'numeric',
+                  minute: 'numeric',
+                  hour12: true
+                };
                 const formattedTime = updatedAt.toLocaleTimeString('en-US', timeOptions);
                 const formattedDateTime = `${formattedDate} | ${formattedTime}`;
 
@@ -194,7 +202,7 @@
 
           }
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
           console.error('AJAX Error:', error);
         }
       });
@@ -216,7 +224,7 @@
           variation_id: variationId
         },
         dataType: 'json',
-        success: function (response) {
+        success: function(response) {
           if (response.success) {
             Toastify({
               text: "Order has been cancelled.",
@@ -235,7 +243,7 @@
             }).showToast();
           }
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
           console.error('AJAX Error:', error);
         }
       });
@@ -246,7 +254,7 @@
 
   if (isLoggedIn) {
     // Event listener for the remove button
-    $(document).on('click', '.remove-item', function (event) {
+    $(document).on('click', '.remove-item', function(event) {
       event.preventDefault(); // Prevent default link behavior
       var productId = $(this).data('product-id');
       var variationId = $(this).data('variation-id'); // Include variation ID
@@ -258,9 +266,7 @@
   }
 
   // Call the updateCart function to render the cart on page load
-  $(document).ready(function () {
+  $(document).ready(function() {
     updateCart();
   });
-
-
 </script>

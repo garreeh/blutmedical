@@ -186,11 +186,12 @@ if (isset($_GET['product_id'])) {
       </div>
 
       <!-- Start Product Section -->
-      <div class="footer-section">
+      <!-- <div class="footer-section">
         <div class="container">
           <h2>Product Description</h2>
+          <p></?php echo $product['product_description']; ?></p>
         </div>
-      </div>
+      </div> -->
       <!-- End Product Section -->
 
       <!-- Start Product Section -->

@@ -132,7 +132,7 @@
         url: '/blutmedical/controllers/users/fetch_order_process.php',
         method: 'GET',
         dataType: 'json',
-        success: function (response) {
+        success: function(response) {
           console.log('Cart Data:', response);
 
           var cartContent = '';
@@ -140,7 +140,7 @@
 
           if (response.success) {
             if (response.items.length > 0) {
-              $.each(response.items, function (index, item) {
+              $.each(response.items, function(index, item) {
                 var productPrice = parseFloat(item.product_sellingprice) || 0;
                 var cartQuantity = parseInt(item.cart_quantity, 10) || 0;
                 var variationId = item.variation_id;
@@ -165,7 +165,13 @@
                 cartContent += '<td style="background-color: #fff9c4;"> <strong>' + item.cart_status + '<strong></td>'; // Display total price with variation if available
 
                 cartContent += '<td>₱ ' + (variationPrice * cartQuantity).toFixed(2) + '</td>'; // Display total price with variation if available
-                cartContent += '<td><a href="#" class="btn btn-black btn-sm remove-item" data-product-id="' + productId + '" data-variation-id="' + variationId + '">X</a></td>';
+
+                // Conditionally render delete or "Already Shipped"
+                if (item.cart_status === 'Shipped') {
+                  cartContent += '<td><span class="text-muted">Already Shipped</span></td>';
+                } else {
+                  cartContent += '<td><a href="#" class="btn btn-black btn-sm remove-item" data-product-id="' + productId + '" data-variation-id="' + variationId + '">X</a></td>';
+                }
 
                 cartContent += '</tr>';
 
@@ -182,15 +188,15 @@
                 $('#checkout-button').hide();
               }
             }
-
           }
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
           console.error('AJAX Error:', error);
         }
       });
     }
   }
+
 
   // Delete cart item (handles both database and localStorage-based carts)
   function deleteCartItem(productId, variationId) {
@@ -207,7 +213,7 @@
           variation_id: variationId
         },
         dataType: 'json',
-        success: function (response) {
+        success: function(response) {
           if (response.success) {
             Toastify({
               text: "Order has been cancelled.",
@@ -226,7 +232,7 @@
             }).showToast();
           }
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
           console.error('AJAX Error:', error);
         }
       });
@@ -237,7 +243,7 @@
 
   if (isLoggedIn) {
     // Event listener for the remove button
-    $(document).on('click', '.remove-item', function (event) {
+    $(document).on('click', '.remove-item', function(event) {
       event.preventDefault(); // Prevent default link behavior
       var productId = $(this).data('product-id');
       var variationId = $(this).data('variation-id'); // Include variation ID
@@ -249,9 +255,7 @@
   }
 
   // Call the updateCart function to render the cart on page load
-  $(document).ready(function () {
+  $(document).ready(function() {
     updateCart();
   });
-
-
 </script>

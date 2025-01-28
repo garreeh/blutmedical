@@ -6,16 +6,16 @@ if (session_status() == PHP_SESSION_NONE) {
 	session_start();
 }
 
-if (isset($_SESSION['user_id'])) {
-	if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == "1") {
-		// If the user is an admin, redirect to the admin dashboard
-		header("Location: /blutmedical/views/admin/dashboard.php");
-	} else {
-		// If the user is not an admin, redirect to the user dashboard
-		header("Location: /blutmedical/index.php");
-	}
-	exit();
-}
+// if (isset($_SESSION['user_id'])) {
+// 	if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == "1") {
+// 		// If the user is an admin, redirect to the admin dashboard
+// 		header("Location: /blutmedical/views/admin/dashboard.php");
+// 	} else {
+// 		// If the user is not an admin, redirect to the user dashboard
+// 		header("Location: /blutmedical/index.php");
+// 	}
+// 	exit();
+// }
 
 ?>
 
@@ -132,8 +132,8 @@ if (isset($_SESSION['user_id'])) {
 
 </html>
 <script>
-	document.addEventListener('DOMContentLoaded', function () {
-		document.getElementById('togglePassword').addEventListener('click', function () {
+	document.addEventListener('DOMContentLoaded', function() {
+		document.getElementById('togglePassword').addEventListener('click', function() {
 			var passwordInput = document.getElementById('user_password');
 			var type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
 			passwordInput.setAttribute('type', type);
@@ -142,7 +142,7 @@ if (isset($_SESSION['user_id'])) {
 		});
 	});
 
-	document.getElementById('loginForm').addEventListener('keydown', function (e) {
+	document.getElementById('loginForm').addEventListener('keydown', function(e) {
 		if (e.key === 'Enter') {
 			submitForm();
 		}
@@ -189,7 +189,7 @@ if (isset($_SESSION['user_id'])) {
 			url: '../controllers/login_process.php',
 			data: data,
 			dataType: 'json',
-			success: function (response) {
+			success: function(response) {
 				console.log(response);
 				if (response.success) {
 					// Check if the user is an admin
@@ -202,7 +202,7 @@ if (isset($_SESSION['user_id'])) {
 					showToast(response.message);
 				}
 			},
-			error: function (xhr, status, error) {
+			error: function(xhr, status, error) {
 				showToast('Error occurred while processing the request.');
 			}
 		});
