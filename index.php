@@ -63,12 +63,12 @@
           <li class="breadcrumb-item"><a href="index.php">Home</a></li>
         </ol>
 
-        <div class="search-bar">
+        <!-- <div class="search-bar">
           <input type="text" id="searchInput" class="form-control d-none d-md-block" placeholder="Search products..."
             autocomplete="off" style="width: 35rem;">
           <div id="searchResults" class="dropdown-menu" style="width: 35rem;"></div>
 
-        </div>
+        </div> -->
 
         <div class="dropdown-category">
           <select id="categoryDropdown" class="form-control" aria-label="Select Category" style="width: 13rem;">

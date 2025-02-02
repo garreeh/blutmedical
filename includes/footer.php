@@ -8,8 +8,9 @@
 
     <div class="row g-5 mb-5">
       <div class="col-lg-6">
-        <p class="mb-4">Donec facilisis quam ut purus rutrum lobortis. Donec vitae odio quis nisl dapibus malesuada.
-          Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. Pellentesque habitant</p>
+        <p class="mb-4">107 Kalayaan Ave
+          Central, Quezon City,
+          Philippines</p>
 
         <ul class="list-unstyled custom-social">
           <!-- <li><a href="#"><span class="fa fa-brands fa-facebook-f"></span></a></li> -->
@@ -19,7 +20,7 @@
         </ul>
       </div>
 
-      <div class="col-lg-6">
+      <!-- <div class="col-lg-6">
         <div class="row links-wrap">
           <div class="col-6 col-sm-6 col-md-3">
             <ul class="list-unstyled">
@@ -29,15 +30,17 @@
           </div>
 
         </div>
-      </div>
+      </div> -->
 
     </div>
 
     <div class="border-top copyright">
       <div class="row pt-4">
         <div class="col-lg-6">
-          <p class="mb-2 text-center text-lg-start">Copyright &copy;
-            <script>document.write(new Date().getFullYear());</script>. All Rights Reserved.
+          <p class="mb-2 text-center text-lg-start">Copyright &copy; <strong>Blüt Medical</strong>
+            <script>
+              document.write(new Date().getFullYear());
+            </script>. All Rights Reserved.
           </p>
         </div>
 
