@@ -99,24 +99,48 @@ if (isset($_POST['edit_product'])) {
 
     if (mysqli_query($conn, $sql)) {
         // Updating Variations
-        if (isset($_POST['value']) && isset($_POST['price'])) {
+        if (isset($_POST['value']) && isset($_POST['price']) && isset($_POST['product_code'])) {
             $variation_names = $_POST['value'];
             $variation_prices = $_POST['price'];
+            $variation_codes = $_POST['product_code'];
+
             $variation_ids = isset($_POST['variation_id']) ? $_POST['variation_id'] : [];
 
             foreach ($variation_names as $index => $variation_name) {
                 $variation_id = isset($variation_ids[$index]) ? $variation_ids[$index] : null;
                 $variation_name = $conn->real_escape_string($variation_name);
                 $variation_price = $conn->real_escape_string($variation_prices[$index]);
+                $variation_code = $conn->real_escape_string($variation_codes[$index]);
+
 
                 if ($variation_id) {
                     // Update existing variation
-                    $sql_variation = "UPDATE `variations` SET `value`='$variation_name', price='$variation_price' WHERE variation_id='$variation_id'";
+                    $sql_variation = "UPDATE `variations` SET `value`='$variation_name', price='$variation_price', product_code='$variation_code' WHERE variation_id='$variation_id'";
                 } else {
                     // Insert new variation
                     $sql_variation = "INSERT INTO `variations` (product_id, `value`, price) VALUES ('$product_id', '$variation_name', '$variation_price')";
                 }
                 mysqli_query($conn, $sql_variation);
+            }
+        }
+
+        // Handle Product Colors
+        if (isset($_POST['color'])) {
+            $color_names = $_POST['color'];
+            $variation_color_ids = isset($_POST['variation_color_id']) ? $_POST['variation_color_id'] : [];
+
+            foreach ($color_names as $index => $color_name) {
+                $variation_color_id = isset($variation_color_ids[$index]) ? $variation_color_ids[$index] : null;
+                $color_name = $conn->real_escape_string($color_name);
+
+                if ($variation_color_id) {
+                    // Update existing color
+                    $sql_color = "UPDATE `variations_colors` SET `color`='$color_name' WHERE variation_color_id='$variation_color_id'";
+                } else {
+                    // Insert new color
+                    $sql_color = "INSERT INTO `variations_colors` (product_id, `color`) VALUES ('$product_id', '$color_name')";
+                }
+                mysqli_query($conn, $sql_color);
             }
         }
 

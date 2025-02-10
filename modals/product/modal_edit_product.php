@@ -71,6 +71,17 @@ if (isset($_POST['product_id'])) {
     }
   }
 
+  $sql_colors = "SELECT * FROM variations_colors WHERE product_id = '$product_id'";
+  $result_colors = mysqli_query($conn, $sql_colors);
+
+  $colors = [];
+  if ($result_colors) {
+    while ($row = mysqli_fetch_assoc($result_colors)) {
+      $colors[] = $row;
+    }
+  }
+
+
   if ($result) {
     while ($row = mysqli_fetch_assoc($result)) {
       $product_image = basename($row['product_image']);
@@ -179,16 +190,21 @@ if (isset($_POST['product_id'])) {
                           <div class="form-row mt-2">
                             <input type="hidden" name="variation_id[]" value="<?php echo $variation['variation_id']; ?>">
 
-                            <div class="form-group col-md-5">
+                            <div class="form-group col-md-4">
                               <label>Variation Name:</label>
 
                               <input type="text" class="form-control" name="value[]" value="<?php echo $variation['value']; ?>"
                                 placeholder="Enter Variation Name" required>
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-3">
+                              <label>Product Code:</label>
+                              <input type="text" class="form-control variation-product-code" name="product_code[]"
+                                value="<?php echo $variation['product_code']; ?>" placeholder="Enter Variation Price" required>
+                            </div>
+                            <div class="form-group col-md-4">
                               <label>Variation Price:</label>
                               <input type="text" class="form-control variation-price" name="price[]"
-                                value="<?php echo $variation['price']; ?>" placeholder="Enter Variation Price" required>
+                                value="<?php echo $variation['price']; ?>" placeholder="Enter Produt Code" required>
                             </div>
                             <div class="form-group col-md-1">
                               <label></label>
@@ -205,7 +221,26 @@ if (isset($_POST['product_id'])) {
                     </div>
                   </div>
                 </div>
+                <hr>
 
+                <div class="form-group">
+                  <label>Product Color:</label>
+                  <div id="color-container_update">
+                    <?php foreach ($colors as $color): ?>
+                      <div class="input-group mb-2">
+                        <input type="hidden" name="variation_color_id[]" value="<?php echo $color['variation_color_id']; ?>">
+
+                        <input type="text" class="form-control" name="color[]" value="<?php echo $color['color']; ?>"
+                          placeholder="Enter Color" required>
+                        <div class="input-group-append">
+                          <button type="button" class="btn btn-danger remove-color"
+                            data-id="<?php echo $color['variation_color_id']; ?>">Remove</button>
+                        </div>
+                      </div>
+                    <?php endforeach; ?>
+                  </div>
+                  <button type="button" id="add-color-button_update" class="btn btn-secondary mt-2">+ Add Color</button>
+                </div>
 
                 <hr>
                 <div class="form-row">
@@ -286,11 +321,15 @@ if (isset($_POST['product_id'])) {
     const newVariation = document.createElement('div');
     newVariation.classList.add('form-row', 'mt-2');
     newVariation.innerHTML = `
-    <div class="form-group col-md-5">
+    <div class="form-group col-md-4">
       <label>Variation Name:</label>
       <input type="text" class="form-control" name="value[]" placeholder="Enter Variation Name" required>
     </div>
-    <div class="form-group col-md-6">
+    <div class="form-group col-md-3">
+      <label>Product Code:</label>
+      <input type="text" class="form-control" name="product_code[]" placeholder="Enter Product Code" required>
+    </div>
+    <div class="form-group col-md-4">
       <label>Variation Price:</label>
       <input type="text" class="form-control variation-price" name="price[]" placeholder="Enter Variation Price" required>
     </div>
@@ -319,6 +358,34 @@ if (isset($_POST['product_id'])) {
 
   // Remove Variation Functionality
   document.querySelectorAll('.remove-variation').forEach(function (button) {
+    button.addEventListener('click', function () {
+      this.parentElement.parentElement.remove();
+    });
+  });
+
+  // Add Variation Functionality
+  document.getElementById('add-color-button_update').addEventListener('click', function () {
+    const container = document.getElementById('color-container_update');
+
+    const newVariationColor = document.createElement('div');
+    newVariationColor.classList.add('form-row', 'mt-2');
+    newVariationColor.innerHTML = `
+    <div class="form-group col-md-10">
+      <input type="text" class="form-control" name="color[]" placeholder="Enter Color Name" required>
+    </div>
+
+    <div class="form-group col-md-2">
+      <label></label>
+      <button type="button" class="btn btn-danger remove-color">Remove</button>
+    </div>
+  `;
+
+    container.appendChild(newVariationColor);
+
+  });
+
+  // Remove Variation Functionality
+  document.querySelectorAll('.remove-color').forEach(function (button) {
     button.addEventListener('click', function () {
       this.parentElement.parentElement.remove();
     });
@@ -373,7 +440,6 @@ if (isset($_POST['product_id'])) {
       }
     });
   });
-
 
 
   // Other Image Remove AJAX
@@ -504,6 +570,67 @@ if (isset($_POST['product_id'])) {
       }).showToast();
     }
   });
+
+  $(document).off('click', '.remove-color').on('click', '.remove-color', function () {
+    var variation_color_id = $(this).data('id');
+
+    if (variation_color_id) {
+      // Send the variation_id to the backend via AJAX for deletion
+      $.ajax({
+        type: 'POST',
+        url: '/blutmedical/controllers/admin/remove_color_process.php',
+        data: {
+          remove_variation_id: [variation_color_id]
+        },
+        success: function (response) {
+          try {
+            response = JSON.parse(response);
+
+            if (response.success) {
+              Toastify({
+                text: 'Color removed successfully!',
+                duration: 2000,
+                backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)"
+              }).showToast();
+
+              // Remove the corresponding <div> from the UI
+              $(this).closest('.form-row').remove(); // Fix: `this` needs to reference the current `remove-variation` element
+            } else {
+              Toastify({
+                text: response.message,
+                duration: 2000,
+                backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
+              }).showToast();
+            }
+          } catch (error) {
+            console.error('Error parsing response JSON:', error);
+            Toastify({
+              text: "An error occurred while processing the variation removal.",
+              duration: 2000,
+              backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
+            }).showToast();
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error(xhr.responseText);
+          Toastify({
+            text: "Error occurred while removing variation. Please try again later.",
+            duration: 2000,
+            backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
+          }).showToast();
+        }
+      });
+    } else {
+      // If no `variation_id`, simply perform the deletion without AJAX
+      $(this).closest('.form-row').remove();
+      Toastify({
+        text: 'Variation removed successfully!',
+        duration: 2000,
+        backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)"
+      }).showToast();
+    }
+  });
+
 
   // Submit Button AJAX
   $(document).ready(function () {

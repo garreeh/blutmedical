@@ -19,7 +19,7 @@ if (isset($_GET['product_id'])) {
 
 
     $image_url = './uploads/' . $product_image;
-?>
+    ?>
 
     <!doctype html>
     <html lang="en">
@@ -107,7 +107,7 @@ if (isset($_GET['product_id'])) {
                 ?>
 
                 <!-- Display the price -->
-                <p class="text-muted">₱ <span id="productPrice"><?php echo number_format($initialPrice, 2); ?></span></p>
+                <p class="text-muted">$ <span id="productPrice"><?php echo number_format($initialPrice, 2); ?></span></p>
                 <p><?php echo htmlspecialchars($product['product_description']); ?></p>
 
                 <?php if (!empty($variations)) { ?>
@@ -116,12 +116,9 @@ if (isset($_GET['product_id'])) {
 
                 <form id="sizeForm">
                   <?php foreach ($variations as $index => $variation) { ?>
-                    <button id="selectedValue"
-                      type="button"
-                      class="btn variation-toggle <?php echo $index === 0 ? 'active' : ''; ?>"
-                      data-bs-toggle="button"
-                      aria-pressed="<?php echo $index === 0 ? 'true' : 'false'; ?>"
-                      autocomplete="off"
+                    <button id="selectedValue" type="button"
+                      class="btn variation-toggle <?php echo $index === 0 ? 'active' : ''; ?>" data-bs-toggle="button"
+                      aria-pressed="<?php echo $index === 0 ? 'true' : 'false'; ?>" autocomplete="off"
                       data-value="<?php echo htmlspecialchars(trim($variation['value'])); ?>"
                       data-price="<?php echo htmlspecialchars(trim($variation['price'])); ?>"
                       data-id="<?php echo htmlspecialchars(trim($variation['variation_id'])); ?>"> <!-- Added data-id -->
@@ -129,38 +126,20 @@ if (isset($_GET['product_id'])) {
                     </button>
                   <?php } ?>
 
-                  <input
-                    type="hidden"
-                    name="selected_variation"
-                    id="selectedVariationId"
+                  <input type="hidden" name="selected_variation" id="selectedVariationId"
                     value="<?php echo trim($variations[0]['variation_id'] ?? '-'); ?>">
 
-                  <input
-                    type="hidden"
-                    name="selected_variation"
-                    id="selectedVariation"
+                  <input type="hidden" name="selected_variation" id="selectedVariation"
                     value="<?php echo trim($variations[0]['value'] ?? '-'); ?>">
 
-                  <input
-                    type="hidden"
-                    name="selected_price"
-                    id="selectedPrice"
-                    value="<?php echo trim($variations[0]['price'] ?? '-'); ?>"> <!-- Default to '-' if empty or undefined -->
+                  <input type="hidden" name="selected_price" id="selectedPrice"
+                    value="<?php echo trim($variations[0]['price'] ?? '-'); ?>">
+                  <!-- Default to '-' if empty or undefined -->
 
-                  <input
-                    type="hidden"
-                    name="product_name"
-                    id="product_name"
-                    value="<?php echo $product_name; ?>">
-                  <input
-                    type="hidden"
-                    name="product_image"
-                    id="product_image"
+                  <input type="hidden" name="product_name" id="product_name" value="<?php echo $product_name; ?>">
+                  <input type="hidden" name="product_image" id="product_image"
                     value="<?php echo $product_image_no_base; ?>">
-                  <input
-                    type="hidden"
-                    name="product_sellingprice"
-                    id="product_sellingprice"
+                  <input type="hidden" name="product_sellingprice" id="product_sellingprice"
                     value="<?php echo $product_sellingprice; ?>">
                 </form>
 
@@ -230,19 +209,21 @@ if (isset($_GET['product_id'])) {
                   $product_name = htmlspecialchars($product['product_name']);
                   $product_price = number_format($product['product_sellingprice'], 2);
 
-              ?>
+                  ?>
 
                   <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-5">
                     <a href="product_details.php?product_id=<?php echo $product_id_you; ?>" target="_blank">
                       <div class="product-item">
                         <img src="<?php echo $image_url; ?>" class="img-fluid product-thumbnail"
                           style="height: 200px; width: 100%; object-fit: cover; border-radius: 10px;">
-                        <h3 class="product-title" style="font-size: 1rem; text-align: center; margin-top: 10px;"><?php echo $product_name; ?></h3>
-                        <strong class="product-price" style="font-size: 1.2rem; margin-top: auto;">₱ <?php echo $product_price; ?></strong>
+                        <h3 class="product-title" style="font-size: 1rem; text-align: center; margin-top: 10px;">
+                          <?php echo $product_name; ?></h3>
+                        <strong class="product-price" style="font-size: 1.2rem; margin-top: auto;">$
+                          <?php echo $product_price; ?></strong>
                       </div>
                     </a>
                   </div>
-              <?php
+                  <?php
 
                   // Close the row and carousel-item after every 4 products
                   if (($i + 1) % $productsPerSlide == 0 || $i == $totalProducts - 1) {
@@ -472,7 +453,7 @@ if (isset($_GET['product_id'])) {
 
 
 
-      document.querySelector('#addToCartBtn').addEventListener('click', function() {
+      document.querySelector('#addToCartBtn').addEventListener('click', function () {
         // Retrieve product ID securely from a hidden input or directly from PHP
         const product_id = <?php echo isset($product_id) ? json_encode($product_id) : 'null'; ?>;
 
@@ -533,7 +514,7 @@ if (isset($_GET['product_id'])) {
             type: 'POST',
             data: cartData,
             dataType: 'json',
-            success: function(response) {
+            success: function (response) {
               Toastify({
                 text: response.message || (response.success ? 'Added to cart successfully!' : 'Failed to add to cart.'),
                 duration: 3000,
@@ -546,7 +527,7 @@ if (isset($_GET['product_id'])) {
               // Update the cart badge
               updateCartBadge();
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
               console.error('AJAX Error:', error);
               Toastify({
                 text: 'An unexpected error occurred while adding to cart.',
@@ -557,7 +538,7 @@ if (isset($_GET['product_id'])) {
                 backgroundColor: '#FF0000',
               }).showToast();
             },
-            complete: function() {
+            complete: function () {
               button.textContent = originalText;
               button.disabled = false;
             },
@@ -608,7 +589,7 @@ if (isset($_GET['product_id'])) {
       var mainImage = document.getElementById('mainProductImage');
       var zoomedImage = document.getElementById('zoomedImage');
 
-      mainImage.addEventListener('mousemove', function(e) {
+      mainImage.addEventListener('mousemove', function (e) {
         var zoomScale = 1.5; // Scale factor
         var offsetX = e.offsetX;
         var offsetY = e.offsetY;
@@ -628,12 +609,12 @@ if (isset($_GET['product_id'])) {
         zoomedImage.style.top = zoomedImageY + 'px';
       });
 
-      mainImage.addEventListener('mouseleave', function() {
+      mainImage.addEventListener('mouseleave', function () {
         zoomedImage.style.display = 'none';
       });
     </script>
 
-<?php
+    <?php
   }
 }
 ?>

@@ -6,27 +6,32 @@ if (isset($_POST['edit_user_type'])) {
 
   $user_type_id = $conn->real_escape_string($_POST['user_type_id']);
   $user_type_name = $conn->real_escape_string($_POST['user_type_name']);
-  $inventory_module = $conn->real_escape_string($_POST['inventory_module']);
-  $user_module = $conn->real_escape_string($_POST['user_module']);
-  $reports_module = $conn->real_escape_string($_POST['reports_module']);
-  $po_module = $conn->real_escape_string($_POST['po_module']);
 
-  $transaction_module = $conn->real_escape_string($_POST['transaction_module']);
-  $orders_module = $conn->real_escape_string($_POST['orders_module']);
-  $deliveries_module = $conn->real_escape_string($_POST['deliveries_module']);
+  $ship_order = isset($_POST['ship_order']) ? $conn->real_escape_string($_POST['ship_order']) : '0';
+  $view_order = isset($_POST['view_order']) ? $conn->real_escape_string($_POST['view_order']) : '0';
+  $client_order_module = isset($_POST['client_order_module']) ? $conn->real_escape_string($_POST['client_order_module']) : '0';
+  $complete_order = isset($_POST['complete_order']) ? $conn->real_escape_string($_POST['complete_order']) : '0';
+  $view_shipped_order = isset($_POST['view_shipped_order']) ? $conn->real_escape_string($_POST['view_shipped_order']) : '0';
+  $shipped_order_module = isset($_POST['shipped_order_module']) ? $conn->real_escape_string($_POST['shipped_order_module']) : '0';
+  $view_transaction_module = isset($_POST['view_transaction_module']) ? $conn->real_escape_string($_POST['view_transaction_module']) : '0';
+  $sales_report_module = isset($_POST['sales_report_module']) ? $conn->real_escape_string($_POST['sales_report_module']) : '0';
+  $product_setup_module = isset($_POST['product_setup_module']) ? $conn->real_escape_string($_POST['product_setup_module']) : '0';
+  $user_setup = isset($_POST['user_setup']) ? $conn->real_escape_string($_POST['user_setup']) : '0';
 
   // Construct SQL query for UPDATE
   $sql = "UPDATE `usertype` 
           SET 
             user_type_name = '$user_type_name',
-            inventory_module = '$inventory_module',
-            user_module = '$user_module',
-            reports_module = '$reports_module',
-            po_module = '$po_module',
-
-            transaction_module = '$transaction_module',
-            orders_module = '$orders_module',
-            deliveries_module = '$deliveries_module'
+            ship_order = '$ship_order',
+            view_order = '$view_order',
+            client_order_module = '$client_order_module',
+            complete_order = '$complete_order',
+            view_shipped_order = '$view_shipped_order',
+            shipped_order_module = '$shipped_order_module',
+            view_transaction_module = '$view_transaction_module',
+            sales_report_module = '$sales_report_module',
+            product_setup_module = '$product_setup_module',
+            user_setup = '$user_setup'
           WHERE user_type_id = '$user_type_id'";
 
   // Execute SQL query

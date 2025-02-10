@@ -52,18 +52,33 @@ if (isset($_POST['add_product'])) {
         $response['success'] = true;
         $response['message'] = 'Product added successfully!';
 
-        // Handle product variations
-        if (isset($_POST['value']) && isset($_POST['price'])) {
+        if (isset($_POST['value']) && isset($_POST['price']) && isset($_POST['product_code'])) {
             $variation_names = $_POST['value'];
             $variation_prices = $_POST['price'];
+            $variation_codes = $_POST['product_code'];
 
             foreach ($variation_names as $index => $variation_name) {
                 $variation_name = $conn->real_escape_string($variation_name);
                 $variation_price = $conn->real_escape_string($variation_prices[$index]);
+                $variation_code = $conn->real_escape_string($variation_codes[$index]);
 
-                $sql_variation = "INSERT INTO `variations` (product_id, `value`, price)
-                          VALUES ('$product_id', '$variation_name', '$variation_price')";
+                // Insert into variations table
+                $sql_variation = "INSERT INTO `variations` (product_id, `value`, price, product_code)
+                              VALUES ('$product_id', '$variation_name', '$variation_price', '$variation_code')";
                 mysqli_query($conn, $sql_variation);
+            }
+        }
+
+        // Handle variation colors separately
+        if (isset($_POST['color'])) {
+            $variation_colors = $_POST['color'];
+
+            foreach ($variation_colors as $color) {
+                $color = $conn->real_escape_string($color);
+
+                $sql_color = "INSERT INTO `variations_colors` (product_id, color)
+                          VALUES ('$product_id', '$color')";
+                mysqli_query($conn, $sql_color);
             }
         }
 

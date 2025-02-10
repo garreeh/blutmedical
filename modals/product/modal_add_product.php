@@ -115,6 +115,17 @@ if ($result) {
               <button type="button" class="btn btn-secondary mt-2" id="add-variation-button">+ Add Variation</button>
             </div>
           </div>
+
+          <hr>
+          <div class="form-row">
+            <div class="form-group col-md-12">
+              <label>Variation Colors:</label>
+              <div id="variations-colors-container">
+                <!-- Placeholder for variation colors -->
+              </div>
+              <button type="button" class="btn btn-secondary mt-2" id="add-variation-color-button">+ Add Color</button>
+            </div>
+          </div>
           <hr>
           <div class="form-row">
             <div class="form-group col-md-12">
@@ -145,7 +156,6 @@ if ($result) {
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
 <script>
-  // Add Variation functionality with remove button
   const addVariationButton = document.getElementById('add-variation-button');
   addVariationButton.addEventListener('click', function () {
     const container = document.getElementById('variations-container');
@@ -155,14 +165,21 @@ if ($result) {
 
     // Variation name field
     const variationNameCol = document.createElement('div');
-    variationNameCol.className = 'form-group col-md-5';
+    variationNameCol.className = 'form-group col-md-4';
     variationNameCol.innerHTML = `
     <input type="text" class="form-control" name="value[]" placeholder="Enter Variation Name" required>
   `;
 
+    // Product code field
+    const productCodeCol = document.createElement('div');
+    productCodeCol.className = 'form-group col-md-3';
+    productCodeCol.innerHTML = `
+    <input type="text" class="form-control" name="product_code[]" placeholder="Enter Product Code" required>
+  `;
+
     // Variation price field
     const variationPriceCol = document.createElement('div');
-    variationPriceCol.className = 'form-group col-md-6';
+    variationPriceCol.className = 'form-group col-md-4';
     variationPriceCol.innerHTML = `
     <input type="text" class="form-control variation-price" name="price[]" placeholder="Enter Variation Price" required>
   `;
@@ -175,6 +192,7 @@ if ($result) {
   `;
 
     row.appendChild(variationNameCol);
+    row.appendChild(productCodeCol);
     row.appendChild(variationPriceCol);
     row.appendChild(removeCol);
 
@@ -203,6 +221,42 @@ if ($result) {
   document.querySelectorAll('.variation-price').forEach(function (input) {
     input.addEventListener('input', restrictPriceInput);
   });
+
+
+  // Add Variation Color functionality with remove button
+  const addVariationColorButton = document.getElementById('add-variation-color-button');
+  addVariationColorButton.addEventListener('click', function () {
+    const container = document.getElementById('variations-colors-container');
+
+    const row = document.createElement('div');
+    row.className = 'form-row mt-2';
+
+    // Variation color field
+    const variationColorCol = document.createElement('div');
+    variationColorCol.className = 'form-group col-md-11';
+    variationColorCol.innerHTML = `
+    <input type="text" class="form-control" name="color[]" placeholder="Enter Color Name" required>
+  `;
+
+    // Remove button
+    const removeCol = document.createElement('div');
+    removeCol.className = 'form-group col-md-1';
+    removeCol.innerHTML = `
+    <button type="button" class="btn btn-danger btn-block remove-add-color">Remove</button>
+  `;
+
+    row.appendChild(variationColorCol);
+    row.appendChild(removeCol);
+
+    container.appendChild(row);
+
+    // Add event listener for remove button
+    const removeButton = row.querySelector('.remove-add-color');
+    removeButton.addEventListener('click', function () {
+      container.removeChild(row);
+    });
+  });
+
 
   // Add Image functionality with remove button
   const addImageButton = document.getElementById('add-image-button');
@@ -245,6 +299,7 @@ if ($result) {
       this.value = this.value.slice(0, -1); // Remove the last character if there's more than one dot
     }
   });
+
 
 
   $(document).ready(function () {

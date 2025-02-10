@@ -33,7 +33,7 @@ $result = mysqli_query($conn, $sql);
 
 if ($result) {
   while ($row = mysqli_fetch_assoc($result)) {
-?>
+    ?>
     <!DOCTYPE html>
     <html lang="en">
 
@@ -77,7 +77,7 @@ if ($result) {
           Admin Panel
         </div>
 
-        <?php if ($row['orders_module'] == 1): ?>
+        <?php if ($row['client_order_module'] == 1): ?>
           <li class="nav-item">
             <a class="nav-link" href="/blutmedical/views/admin/orders_module.php">
               <i class="fas fa-fw fa-money-bill"></i>
@@ -85,7 +85,7 @@ if ($result) {
           </li>
         <?php endif; ?>
 
-        <?php if ($row['deliveries_module'] == 1): ?>
+        <?php if ($row['shipped_order_module'] == 1): ?>
           <li class="nav-item">
             <a class="nav-link" href="/blutmedical/views/admin/deliveries_module.php">
               <i class="fas fa-fw fa-money-bill"></i>
@@ -93,7 +93,7 @@ if ($result) {
           </li>
         <?php endif; ?>
 
-        <?php if ($row['transaction_module'] == 1): ?>
+        <?php if ($row['view_transaction_module'] == 1): ?>
           <li class="nav-item">
             <a class="nav-link" href="/blutmedical/views/admin/transaction_module.php">
               <i class="fas fa-fw fa-money-bill"></i>
@@ -116,7 +116,7 @@ if ($result) {
 
 
 
-        <?php if ($row['reports_module'] == 1): ?>
+        <?php if ($row['sales_report_module'] == 1): ?>
           <!-- Reports Collapse -->
           <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapse1" aria-expanded="true"
@@ -127,19 +127,14 @@ if ($result) {
             <div id="collapse1" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
               <div class="bg-white py-2 collapse-inner rounded">
                 <!-- <h6 class="collapse-header">Setup:</h6> -->
+
                 <a class="collapse-item" href="/blutmedical/views/admin/sales_report_module.php">Sales Report</a>
+
               </div>
             </div>
           </li>
         <?php endif; ?>
-        <?php if ($row['po_module'] == 1): ?>
-          <!-- <li class="nav-item">
-            <a class="nav-link" href="/blutmedical/views/admin/purchase_module.php">
-              <i class="fas fa-fw fa-cart-plus"></i>
-              <span>Add Stocks</span></a>
-          </li> -->
-        <?php endif; ?>
-        <?php if ($row['inventory_module'] == 1): ?>
+        <?php if ($row['product_setup_module'] == 1): ?>
           <!-- Products Setup Collapse -->
           <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapse2" aria-expanded="true"
@@ -170,7 +165,7 @@ if ($result) {
           Settings
         </div>
 
-        <?php if ($row['user_module'] == 1): ?>
+        <?php if ($row['user_setup'] == 1): ?>
           <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapse4" aria-expanded="true"
               aria-controls="collapse4">
@@ -213,7 +208,7 @@ if ($result) {
 
     </html>
 
-<?php
+    <?php
   }
 }
 ?>
