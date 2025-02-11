@@ -157,7 +157,7 @@ if ($result) {
 
 <script>
   const addVariationButton = document.getElementById('add-variation-button');
-  addVariationButton.addEventListener('click', function () {
+  addVariationButton.addEventListener('click', function() {
     const container = document.getElementById('variations-container');
 
     const row = document.createElement('div');
@@ -204,7 +204,7 @@ if ($result) {
 
     // Add event listener for remove button
     const removeButton = row.querySelector('.remove-add-variation');
-    removeButton.addEventListener('click', function () {
+    removeButton.addEventListener('click', function() {
       container.removeChild(row);
     });
   });
@@ -218,14 +218,14 @@ if ($result) {
   }
 
   // Attach to existing inputs (if any)
-  document.querySelectorAll('.variation-price').forEach(function (input) {
+  document.querySelectorAll('.variation-price').forEach(function(input) {
     input.addEventListener('input', restrictPriceInput);
   });
 
 
   // Add Variation Color functionality with remove button
   const addVariationColorButton = document.getElementById('add-variation-color-button');
-  addVariationColorButton.addEventListener('click', function () {
+  addVariationColorButton.addEventListener('click', function() {
     const container = document.getElementById('variations-colors-container');
 
     const row = document.createElement('div');
@@ -252,7 +252,7 @@ if ($result) {
 
     // Add event listener for remove button
     const removeButton = row.querySelector('.remove-add-color');
-    removeButton.addEventListener('click', function () {
+    removeButton.addEventListener('click', function() {
       container.removeChild(row);
     });
   });
@@ -260,7 +260,7 @@ if ($result) {
 
   // Add Image functionality with remove button
   const addImageButton = document.getElementById('add-image-button');
-  addImageButton.addEventListener('click', function () {
+  addImageButton.addEventListener('click', function() {
     const container = document.getElementById('images-container');
 
     const row = document.createElement('div');
@@ -286,13 +286,13 @@ if ($result) {
 
     // Add event listener for remove button
     const removeButton = row.querySelector('.remove-add-image');
-    removeButton.addEventListener('click', function () {
+    removeButton.addEventListener('click', function() {
       container.removeChild(row);
     });
   });
 
 
-  document.getElementById('product_sellingprice').addEventListener('input', function (e) {
+  document.getElementById('product_sellingprice').addEventListener('input', function(e) {
     // Allow only numbers and dots, and ensure only one dot
     this.value = this.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters except dot
     if ((this.value.match(/\./g) || []).length > 1) {
@@ -302,8 +302,8 @@ if ($result) {
 
 
 
-  $(document).ready(function () {
-    $('#addProductModal form').submit(function (event) {
+  $(document).ready(function() {
+    $('#addProductModal form').submit(function(event) {
       event.preventDefault(); // Prevent default form submission
 
       // Store a reference to $(this)
@@ -324,7 +324,7 @@ if ($result) {
         data: formData,
         contentType: false,
         processData: false,
-        success: function (response) {
+        success: function(response) {
           // Handle success response
           console.log(response); // Log the response for debugging
           response = JSON.parse(response);
@@ -352,7 +352,7 @@ if ($result) {
             }).showToast();
           }
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
           // Handle error response
           console.error(xhr.responseText);
           Toastify({
@@ -361,7 +361,7 @@ if ($result) {
             backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
           }).showToast();
         },
-        complete: function () {
+        complete: function() {
           // Reset button text and re-enable it
           $addButton.text('Add');
           $addButton.prop('disabled', false);
@@ -369,7 +369,7 @@ if ($result) {
       });
     });
 
-    $('#addProductModal').on('hidden.bs.modal', function () {
+    $('#addProductModal').on('hidden.bs.modal', function() {
 
       // Reset the dropdowns to their default states
       $('#category_id')[0].selectize.clear();

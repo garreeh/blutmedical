@@ -81,7 +81,7 @@ if (session_status() == PHP_SESSION_NONE) {
                         <th>Name</th>
                         <th>Description</th>
                         <th>Image</th>
-                        <th>Selling Price</th>
+                        <th>Main Selling Price</th>
                         <th>Manage</th>
                       </tr>
                     </thead>

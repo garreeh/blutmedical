@@ -70,7 +70,7 @@
             $product_image = basename($row['product_image']);
             $image_url = './uploads/' . $product_image;
             $product_id = $row['product_id'];
-            ?>
+        ?>
             <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-5">
               <a href="product_details.php?product_id=<?php echo $product_id; ?>" target="_blank">
                 <div class="product-item">
@@ -84,7 +84,7 @@
                 </div>
               </a>
             </div>
-            <?php
+        <?php
           }
         }
         ?>
@@ -107,14 +107,16 @@
 
 <script>
   // AJAX for Search Bar using jQuery
-  $('#searchInput').on('input', function () {
+  $('#searchInput').on('input', function() {
     const query = $(this).val().trim();
     if (query.length > 0) {
       $.ajax({
         type: 'POST',
         url: '/blutmedical/controllers/users/search_products.php',
-        data: { query: query },
-        success: function (response) {
+        data: {
+          query: query
+        },
+        success: function(response) {
           $('#searchResults').html(response).addClass('show');
         }
       });
@@ -124,44 +126,43 @@
   });
 
   // Hide search results when clicking outside
-  $(document).on('click', function (e) {
+  $(document).on('click', function(e) {
     if (!$(e.target).closest('#searchInput, #searchResults').length) {
       $('#searchResults').removeClass('show');
     }
   });
 
-  $(document).ready(function () {
+  $(document).ready(function() {
     // Populate categories in the dropdown
     $.ajax({
       type: 'GET',
       url: '/blutmedical/controllers/users/fetch_categories.php',
-      success: function (response) {
+      success: function(response) {
         $('#categoryDropdown').append(response);
       },
-      error: function () {
+      error: function() {
         $('#categoryDropdown').append('<option disabled>Error loading categories</option>');
       }
     });
 
     // Handle category change
-    $('#categoryDropdown').on('change', function () {
+    $('#categoryDropdown').on('change', function() {
       const categoryId = $(this).val();
 
       // Fetch products by selected category
       $.ajax({
         type: 'GET',
         url: '/blutmedical/controllers/users/fetch_products_by_category.php',
-        data: { category_id: categoryId },
-        success: function (response) {
+        data: {
+          category_id: categoryId
+        },
+        success: function(response) {
           $('#productList').html(response);
         },
-        error: function () {
+        error: function() {
           $('#productList').html('<p>Error loading products. Please try again.</p>');
         }
       });
     });
   });
-
-
-
 </script>

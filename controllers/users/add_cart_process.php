@@ -2,11 +2,12 @@
 session_start();
 include '../../connections/connections.php';
 
-// Retrieve product_id, cart_quantity, and variation_id from the POST request
+// Retrieve product_id, cart_quantity, variation_id, and variation_color_id from the POST request
 if (isset($_POST['product_id']) && isset($_POST['cart_quantity'])) {
     $product_id = $conn->real_escape_string($_POST['product_id']);
     $cart_quantity = (int) $_POST['cart_quantity'];
     $variation_id = isset($_POST['variation_id']) ? $conn->real_escape_string($_POST['variation_id']) : null;
+    $variation_color_id = isset($_POST['variation_color_id']) ? $conn->real_escape_string($_POST['variation_color_id']) : null;
 
     if (isset($_SESSION['user_id'])) {
         $user_id = $_SESSION['user_id'];
@@ -47,19 +48,20 @@ if (isset($_POST['product_id']) && isset($_POST['cart_quantity'])) {
             exit();
         }
 
-        // Check if the product with the same variation already exists in the cart
+        // Check if the product with the same variation (size & color) already exists in the cart
         $cart_query = "
             SELECT cart_quantity, cart_status 
             FROM cart 
             WHERE user_id = '$user_id' 
             AND product_id = '$product_id' 
             AND variation_id = '$variation_id' 
+            AND variation_color_id = '$variation_color_id'
             AND cart_status = 'Cart'
         ";
         $cart_result = $conn->query($cart_query);
 
         if ($cart_result->num_rows > 0) {
-            // Product with the same variation already in the cart
+            // Product with the same variation (size & color) already in the cart
             $cart_row = $cart_result->fetch_assoc();
             $new_quantity = $cart_row['cart_quantity'] + $cart_quantity;
             $total_price = $new_quantity * $product_price;
@@ -70,6 +72,7 @@ if (isset($_POST['product_id']) && isset($_POST['cart_quantity'])) {
                 WHERE user_id = '$user_id' 
                 AND product_id = '$product_id' 
                 AND variation_id = '$variation_id' 
+                AND variation_color_id = '$variation_color_id'
                 AND cart_status = 'Cart'
             ";
             if ($conn->query($update_query)) {
@@ -78,12 +81,12 @@ if (isset($_POST['product_id']) && isset($_POST['cart_quantity'])) {
                 $response = array('success' => false, 'message' => 'Error updating cart: ' . $conn->error);
             }
         } else {
-            // If no such product with the same variation, insert a new entry
+            // If no such product with the same size & color, insert a new entry
             $total_price = $cart_quantity * $product_price;
 
             $insert_query = "
-                INSERT INTO cart (user_id, product_id, cart_quantity, total_price, cart_status, variation_id) 
-                VALUES ('$user_id', '$product_id', $cart_quantity, '$total_price', 'Cart', '$variation_id')
+                INSERT INTO cart (user_id, product_id, cart_quantity, total_price, cart_status, variation_id, variation_color_id) 
+                VALUES ('$user_id', '$product_id', '$cart_quantity', '$total_price', 'Cart', '$variation_id', '$variation_color_id')
             ";
             if ($conn->query($insert_query)) {
                 $response = array('success' => true, 'message' => 'Product added to cart successfully!');

@@ -10,6 +10,8 @@ if (!isset($_SESSION['user_id'])) {
 if (isset($_POST['product_id']) && isset($_POST['variation_id'])) {
     $product_id = $conn->real_escape_string($_POST['product_id']);
     $variation_id = $conn->real_escape_string($_POST['variation_id']);
+    $variation_color_id = $conn->real_escape_string($_POST['variation_color_id']);
+
     $user_id = $_SESSION['user_id'];
 
     // Delete the item from the cart based on product_id and variation_id
@@ -18,6 +20,7 @@ if (isset($_POST['product_id']) && isset($_POST['variation_id'])) {
         WHERE user_id = '$user_id' 
           AND product_id = '$product_id' 
           AND variation_id = '$variation_id'
+          AND variation_color_id = '$variation_color_id'
           AND cart_status = 'Cart'
     ";
 

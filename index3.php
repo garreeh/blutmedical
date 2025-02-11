@@ -1,513 +1,714 @@
 <?php
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+include './connections/connections.php';
 
-// Check if the user is logged in and an admin
-if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === "1") {
-    // If the user is an admin, redirect them to the admin dashboard
-    header("Location: /blutmedical/views/admin/dashboard.php");
-    exit();
-}
+if (isset($_GET['product_id'])) {
+    $product_id = $_GET['product_id'];
+
+    // Updated query with LEFT JOIN on `variations` table
+    $sql = "SELECT * FROM product WHERE product_id = '$product_id'";
+    $result = mysqli_query($conn, $sql);
+
+    if ($result) {
+        // Fetch product details and variations
+        $product = mysqli_fetch_assoc($result);
+        $product_image = basename($product['product_image']);
+        $product_image_no_base = $product['product_image'];
+
+        $product_name = $product['product_name'];
+        $product_sellingprice = $product['product_sellingprice'];
 
 
+        $image_url = './uploads/' . $product_image;
 ?>
 
-<!DOCTYPE html>
+        <!doctype html>
+        <html lang="en">
 
-<html lang="en">
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+            <meta name="author" content="Untree.co">
+            <link rel="shortcut icon" href="favicon.png">
 
-<head>
-    <meta charset="utf-8">
-    <title>Sterling | Showcase</title>
+            <meta name="description" content="" />
+            <meta name="keywords" content="bootstrap, bootstrap4" />
 
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+            <!-- Bootstrap CSS -->
+            <?php include 'assets.php'; ?>
+            <title>Blüt Medical</title>
+        </head>
 
-    <meta content="Metronic Shop UI description" name="description">
-    <meta content="Metronic Shop UI keywords" name="keywords">
-    <meta content="keenthemes" name="author">
+        <body>
 
-    <meta property="og:site_name" content="-CUSTOMER VALUE-">
-    <meta property="og:title" content="-CUSTOMER VALUE-">
-    <meta property="og:description" content="-CUSTOMER VALUE-">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="-CUSTOMER VALUE-"><!-- link to image for socio -->
-    <meta property="og:url" content="-CUSTOMER VALUE-">
+            <?php include './includes/navigation.php'; ?>
 
-    <link rel="shortcut icon" href="favicon.ico">
+            <div class="product-section">
+                <div class="container">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Product Showcase</li>
+                        </ol>
+                    </nav>
+                    <div class="row">
+                        <div class="col-md-6 align-items-stretch">
+                            <!-- Card for Main Product Image and Thumbnails -->
+                            <div id="productStyles">
+                                <!-- Main Product Image with Zoom Effect -->
+                                <div class="zoom-container">
+                                    <img id="mainProductImage" src="<?php echo $image_url; ?>" class="img-fluid"
+                                        style="border-radius: 10px; object-fit: cover;">
 
-    <!-- Fonts START -->
-    <link
-        href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|PT+Sans+Narrow|Source+Sans+Pro:200,300,400,600,700,900&amp;subset=all"
-        rel="stylesheet" type="text/css">
-    <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900&amp;subset=all"
-        rel="stylesheet" type="text/css">
-    <!-- Fonts END -->
+                                    <!-- Optional: Add zoom effect using CSS -->
+                                    <div id="zoomedImage" class="zoomed-image"></div>
+                                </div>
 
-    <!-- Global styles START -->
-    <link href="assets/user/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-    <link href="assets/user/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Global styles END -->
+                                <!-- Thumbnail Images below main image -->
+                                <div class="product-thumbnails">
+                                    <?php
+                                    // Display the main product image as the first thumbnail
+                                    echo '<img src="' . $image_url . '" class="img-thumbnail" alt="Product Image" style="cursor: pointer;" onclick="changeMainImage(\'' . $image_url . '\')">';
 
-    <!-- Page level plugin styles START -->
-    <link href="assets/user/pages/css/animate.css" rel="stylesheet">
-    <link href="assets/user/plugins/fancybox/source/jquery.fancybox.css" rel="stylesheet">
-    <link href="assets/user/plugins/owl.carousel/assets/owl.carousel.css" rel="stylesheet">
-    <!-- Page level plugin styles END -->
+                                    // Fetch all other product images from 'product_image' table
+                                    $queryImages = "SELECT product_image_path FROM product_image WHERE product_id = $product_id";
+                                    $resultImages = mysqli_query($conn, $queryImages);
 
-    <!-- Theme styles START -->
-    <link href="assets/user/pages/css/components.css" rel="stylesheet">
-    <link href="assets/user/pages/css/style-shop.css" rel="stylesheet" type="text/css">
-    <link href="assets/user/corporate/css/style.css" rel="stylesheet">
-    <link href="assets/user/corporate/css/style-responsive.css" rel="stylesheet">
-    <link href="assets/user/corporate/css/themes/red.css" rel="stylesheet" id="style-color">
-    <link href="assets/user/corporate/css/custom.css" rel="stylesheet">
-    <!-- Theme styles END -->
-</head>
-<!-- Head END -->
+                                    if ($resultImages && mysqli_num_rows($resultImages) > 0) {
+                                        while ($image = mysqli_fetch_assoc($resultImages)) {
+                                            $productImagePath = './uploads/' . basename($image['product_image_path']);
+                                            echo '<img src="' . $productImagePath . '" class="img-thumbnail" alt="Product Image" style="cursor: pointer;" onclick="changeMainImage(\'' . $productImagePath . '\')">';
+                                        }
+                                    }
+                                    ?>
+                                </div>
+                            </div>
+                        </div>
 
-<style>
-    /* Category Filter styling */
-    .category-filter {
-        max-width: 250px !important;
-        padding: 15px !important;
-        border: 1px solid #ddd !important;
-        border-radius: 10px !important;
-        background-color: #f9f9f9 !important;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
-        position: -webkit-sticky;
-        /* For Safari */
-        position: sticky !important;
-        /* Use sticky positioning */
-        top: 20px !important;
-        /* Distance from the top when sticking */
-        z-index: 1000 !important;
-    }
+                        <div class="col-md-6 align-items-stretch">
+                            <!-- Card for Product Details -->
+                            <div id="productStyles">
+                                <h1><?php echo htmlspecialchars($product['product_name']); ?></h1>
 
-    .category-filter h3 {
-        color: #555 !important;
-        font-weight: bold !important;
-        font-size: 24px !important;
-    }
+                                <hr>
+                                <i class="fas fa-box"></i> IN STOCK
+                                <hr>
 
-    .category-filter ul li a {
-        text-decoration: none !important;
-        color: #555 !important;
-        font-size: 18px !important;
-        font-weight: bold !important;
-        display: block !important;
-        padding: 10px 20px !important;
-        margin: 5px auto !important;
-        border-radius: 6px !important;
-        transition: background-color 0.3s, color 0.3s !important;
-    }
+                                <?php
+                                // Fetch variations for the specific product (Size)
+                                $query = "SELECT * FROM variations WHERE product_id = $product_id";
+                                $result = mysqli_query($conn, $query);
 
-    .category-filter ul li a:hover {
-        background-color: #4682B4 !important;
-        color: #fff !important;
-    }
+                                $variations = [];
+                                $initialPrice = $product['product_sellingprice']; // Default product price
+                                if ($result && mysqli_num_rows($result) > 0) {
+                                    $variations = mysqli_fetch_all($result, MYSQLI_ASSOC);
+                                    $initialPrice = $variations[0]['price']; // Default to the first variation price
+                                }
 
-    /* Product Card styling */
-    .product-item {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        padding: 1rem !important;
-        border: 1px solid #ddd !important;
-        border-radius: 10px !important;
-        background-color: #fff !important;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
-        transition: transform 0.3s, box-shadow 0.3s !important;
-    }
+                                // Fetch color variations
+                                $colorQuery = "SELECT * FROM variations_colors WHERE product_id = $product_id";
+                                $colorResult = mysqli_query($conn, $colorQuery);
 
-    .product-item:hover {
-        transform: translateY(-5px) !important;
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3) !important;
-    }
-
-    .product-item img {
-        max-width: 100% !important;
-        height: 15rem !important;
-        border-radius: 8px !important;
-        transition: transform 0.3s !important;
-    }
-
-    .product-item img:hover {
-        transform: scale(1.05) !important;
-    }
-
-    .product-item h3 {
-        color: #333 !important;
-        font-size: 1.8rem !important;
-        font-weight: bold !important;
-        margin-top: 15px !important;
-        text-align: center !important;
-    }
-
-    .pi-price {
-        color: #2E8B57 !important;
-        font-size: 1.5rem !important;
-        font-weight: bold !important;
-        margin-top: 10px !important;
-        text-align: center !important;
-    }
-
-    /* Quantity Controls */
-    .quantity-controls {
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        gap: 10px !important;
-        margin: 10px 0 !important;
-        padding: 10px !important;
-        border-radius: 8px !important;
-        border: 1px solid #ccc !important;
-        background-color: #f9f9f9 !important;
-    }
-
-    .quantity-controls button {
-        border: none !important;
-        border-radius: 6px !important;
-        font-size: 1.5rem !important;
-        cursor: pointer !important;
-        transition: background-color 0.3s !important;
-        padding: 10px 20px !important;
-    }
-
-    .minus-btn {
-        background-color: #ff6f61 !important;
-        color: white !important;
-    }
-
-    .minus-btn:hover {
-        background-color: #ff4d4d !important;
-    }
-
-    .add-btn {
-        background-color: #4CAF50 !important;
-        color: white !important;
-    }
-
-    .add-btn:hover {
-        background-color: #45a049 !important;
-    }
-
-    .cart_quantity {
-        font-size: 1.5rem !important;
-        text-align: center !important;
-        border: none !important;
-        width: 60px !important;
-    }
-
-    /* Add to Order Button */
-    .add-to-cart {
-        position: absolute !important;
-        bottom: 1rem !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        width: 90% !important;
-        padding: 0.5rem 0 !important;
-        background-color: #4682B4 !important;
-        color: #fff !important;
-        font-weight: bold !important;
-        text-align: center !important;
-        border-radius: 8px !important;
-        transition: background-color 0.3s !important;
-    }
-
-    .add-to-cart:hover {
-        background-color: #3578A6 !important;
-    }
-
-
-
-    /* Product item styles */
-    .product-item:hover {
-        transform: scale(1.02) !important;
-    }
-
-    /* Button hover effects */
-    .add-btn:hover,
-    .minus-btn:hover {
-        opacity: 0.8 !important;
-    }
-
-    /* Category menu styles */
-    #categoryMenu a:hover {
-        background-color: #e9ecef !important;
-    }
-
-    /* Responsive styling */
-</style>
-
-<!-- Body BEGIN -->
-
-<body class="ecommerce">
-
-    <!-- This is the Header and navigation -->
-    <?php
-
-    include './includes/navigation.php';
-    include './connections/connections.php';
-
-    ?>
-
-    <div class="main">
-        <div class="container">
-            <!-- Flex Container to keep Category Filter on the left -->
-            <div class="row margin-bottom-40">
-                <!-- Category Filter -->
-                <div class="col-md-3 col-sm-6 col-xs-5 category-filter"
-                    style="max-width: 250px; padding: 0 10px; flex-shrink: 0;">
-                    <div id="categoryMenu" style="border-radius: 8px; padding: 10px 0; background-color: #f9f9f9;">
-                        <ul style="list-style: none; padding-left: 0; margin: 0;">
-                            <li style="margin: 10px 0; text-align: center;">
-                                <a href="javascript:void(0)" onclick="filterProducts('')"
-                                    style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px; padding: 10px 15px; display: inline-block; width: 90%; border-radius: 5px; background-color: #fff; transition: background 0.3s;">
-                                    All Categories
-                                </a>
-                            </li>
-                            <?php
-                            $categoryQuery = "SELECT * FROM category";
-                            $categoryResult = $conn->query($categoryQuery);
-                            while ($categoryRow = $categoryResult->fetch_assoc()) {
-                                echo "<li style='margin: 10px 0; text-align: center;'><a href=\"javascript:void(0)\" onclick=\"filterProducts('" . $categoryRow['category_id'] . "')\" style=\"text-decoration: none; color: #333; font-size: 18px; padding: 10px 15px; display: inline-block; width: 90%; border-radius: 5px; background-color: #fff; transition: background 0.3s;\">" . htmlspecialchars($categoryRow['category_name']) . "</a></li>";
-                            }
-                            ?>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="col-md-9 col-sm-8 col-xs-7 special-product">
-                    <?php
-                    $categoryQuery = "SELECT * FROM category";
-                    $categoryResult = $conn->query($categoryQuery);
-                    while ($categoryRow = $categoryResult->fetch_assoc()) {
-                        $category_id = $categoryRow['category_id'];
-                        $category_name = htmlspecialchars($categoryRow['category_name']);
-                        $productQuery = "SELECT * FROM product WHERE category_id = '$category_id'";
-                        $productResult = $conn->query($productQuery);
-
-                        if ($productResult->num_rows > 0) {
-                            echo "<div class='category-products' data-category-id='$category_id'>";
-                            echo "<h3 style='font-size: 2rem; color: #800000; margin-top: 30px;'>$category_name:</h3>";
-                            echo "<div class='row'>";
-
-                            while ($row = $productResult->fetch_assoc()) {
-                                $product_image = basename($row['product_image']);
-                                $image_url = './uploads/' . $product_image;
+                                $colors = [];
+                                if ($colorResult && mysqli_num_rows($colorResult) > 0) {
+                                    $colors = mysqli_fetch_all($colorResult, MYSQLI_ASSOC);
+                                }
                                 ?>
-                                <div class="col-xs-12 col-sm-6 col-md-4" style="margin-bottom: 2rem;">
-                                    <div class="product-item"
-                                        style="display: flex; flex-direction: column; padding-bottom: 1rem; border: 1px solid #ddd; border-radius: 10px; position: relative; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: transform 0.3s; overflow: hidden;">
-                                        <div class="pi-img-wrapper" style="text-align: center; position: relative;">
-                                            <img src="<?php echo $image_url; ?>" class="img-responsive"
-                                                alt="<?php echo htmlspecialchars($row['product_name']); ?>"
-                                                style="width: 100%; height: auto; border-radius: 8px; transition: transform 0.3s;">
-                                        </div>
-                                        <h3 style="text-align: center; color: #333; font-size: 1.8rem; font-weight: bold;">
-                                            <?php echo htmlspecialchars($row['product_name']); ?>
-                                        </h3>
-                                        <div class="pi-price" style="text-align: center; color: #2E8B57; font-size: 1.5rem;">
-                                            ₱<?php echo number_format($row['product_sellingprice'], 2); ?>
-                                        </div>
 
-                                        <div class="pi-price" style="text-align: center; color: #2E8B57; font-size: 1.5rem;">
-                                            Stocks: <?php echo $row['product_stocks']; ?>
-                                        </div>
-                                        <div class="quantity-controls"
-                                            style="display: flex; justify-content: center; align-items: center; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; padding: 10px; background-color: #f9f9f9; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-                                            <button class="minus-btn"
-                                                style="background-color: #ff6f61; color: white; border: none; border-radius: 5px; width: 50px; height: 50px; cursor: pointer; transition: background-color 0.3s; font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">
-                                                -
-                                            </button>
-                                            <input type="number" class="cart_quantity" value="1" min="1"
-                                                style="width: 60px; text-align: center; border: none; outline: none; font-size: 1.5rem; margin: 0 10px; border-radius: 5px; height: 50px;">
-                                            <button class="add-btn"
-                                                style="background-color: #4CAF50; color: white; border: none; border-radius: 5px; width: 50px; height: 50px; cursor: pointer; transition: background-color 0.3s; font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">
-                                                +
-                                            </button>
-                                        </div>
-                                        <br>
-                                        <br>
-                                        <a href="javascript:void(0)" class="btn btn-default add-to-cart add2cart"
-                                            data-product-id="<?php echo $row['product_id']; ?>"
-                                            style="position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%); width: 90%; text-align: center; padding: 0.5rem 0; background-color: #4682B4; color: #fff; font-weight: bold; border-radius: 5px; transition: background-color 0.3s;">
-                                            Add to Order
-                                        </a>
+                                <!-- Display the price -->
+                                <p class="text-muted">$ <span id="productPrice"><?php echo number_format($initialPrice, 2); ?></span></p>
+                                <p><?php echo htmlspecialchars($product['product_description']); ?></p>
+
+                                <!-- Product Form -->
+                                <form id="productForm">
+                                    <div class="variation-container">
+                                        <!-- Size Variations -->
+                                        <?php if (!empty($variations)) { ?>
+                                            <h4>Available Sizes:</h4>
+                                            <div class="size-variations">
+                                                <?php foreach ($variations as $index => $variation) { ?>
+                                                    <button type="button" class="btn variation-toggle <?php echo $index === 0 ? 'active' : ''; ?>"
+                                                        data-bs-toggle="button" aria-pressed="<?php echo $index === 0 ? 'true' : 'false'; ?>" autocomplete="off"
+                                                        data-value="<?php echo htmlspecialchars(trim($variation['value'])); ?>"
+                                                        data-price="<?php echo htmlspecialchars(trim($variation['price'])); ?>"
+                                                        data-id="<?php echo htmlspecialchars(trim($variation['variation_id'])); ?>">
+                                                        <?php echo $variation['value']; ?>
+                                                    </button>
+                                                <?php } ?>
+                                            </div>
+                                        <?php } ?>
+
+                                        <!-- Hidden fields for size selection -->
+                                        <input type="hidden" name="selected_variation" id="selectedVariationId" value="<?php echo trim($variations[0]['variation_id'] ?? '-'); ?>">
+                                        <input type="hidden" name="selected_variation" id="selectedVariation" value="<?php echo trim($variations[0]['value'] ?? '-'); ?>">
+                                        <input type="hidden" name="selected_price" id="selectedPrice" value="<?php echo trim($variations[0]['price'] ?? '-'); ?>">
+
+                                        <!-- Color Variations (Now Positioned Below) -->
+                                        <?php if (!empty($colors)) { ?>
+                                            <h4>Available Colors:</h4>
+
+                                            <div class="color-variations">
+                                                <?php foreach ($colors as $index => $color) { ?>
+                                                    <button type="button" class="btn color-toggle <?php echo $index === 0 ? 'active' : ''; ?>"
+                                                        data-bs-toggle="button" aria-pressed="<?php echo $index === 0 ? 'true' : 'false'; ?>" autocomplete="off"
+                                                        data-color="<?php echo htmlspecialchars(trim($color['color'])); ?>"
+                                                        data-id="<?php echo htmlspecialchars(trim($color['variation_color_id'])); ?>">
+                                                        <?php echo ucfirst($color['color']); ?>
+                                                    </button>
+                                                <?php } ?>
+                                            </div>
+                                            <br>
+
+                                            <!-- Hidden fields for selected color and color ID -->
+                                            <input type="text" name="selected_color_id" id="selectedColorId" value="<?php echo trim($colors[0]['variation_color_id'] ?? '-'); ?>">
+                                            <input type="text" name="selected_color_name" id="selectedColorName" value="<?php echo trim($colors[0]['color'] ?? '-'); ?>">
+                                        <?php } ?>
+
+                                    </div>
+
+                                    <!-- Other hidden inputs -->
+                                    <input type="hidden" name="product_name" id="product_name" value="<?php echo $product_name; ?>">
+                                    <input type="hidden" name="product_image" id="product_image" value="<?php echo $product_image_no_base; ?>">
+                                    <input type="hidden" name="product_sellingprice" id="product_sellingprice" value="<?php echo $product_sellingprice; ?>">
+                                </form>
+
+                                <!-- CSS Styling -->
+                                <style>
+                                    .variation-container {
+                                        display: flex;
+                                        flex-direction: column;
+                                        gap: 10px;
+                                        /* Space between sections */
+                                    }
+
+                                    .size-variations,
+                                    .color-variations {
+                                        display: flex;
+                                        flex-wrap: wrap;
+                                        gap: 5px;
+                                    }
+                                </style>
+
+
+                                <!-- Quantity Selector -->
+                                <div>
+                                    <div class="input-group" style="max-width: 13rem;">
+                                        <button class="btn btn-outline-secondary" type="button" id="btn-minus">-</button>
+                                        <input type="number" id="quantity" name="quantity" class="form-control text-center" value="1" readonly>
+                                        <button class="btn btn-outline-secondary" type="button" id="btn-plus">+</button>
                                     </div>
                                 </div>
-                                <?php
-                            }
-                            echo "</div>";
-                            echo "</div>";
-                        }
-                    }
-                    ?>
+
+                                <!-- Add to Cart Button -->
+                                <button class="btn btn-primary btn-lg mt-4" id="addToCartBtn">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <!-- Start Product Section -->
+            <!-- <div class="footer-section">
+        <div class="container">
+          <h2>Product Description</h2>
+          <p></?php echo $product['product_description']; ?></p>
         </div>
-    </div>
-    <?php include './modals/not_logged_in.php' ?>
-    <?php include './includes/footer.php' ?>
-    <?php include './modals/modal_fast_view.php' ?>
-</body>
-<!-- END BODY -->
+      </div> -->
+            <!-- End Product Section -->
 
-</html>
+            <!-- Start Product Section -->
+            <div class="footer-section" style="text-align: center;">
+                <div class="container">
+                    <h2 style="margin-bottom: 20px;">You may also like</h2>
+                    <div id="productCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
+                        <div class="carousel-inner">
+                            <?php
+                            $sql = "SELECT * FROM product"; // Fetch all products
+                            $result = $conn->query($sql);
+
+                            if ($result->num_rows > 0) {
+                                $products = [];
+                                while ($row = $result->fetch_assoc()) {
+                                    $products[] = $row;
+                                }
+
+                                $totalProducts = count($products);
+                                $productsPerSlide = 4;
+
+                                // Loop through the products and create carousel items
+                                for ($i = 0; $i < $totalProducts; $i++) {
+                                    if ($i % $productsPerSlide == 0) {
+                                        $isActive = ($i == 0) ? 'active' : ''; // Set first item as active
+                                        echo "<div class='carousel-item $isActive'>";
+                                        echo '<div class="row">';
+                                    }
+
+                                    $product = $products[$i];
+                                    $product_image = basename($product['product_image']);
+
+                                    $image_url = './uploads/' . $product_image;
+                                    $product_id_you = $product['product_id'];
+
+                                    $product_name = htmlspecialchars($product['product_name']);
+                                    $product_price = number_format($product['product_sellingprice'], 2);
+
+                            ?>
+
+                                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-5">
+                                        <a href="product_details.php?product_id=<?php echo $product_id_you; ?>" target="_blank">
+                                            <div class="product-item">
+                                                <img src="<?php echo $image_url; ?>" class="img-fluid product-thumbnail"
+                                                    style="height: 200px; width: 100%; object-fit: cover; border-radius: 10px;">
+                                                <h3 class="product-title" style="font-size: 1rem; text-align: center; margin-top: 10px;">
+                                                    <?php echo $product_name; ?></h3>
+                                                <strong class="product-price" style="font-size: 1.2rem; margin-top: auto;">$
+                                                    <?php echo $product_price; ?></strong>
+                                            </div>
+                                        </a>
+                                    </div>
+                            <?php
+
+                                    // Close the row and carousel-item after every 4 products
+                                    if (($i + 1) % $productsPerSlide == 0 || $i == $totalProducts - 1) {
+                                        echo '</div>'; // Close row
+                                        echo '</div>'; // Close carousel-item
+                                    }
+                                }
+                            }
+                            ?>
+                        </div>
+
+                        <!-- Carousel controls -->
+                        <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- End Product Section -->
 
 
-<script src="assets/user/plugins/jquery.min.js" type="text/javascript"></script>
-<script src="assets/user/plugins/jquery-migrate.min.js" type="text/javascript"></script>
-<script src="assets/user/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
-<script src="assets/user/corporate/scripts/back-to-top.js" type="text/javascript"></script>
-<script src="assets/user/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
-<!-- END CORE PLUGINS -->
-
-<!-- BEGIN PAGE LEVEL JAVASCRIPTS (REQUIRED ONLY FOR CURRENT PAGE) -->
-<script src="assets/user/plugins/fancybox/source/jquery.fancybox.pack.js" type="text/javascript"></script>
-<!-- pop up -->
-<script src="assets/user/plugins/owl.carousel/owl.carousel.min.js" type="text/javascript"></script>
-<!-- slider for products -->
-<script src='assets/user/plugins/zoom/jquery.zoom.min.js' type="text/javascript"></script><!-- product zoom -->
-<script src="assets/user/plugins/bootstrap-touchspin/bootstrap.touchspin.js" type="text/javascript"></script>
-<!-- Quantity -->
-
-<script src="assets/user/corporate/scripts/layout.js" type="text/javascript"></script>
-<script src="assets/user/pages/scripts/bs-carousel.js" type="text/javascript"></script>
-
-<!-- Add Toastify CSS and JS -->
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-
-<script type="text/javascript">
-    jQuery(document).ready(function () {
-        Layout.init();
-        Layout.initOWL();
-        Layout.initImageZoom();
-        Layout.initTouchspin();
-        Layout.initTwitter();
-    });
-</script>
-<!-- END PAGE LEVEL JAVASCRIPTS -->
-
-<script type="text/javascript">
-    function filterProducts(categoryId) {
-        document.querySelectorAll('.category-products').forEach(categoryProducts => {
-            categoryProducts.style.display = categoryProducts.getAttribute('data-category-id') === categoryId || categoryId === '' ? 'block' : 'none';
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', () => filterProducts(''));
 
 
-    // Handle quantity increase and decrease buttons
-    $(document).on('click', '.add-btn', function () {
-        var quantityInput = $(this).siblings('.cart_quantity');
-        var currentValue = parseInt(quantityInput.val());
-        quantityInput.val(currentValue + 1);
-    });
+            <!-- Start Product Section -->
+            <div class="product-section">
+                <!-- THIS IS EMPTY FOR DIVISION -->
+            </div>
+            <!-- End Product Section -->
 
-    $(document).on('click', '.minus-btn', function () {
-        var quantityInput = $(this).siblings('.cart_quantity');
-        var currentValue = parseInt(quantityInput.val());
-        if (currentValue > 1) {
-            quantityInput.val(currentValue - 1);
-        }
-    });
+            <?php include './includes/footer.php'; ?>
 
-    $(document).ready(function () {
-        $('#categorySelect').change(function () {
-            var categoryId = $(this).val();
-            fetchProducts(categoryId);
-            // fetchSpecialProducts(categoryId);
-        });
+        </body>
 
-        // Function to fetch regular products based on selected category
-        function fetchProducts(categoryId) {
-            $.ajax({
-                url: '/blutmedical/controllers/users/fetch_products_process.php',
-                type: 'GET',
-                data: {
-                    category_id: categoryId
-                },
-                success: function (data) {
-                    $('#allProducts .row').html(data);
-                },
-                error: function (xhr, status, error) {
-                    console.error("Error fetching products:", error);
+        </html>
+
+        <style>
+            .carousel-control-prev-icon,
+            .carousel-control-next-icon {
+                /* Set the arrow background to black */
+                background-image: none;
+                /* Remove the default icon */
+            }
+
+            .carousel-control-prev-icon::after,
+            .carousel-control-next-icon::after {
+                content: '';
+                /* Clear any default content */
+                display: inline-block;
+                border: solid black;
+                /* Set arrow color */
+                border-width: 0 5px 5px 0;
+                padding: 10px;
+            }
+
+            .carousel-control-prev-icon::after {
+                transform: rotate(135deg);
+                /* Left arrow */
+            }
+
+            .carousel-control-next-icon::after {
+                transform: rotate(-45deg);
+                /* Right arrow */
+            }
+
+            #productStyles {
+                background: #fff;
+                border-radius: 5px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                padding: 1.5rem;
+                height: 100%;
+            }
+
+            #mainProductImage {
+                width: 100%;
+                transition: transform 0.3s ease;
+            }
+
+            /* Hidden zoomed image container */
+            #zoomedImage {
+                position: absolute;
+                /* Use absolute positioning */
+                width: 150px;
+                height: 150px;
+                background-color: rgba(255, 255, 255, 0.8);
+                display: none;
+                background-size: contain;
+                background-repeat: no-repeat;
+                pointer-events: none;
+                /* Prevent zoomed image from blocking clicks */
+                border-radius: 40%;
+                /* Circular effect */
+                border: 3px solid #000;
+                /* Border for better visibility */
+                transition: transform 0.1s ease;
+                z-index: 1000;
+                /* Make sure it's above other elements */
+            }
+
+            /* Thumbnail Image Styling */
+            .product-thumbnails img {
+                max-width: 100px;
+                margin-right: 10px;
+            }
+
+            /* Hover effect for thumbnails */
+            .product-thumbnails img:hover {
+                border: 2px solid #000;
+            }
+
+            .product-section h1 {
+                font-size: 2rem;
+                font-weight: bold;
+                color: #333333;
+                margin-bottom: 1rem;
+            }
+
+            .product-section .text-muted {
+                font-size: 1.2rem;
+                color: #666666;
+                margin-bottom: 1.5rem;
+            }
+
+            .product-section ul li {
+                font-size: 1rem;
+                color: #555555;
+                margin-bottom: 0.5rem;
+            }
+
+            .product-section .form-control {
+                font-size: 1.2rem;
+                border: 1px solid #ddd;
+                color: #333333;
+            }
+
+            /* Style for the toggle buttons */
+            .variation-toggle {
+                /* Default border */
+                color: rgb(0, 0, 0);
+                /* Default text color */
+                background-color: transparent;
+                /* Remove background */
+                transition: all 0.3s ease;
+            }
+
+            .color-toggle {
+                /* Default border */
+                color: rgb(0, 0, 0);
+                /* Default text color */
+                background-color: transparent;
+                /* Remove background */
+                transition: all 0.3s ease;
+            }
+
+            /* When button is pressed/toggled */
+            .variation-toggle.active,
+            .variation-toggle:focus {
+                border: 2px solid #007bff !important;
+                /* Lighter blue when active */
+                color: #0056b3 !important;
+            }
+
+            .color-toggle.active,
+            .color-toggle:focus {
+                border: 2px solid #007bff !important;
+                /* Lighter blue when active */
+                color: #0056b3 !important;
+            }
+
+            /* Prevents background color when clicked */
+            .variation-toggle:active {
+                background-color: transparent !important;
+            }
+
+            .color-toggle:active {
+                background-color: transparent !important;
+            }
+
+            form {
+                display: flex;
+                gap: 10px;
+            }
+        </style>
+
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+        <script>
+            document.querySelectorAll(".color-toggle").forEach(button => {
+                button.addEventListener("click", function() {
+                    // Remove 'active' class from all color buttons
+                    document.querySelectorAll(".color-toggle").forEach(btn => btn.classList.remove("active"));
+
+                    // Add 'active' class to the clicked button
+                    this.classList.add("active");
+
+                    // Set the hidden input fields to store the selected color ID and color name
+                    document.getElementById("selectedColorId").value = this.getAttribute("data-id"); // variation_color_id
+                    document.getElementById("selectedColorName").value = this.getAttribute("data-color"); // color name
+                });
+            });
+
+            const btnMinus = document.getElementById('btn-minus');
+            const btnPlus = document.getElementById('btn-plus');
+            const quantityInput = document.getElementById('quantity');
+
+            btnMinus.addEventListener('click', () => {
+                let currentValue = parseInt(quantityInput.value);
+                if (currentValue > 1) {
+                    quantityInput.value = currentValue - 1;
                 }
             });
-        }
 
-        $('.add-to-cart').click(function () {
-            var productId = $(this).data('product-id');
-            var $button = $(this);
-            var quantityInput = $button.closest('.product-item').find('.cart_quantity');
-            var quantity = parseInt(quantityInput.val()) || 1; // Default to 1 if no valid quantity
+            btnPlus.addEventListener('click', () => {
+                let currentValue = parseInt(quantityInput.value);
+                quantityInput.value = currentValue + 1;
+            });
+            document.addEventListener('DOMContentLoaded', () => {
+                // Attach click event to variation buttons
+                const buttons = document.querySelectorAll('.variation-toggle');
+                const productPrice = document.getElementById('productPrice');
+                const selectedVariationInput = document.getElementById('selectedVariation');
+                const selectedPriceInput = document.getElementById('selectedPrice');
+                const selectedVariationIdInput = document.getElementById('selectedVariationId'); // New input for variation_id
 
-            // Make AJAX call to add_cart_process.php
-            $.ajax({
-                url: '/blutmedical/controllers/users/add_cart_process.php',
-                method: 'POST',
-                data: {
-                    product_id: productId,
-                    cart_quantity: quantity
-                },
-                success: function (response) {
-                    try {
-                        var res = JSON.parse(response);
-                        if (res.success) {
-                            // Show success message using Toastify
-                            Toastify({
-                                text: res.message,
-                                duration: 3000,
-                                close: true,
-                                gravity: "top",
-                                position: "right",
-                                backgroundColor: "#4CAF50", // Green background for success
-                            }).showToast();
-                        } else {
-                            if (res.message === 'You are not logged in.') {
-                                // Show the modal instead of Toast
-                                $('#loginModal').modal('show');
-                            } else {
-                                // Show error message using Toastify
-                                Toastify({
-                                    text: res.message,
-                                    duration: 3000,
-                                    close: true,
-                                    gravity: "top",
-                                    position: "right",
-                                    backgroundColor: "#FF0000", // Red background for error
-                                }).showToast();
-                            }
-                        }
-                    } catch (e) {
-                        console.error("Invalid JSON response:", response);
-                        Toastify({
-                            text: "An unexpected error occurred.",
-                            duration: 3000,
-                            close: true,
-                            gravity: "top",
-                            position: "right",
-                            backgroundColor: "#FF0000", // Red background for error
-                        }).showToast();
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.log('Error: ' + error);
+                buttons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        // Untoggle all buttons
+                        buttons.forEach(btn => {
+                            btn.classList.remove('active');
+                            btn.setAttribute('aria-pressed', 'false');
+                        });
+
+                        // Toggle the clicked button
+                        button.classList.add('active');
+                        button.setAttribute('aria-pressed', 'true');
+
+                        // Update the displayed price
+                        const price = button.getAttribute('data-price');
+                        productPrice.textContent = parseFloat(price).toFixed(2);
+
+                        // Update the hidden input value for variation
+                        const variationValue = button.getAttribute('data-value');
+                        selectedVariationInput.value = variationValue;
+
+                        // Update the hidden input value for price
+                        selectedPriceInput.value = price;
+
+                        // Update the hidden input value for variation_id
+                        const variationId = button.getAttribute('data-id'); // Get the data-id
+                        selectedVariationIdInput.value = variationId; // Set it in the hidden input
+                    });
+                });
+            });
+
+
+
+
+            document.querySelector('#addToCartBtn').addEventListener('click', function() {
+                // Retrieve product ID securely from a hidden input or directly from PHP
+                const product_id = <?php echo isset($product_id) ? json_encode($product_id) : 'null'; ?>;
+
+                // Debug to verify
+                console.log("Product ID:", product_id);
+
+                if (!product_id) {
+                    console.error("Product ID is not defined!");
                     Toastify({
-                        text: "An error occurred. Please try again.",
+                        text: "Product ID is missing.",
                         duration: 3000,
                         close: true,
-                        gravity: "top",
-                        position: "right",
-                        backgroundColor: "#FF0000", // Red background for error
+                        gravity: 'top',
+                        position: 'right',
+                        backgroundColor: '#FF0000',
                     }).showToast();
+                    return;
+                }
+
+                // Retrieve quantity (default to 1 if invalid or empty)
+                var quantity = parseInt(document.getElementById('quantity').value) || 1;
+                var selectedPrice = document.getElementById('selectedPrice').value || '-';
+
+                var product_sellingprice = document.getElementById('product_sellingprice').value;
+
+                var selectedVariation = document.getElementById('selectedVariation').value;
+                var selectedVariationId = document.getElementById('selectedVariationId').value || null;
+                var selectedColorId = document.getElementById('selectedColorId').value || null;
+
+                var product_name = document.getElementById('product_name').value;
+                var product_image = document.getElementById('product_image').value;
+
+                // Get the button and store original text
+                var button = document.getElementById('addToCartBtn');
+                var originalText = button.textContent;
+
+                // Update button state
+                button.textContent = 'Adding to Cart...';
+                button.disabled = true;
+
+                // Check if the user is logged in
+                var isLoggedIn = <?php echo json_encode(isset($_SESSION['user_id'])); ?>;
+
+                // Prepare data for AJAX
+                var cartData = {
+                    product_id: product_id,
+                    price: selectedPrice || null,
+                    value: selectedVariation,
+                    variation_id: selectedVariationId, // Add variation_id to cartData
+                    cart_quantity: quantity,
+                    product_name: product_name,
+                    product_image: product_image,
+                    product_sellingprice: product_sellingprice,
+                    variation_color_id: selectedColorId,
+
+                };
+
+                if (isLoggedIn) {
+                    // User is logged in, perform AJAX call to add to the server cart
+                    $.ajax({
+                        url: '/blutmedical/controllers/users/add_cart_process.php',
+                        type: 'POST',
+                        data: cartData,
+                        dataType: 'json',
+                        success: function(response) {
+                            Toastify({
+                                text: response.message || (response.success ? 'Added to cart successfully!' : 'Failed to add to cart.'),
+                                duration: 3000,
+                                close: true,
+                                gravity: 'top',
+                                position: 'right',
+                                backgroundColor: response.success ? '#4CAF50' : '#FF0000',
+                            }).showToast();
+
+                            // Update the cart badge
+                            updateCartBadge();
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('AJAX Error:', error);
+                            Toastify({
+                                text: 'An unexpected error occurred while adding to cart.',
+                                duration: 3000,
+                                close: true,
+                                gravity: 'top',
+                                position: 'right',
+                                backgroundColor: '#FF0000',
+                            }).showToast();
+                        },
+                        complete: function() {
+                            button.textContent = originalText;
+                            button.disabled = false;
+                        },
+                    });
+                } else {
+                    // User is not logged in, update the guest cart in localStorage
+                    var cart = JSON.parse(localStorage.getItem('guestCart')) || [];
+                    var existingProductIndex = cart.findIndex(
+                        (item) =>
+                        item.product_id === product_id &&
+                        item.variation_id === selectedVariation &&
+                        item.variation_color_id === selectedVariationId // Check color variation too
+                    );
+
+                    if (existingProductIndex !== -1) {
+                        // Update quantity if the product already exists
+                        cart[existingProductIndex].cart_quantity += quantity;
+                    } else {
+                        // Add new product
+                        var cartData = {
+                            product_id: product_id,
+                            cart_quantity: quantity,
+                            variation_id: selectedVariation || null, // Ensure it handles cases with no size
+                            variation_color_id: selectedColorVariation || null, // Ensure it handles cases with no color
+                        };
+
+                        cart.push(cartData);
+                    }
+
+                    localStorage.setItem('guestCart', JSON.stringify(cart));
+
+                    Toastify({
+                        text: 'Added to cart as guest.',
+                        duration: 3000,
+                        close: true,
+                        gravity: 'top',
+                        position: 'right',
+                        backgroundColor: '#4CAF50',
+                    }).showToast();
+
+                    // Update the cart badge
+                    updateCartBadge();
+
+                    button.textContent = originalText;
+                    button.disabled = false;
+
                 }
             });
-        });
-    });
-</script>
+        </script>
+
+        <!-- Zoom JavaScript -->
+        <script>
+            // Change the main image when a thumbnail is clicked
+            function changeMainImage(imagePath) {
+                document.getElementById('mainProductImage').src = imagePath;
+            }
+
+            // Handle zoom effect on hover
+            var mainImage = document.getElementById('mainProductImage');
+            var zoomedImage = document.getElementById('zoomedImage');
+
+            mainImage.addEventListener('mousemove', function(e) {
+                var zoomScale = 1.5; // Scale factor
+                var offsetX = e.offsetX;
+                var offsetY = e.offsetY;
+
+                var x = (offsetX / mainImage.width) * 105;
+                var y = (offsetY / mainImage.height) * 100;
+
+                // Position the zoomed image next to the cursor
+                var zoomedImageX = e.pageX + 20; // 20px offset from cursor
+                var zoomedImageY = e.pageY + 20; // 20px offset from cursor
+
+                zoomedImage.style.display = 'block';
+                zoomedImage.style.backgroundImage = 'url(' + mainImage.src + ')';
+                zoomedImage.style.backgroundPosition = x + '% ' + y + '%';
+                zoomedImage.style.backgroundSize = (mainImage.width * zoomScale) + 'px ' + (mainImage.height * zoomScale) + 'px';
+                zoomedImage.style.left = zoomedImageX + 'px';
+                zoomedImage.style.top = zoomedImageY + 'px';
+            });
+
+            mainImage.addEventListener('mouseleave', function() {
+                zoomedImage.style.display = 'none';
+            });
+        </script>
+
+<?php
+    }
+}
+?>

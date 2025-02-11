@@ -19,7 +19,7 @@ if (isset($_GET['product_id'])) {
 
 
     $image_url = './uploads/' . $product_image;
-    ?>
+?>
 
     <!doctype html>
     <html lang="en">
@@ -94,15 +94,24 @@ if (isset($_GET['product_id'])) {
                 <hr>
 
                 <?php
-                // Fetch variations for the specific product
+                // Fetch variations for the specific product (Size)
                 $query = "SELECT * FROM variations WHERE product_id = $product_id";
                 $result = mysqli_query($conn, $query);
 
                 $variations = [];
-                $initialPrice = $product['product_sellingprice']; // Default to product price
+                $initialPrice = $product['product_sellingprice']; // Default product price
                 if ($result && mysqli_num_rows($result) > 0) {
                   $variations = mysqli_fetch_all($result, MYSQLI_ASSOC);
-                  $initialPrice = $variations[0]['price']; // Default to the price of the first variation
+                  $initialPrice = $variations[0]['price']; // Default to the first variation price
+                }
+
+                // Fetch color variations
+                $colorQuery = "SELECT * FROM variations_colors WHERE product_id = $product_id";
+                $colorResult = mysqli_query($conn, $colorQuery);
+
+                $colors = [];
+                if ($colorResult && mysqli_num_rows($colorResult) > 0) {
+                  $colors = mysqli_fetch_all($colorResult, MYSQLI_ASSOC);
                 }
                 ?>
 
@@ -110,40 +119,75 @@ if (isset($_GET['product_id'])) {
                 <p class="text-muted">$ <span id="productPrice"><?php echo number_format($initialPrice, 2); ?></span></p>
                 <p><?php echo htmlspecialchars($product['product_description']); ?></p>
 
-                <?php if (!empty($variations)) { ?>
-                  <h4>Available Sizes:</h4>
-                <?php } ?>
+                <!-- Product Form -->
+                <form id="productForm">
+                  <div class="variation-container">
+                    <!-- Size Variations -->
+                    <?php if (!empty($variations)) { ?>
+                      <h4>Available Sizes:</h4>
+                      <div class="size-variations">
+                        <?php foreach ($variations as $index => $variation) { ?>
+                          <button type="button" class="btn variation-toggle <?php echo $index === 0 ? 'active' : ''; ?>"
+                            data-bs-toggle="button" aria-pressed="<?php echo $index === 0 ? 'true' : 'false'; ?>" autocomplete="off"
+                            data-value="<?php echo htmlspecialchars(trim($variation['value'])); ?>"
+                            data-price="<?php echo htmlspecialchars(trim($variation['price'])); ?>"
+                            data-id="<?php echo htmlspecialchars(trim($variation['variation_id'])); ?>">
+                            <?php echo $variation['value']; ?>
+                          </button>
+                        <?php } ?>
+                      </div>
+                    <?php } ?>
 
-                <form id="sizeForm">
-                  <?php foreach ($variations as $index => $variation) { ?>
-                    <button id="selectedValue" type="button"
-                      class="btn variation-toggle <?php echo $index === 0 ? 'active' : ''; ?>" data-bs-toggle="button"
-                      aria-pressed="<?php echo $index === 0 ? 'true' : 'false'; ?>" autocomplete="off"
-                      data-value="<?php echo htmlspecialchars(trim($variation['value'])); ?>"
-                      data-price="<?php echo htmlspecialchars(trim($variation['price'])); ?>"
-                      data-id="<?php echo htmlspecialchars(trim($variation['variation_id'])); ?>"> <!-- Added data-id -->
-                      <?php echo $variation['value']; ?>
-                    </button>
-                  <?php } ?>
+                    <!-- Hidden fields for size selection -->
+                    <input type="hidden" name="selected_variation" id="selectedVariationId" value="<?php echo trim($variations[0]['variation_id'] ?? '-'); ?>">
+                    <input type="hidden" name="selected_variation" id="selectedVariation" value="<?php echo trim($variations[0]['value'] ?? '-'); ?>">
+                    <input type="hidden" name="selected_price" id="selectedPrice" value="<?php echo trim($variations[0]['price'] ?? '-'); ?>">
 
-                  <input type="hidden" name="selected_variation" id="selectedVariationId"
-                    value="<?php echo trim($variations[0]['variation_id'] ?? '-'); ?>">
+                    <!-- Color Variations (Now Positioned Below) -->
+                    <?php if (!empty($colors)) { ?>
+                      <h4>Available Colors:</h4>
 
-                  <input type="hidden" name="selected_variation" id="selectedVariation"
-                    value="<?php echo trim($variations[0]['value'] ?? '-'); ?>">
+                      <div class="color-variations">
+                        <?php foreach ($colors as $index => $color) { ?>
+                          <button type="button" class="btn color-toggle <?php echo $index === 0 ? 'active' : ''; ?>"
+                            data-bs-toggle="button" aria-pressed="<?php echo $index === 0 ? 'true' : 'false'; ?>" autocomplete="off"
+                            data-color="<?php echo htmlspecialchars(trim($color['color'])); ?>"
+                            data-id="<?php echo htmlspecialchars(trim($color['variation_color_id'])); ?>">
+                            <?php echo ucfirst($color['color']); ?>
+                          </button>
+                        <?php } ?>
+                      </div>
+                      <br>
 
-                  <input type="hidden" name="selected_price" id="selectedPrice"
-                    value="<?php echo trim($variations[0]['price'] ?? '-'); ?>">
-                  <!-- Default to '-' if empty or undefined -->
+                      <!-- Hidden fields for selected color and color ID -->
+                      <input type="text" name="selected_color_id" id="selectedColorId" value="<?php echo trim($colors[0]['variation_color_id'] ?? '-'); ?>">
+                      <input type="text" name="selected_color_name" id="selectedColorName" value="<?php echo trim($colors[0]['color'] ?? '-'); ?>">
+                    <?php } ?>
+                  </div>
 
+                  <!-- Other hidden inputs -->
                   <input type="hidden" name="product_name" id="product_name" value="<?php echo $product_name; ?>">
-                  <input type="hidden" name="product_image" id="product_image"
-                    value="<?php echo $product_image_no_base; ?>">
-                  <input type="hidden" name="product_sellingprice" id="product_sellingprice"
-                    value="<?php echo $product_sellingprice; ?>">
+                  <input type="hidden" name="product_image" id="product_image" value="<?php echo $product_image_no_base; ?>">
+                  <input type="hidden" name="product_sellingprice" id="product_sellingprice" value="<?php echo $product_sellingprice; ?>">
                 </form>
 
-                <br>
+                <!-- CSS Styling -->
+                <style>
+                  .variation-container {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    /* Space between sections */
+                  }
+
+                  .size-variations,
+                  .color-variations {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 5px;
+                  }
+                </style>
+
 
                 <!-- Quantity Selector -->
                 <div>
@@ -209,7 +253,7 @@ if (isset($_GET['product_id'])) {
                   $product_name = htmlspecialchars($product['product_name']);
                   $product_price = number_format($product['product_sellingprice'], 2);
 
-                  ?>
+              ?>
 
                   <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-5">
                     <a href="product_details.php?product_id=<?php echo $product_id_you; ?>" target="_blank">
@@ -223,7 +267,7 @@ if (isset($_GET['product_id'])) {
                       </div>
                     </a>
                   </div>
-                  <?php
+              <?php
 
                   // Close the row and carousel-item after every 4 products
                   if (($i + 1) % $productsPerSlide == 0 || $i == $totalProducts - 1) {
@@ -373,6 +417,15 @@ if (isset($_GET['product_id'])) {
         transition: all 0.3s ease;
       }
 
+      .color-toggle {
+        /* Default border */
+        color: rgb(0, 0, 0);
+        /* Default text color */
+        background-color: transparent;
+        /* Remove background */
+        transition: all 0.3s ease;
+      }
+
       /* When button is pressed/toggled */
       .variation-toggle.active,
       .variation-toggle:focus {
@@ -381,8 +434,19 @@ if (isset($_GET['product_id'])) {
         color: #0056b3 !important;
       }
 
+      .color-toggle.active,
+      .color-toggle:focus {
+        border: 2px solid #007bff !important;
+        /* Lighter blue when active */
+        color: #0056b3 !important;
+      }
+
       /* Prevents background color when clicked */
       .variation-toggle:active {
+        background-color: transparent !important;
+      }
+
+      .color-toggle:active {
         background-color: transparent !important;
       }
 
@@ -397,6 +461,20 @@ if (isset($_GET['product_id'])) {
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
     <script>
+      document.querySelectorAll(".color-toggle").forEach(button => {
+        button.addEventListener("click", function() {
+          // Remove 'active' class from all color buttons
+          document.querySelectorAll(".color-toggle").forEach(btn => btn.classList.remove("active"));
+
+          // Add 'active' class to the clicked button
+          this.classList.add("active");
+
+          // Set the hidden input fields to store the selected color ID and color name
+          document.getElementById("selectedColorId").value = this.getAttribute("data-id"); // variation_color_id
+          document.getElementById("selectedColorName").value = this.getAttribute("data-color"); // color name
+        });
+      });
+
       const btnMinus = document.getElementById('btn-minus');
       const btnPlus = document.getElementById('btn-plus');
       const quantityInput = document.getElementById('quantity');
@@ -453,7 +531,7 @@ if (isset($_GET['product_id'])) {
 
 
 
-      document.querySelector('#addToCartBtn').addEventListener('click', function () {
+      document.querySelector('#addToCartBtn').addEventListener('click', function() {
         // Retrieve product ID securely from a hidden input or directly from PHP
         const product_id = <?php echo isset($product_id) ? json_encode($product_id) : 'null'; ?>;
 
@@ -481,6 +559,10 @@ if (isset($_GET['product_id'])) {
 
         var selectedVariation = document.getElementById('selectedVariation').value;
         var selectedVariationId = document.getElementById('selectedVariationId').value || null;
+        var selectedColorId = document.getElementById('selectedColorId').value || null;
+        var selectedColorName = document.getElementById('selectedColorName').value || null;
+
+
         var product_name = document.getElementById('product_name').value;
         var product_image = document.getElementById('product_image').value;
 
@@ -505,6 +587,10 @@ if (isset($_GET['product_id'])) {
           product_name: product_name,
           product_image: product_image,
           product_sellingprice: product_sellingprice,
+          variation_color_id: selectedColorId,
+          color: selectedColorName,
+
+
         };
 
         if (isLoggedIn) {
@@ -514,7 +600,7 @@ if (isset($_GET['product_id'])) {
             type: 'POST',
             data: cartData,
             dataType: 'json',
-            success: function (response) {
+            success: function(response) {
               Toastify({
                 text: response.message || (response.success ? 'Added to cart successfully!' : 'Failed to add to cart.'),
                 duration: 3000,
@@ -527,7 +613,7 @@ if (isset($_GET['product_id'])) {
               // Update the cart badge
               updateCartBadge();
             },
-            error: function (xhr, status, error) {
+            error: function(xhr, status, error) {
               console.error('AJAX Error:', error);
               Toastify({
                 text: 'An unexpected error occurred while adding to cart.',
@@ -538,7 +624,7 @@ if (isset($_GET['product_id'])) {
                 backgroundColor: '#FF0000',
               }).showToast();
             },
-            complete: function () {
+            complete: function() {
               button.textContent = originalText;
               button.disabled = false;
             },
@@ -547,7 +633,9 @@ if (isset($_GET['product_id'])) {
           // User is not logged in, update the guest cart in localStorage
           var cart = JSON.parse(localStorage.getItem('guestCart')) || [];
           var existingProductIndex = cart.findIndex(
-            (item) => item.product_id === product_id && item.value === selectedVariation
+            (item) => item.product_id === product_id &&
+            item.value === selectedVariation &&
+            item.color === selectedColorName
           );
 
           if (existingProductIndex !== -1) {
@@ -589,7 +677,7 @@ if (isset($_GET['product_id'])) {
       var mainImage = document.getElementById('mainProductImage');
       var zoomedImage = document.getElementById('zoomedImage');
 
-      mainImage.addEventListener('mousemove', function (e) {
+      mainImage.addEventListener('mousemove', function(e) {
         var zoomScale = 1.5; // Scale factor
         var offsetX = e.offsetX;
         var offsetY = e.offsetY;
@@ -609,12 +697,12 @@ if (isset($_GET['product_id'])) {
         zoomedImage.style.top = zoomedImageY + 'px';
       });
 
-      mainImage.addEventListener('mouseleave', function () {
+      mainImage.addEventListener('mouseleave', function() {
         zoomedImage.style.display = 'none';
       });
     </script>
 
-    <?php
+<?php
   }
 }
 ?>

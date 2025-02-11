@@ -153,7 +153,7 @@
         url: '/blutmedical/controllers/users/fetch_cart_process.php',
         method: 'GET',
         dataType: 'json',
-        success: function (response) {
+        success: function(response) {
           console.log('Cart Data:', response);
 
           var cartContent = '';
@@ -161,11 +161,13 @@
 
           if (response.success) {
             if (response.items.length > 0) {
-              $.each(response.items, function (index, item) {
+              $.each(response.items, function(index, item) {
                 var productPrice = parseFloat(item.product_sellingprice) || 0;
                 var cartQuantity = parseInt(item.cart_quantity, 10) || 0;
                 var variationId = item.variation_id;
                 var productId = item.product_id;
+                var variationColorId = item.variation_color_id;
+
                 var baseURL = "/blutmedical/";
 
                 var variationPrice = item.variation_id ? parseFloat(item.price) : productPrice; // Check if variation_id exists
@@ -190,7 +192,8 @@
                 cartContent += '</div>';
                 cartContent += '</td>';
                 cartContent += '<td>₱ ' + (variationPrice * cartQuantity).toFixed(2) + '</td>'; // Display total price with variation if available
-                cartContent += '<td><a href="#" class="btn btn-black btn-sm remove-item" data-product-id="' + productId + '" data-variation-id="' + variationId + '">X</a></td>';
+                cartContent += '<td><a href="#" class="btn btn-black btn-sm remove-item" data-product-id="' + productId + '" data-variation-id="' + variationId + '" data-variation-color-id="' + variationColorId + '">X</a></td>';
+
 
                 cartContent += '</tr>';
 
@@ -216,7 +219,7 @@
 
           }
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
           console.error('AJAX Error:', error);
         }
       });
@@ -228,10 +231,12 @@
         var cartContent = '';
         var totalPrice = 0;
 
-        $.each(guestCart, function (index, item) {
+        $.each(guestCart, function(index, item) {
 
           var productId = item.product_id;
           var variationId = item.variation_id;
+          var variationColorId = item.variation_color_id;
+
 
           var cartQuantity = parseInt(item.cart_quantity, 10) || 0;
           var variationPrice = item.price !== '-' ? parseFloat(item.price) : parseFloat(item.product_sellingprice); // Check if price is not '-', otherwise use product_sellingprice
@@ -257,7 +262,7 @@
           cartContentRow += '</div>';
           cartContentRow += '</td>';
           cartContentRow += '<td>₱ ' + (variationPrice * cartQuantity).toFixed(2) + '</td>';
-          cartContentRow += '<td><a href="#" class="btn btn-black btn-sm remove-item" data-product-id="' + productId + '" data-variation-id="' + variationId + '">X</a></td>';
+          cartContentRow += '<td><a href="#" class="btn btn-black btn-sm remove-item" data-product-id="' + productId + '" data-variation-id="' + variationId + '" data-variation-color-id="' + variationColorId + '">X</a></td>';
           cartContentRow += '</tr>';
 
           cartContent += cartContentRow;
@@ -285,7 +290,7 @@
   }
 
   // Delete cart item (handles both database and localStorage-based carts)
-  function deleteCartItem(productId, variationId) {
+  function deleteCartItem(productId, variationId, variationColorId) {
     // Check if the user is logged in
     var isLoggedIn = <?php echo json_encode(isset($_SESSION['user_id'])); ?>;
 
@@ -296,10 +301,12 @@
         method: 'POST',
         data: {
           product_id: productId,
-          variation_id: variationId
+          variation_id: variationId,
+          variation_color_id: variationColorId
+
         },
         dataType: 'json',
-        success: function (response) {
+        success: function(response) {
           if (response.success) {
             Toastify({
               text: "Item removed from cart.",
@@ -318,21 +325,23 @@
             }).showToast();
           }
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
           console.error('AJAX Error:', error);
         }
       });
     } else {
-      $(document).on('click', '.remove-item', function (event) {
+      $(document).on('click', '.remove-item', function(event) {
         event.preventDefault(); // Prevent default link behavior
         var productId = $(this).data('product-id');
         var variationId = $(this).data('variation-id'); // Include variation ID
+        var variationColorId = $(this).data('variation-color-id'); // Include variation ID
+
 
         // Retrieve the current guestCart from localStorage
         var cart = JSON.parse(localStorage.getItem('guestCart')) || [];
 
         // Filter out the item based on both productId and variationId
-        var updatedCart = cart.filter(item => !(item.product_id == productId && item.variation_id == variationId));
+        var updatedCart = cart.filter(item => !(item.product_id == productId && item.variation_id == variationId && item.variation_color_id == variationColorId));
 
         // Update localStorage with the filtered cart
         localStorage.setItem('guestCart', JSON.stringify(updatedCart));
@@ -356,26 +365,31 @@
 
   if (isLoggedIn) {
     // Event listener for the remove button
-    $(document).on('click', '.remove-item', function (event) {
+    $(document).on('click', '.remove-item', function(event) {
       event.preventDefault(); // Prevent default link behavior
       var productId = $(this).data('product-id');
       var variationId = $(this).data('variation-id'); // Include variation ID
-      deleteCartItem(productId, variationId);
+      var variationColorId = $(this).data('variation-color-id'); // Include variation ID
+
+      deleteCartItem(productId, variationId, variationColorId);
       console.log(variationId)
       console.log(productId)
+      console.log(variationColorId)
+
     });
 
   } else {
-    $(document).on('click', '.remove-item', function (event) {
+    $(document).on('click', '.remove-item', function(event) {
       event.preventDefault(); // Prevent default link behavior
       var productId = $(this).data('product-id');
       var variationId = $(this).data('variation-id'); // Include variation ID
+      var variationColorId = $(this).data('variation-color-id');
 
       // Retrieve the current guestCart from localStorage
       var cart = JSON.parse(localStorage.getItem('guestCart')) || [];
 
       // Filter out the item based on both productId and variationId
-      var updatedCart = cart.filter(item => !(item.product_id == productId && item.variation_id == variationId));
+      var updatedCart = cart.filter(item => !(item.product_id == productId && item.variation_id == variationId && item.variation_color_id == variationColorId));
 
       // Update localStorage with the filtered cart
       localStorage.setItem('guestCart', JSON.stringify(updatedCart));
@@ -393,7 +407,7 @@
     });
   }
 
-  function updateCartQuantity(productId, variationId, action) {
+  function updateCartQuantity(productId, variationId, variationColorId, action) {
     var isLoggedIn = <?php echo json_encode(isset($_SESSION['user_id'])); ?>;
 
     if (isLoggedIn) {
@@ -404,10 +418,12 @@
         data: {
           product_id: productId,
           variation_id: variationId,
+          variation_color_id: variationColorId,
+
           action: action
         },
         dataType: 'json',
-        success: function (response) {
+        success: function(response) {
           if (response.success) {
             Toastify({
               text: "Cart quantity updated.",
@@ -425,7 +441,7 @@
             }).showToast();
           }
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
           console.error('AJAX Error:', error);
         }
       });
@@ -434,8 +450,8 @@
       var cart = JSON.parse(localStorage.getItem('guestCart')) || [];
       console.log(cart);
 
-      $.each(cart, function (index, item) {
-        if (item.product_id == productId && item.variation_id == variationId) {
+      $.each(cart, function(index, item) {
+        if (item.product_id == productId && item.variation_id == variationId && item.variation_color_id == variationColorId) {
 
           if (action === 'increase') {
             item.cart_quantity++; // Increment the cart quantity
@@ -458,24 +474,28 @@
   }
 
   // Event listeners for increase and decrease buttons
-  $(document).on('click', '.increase', function (event) {
+  $(document).on('click', '.increase', function(event) {
     var productId = $(this).closest('tr').find('.remove-item').data('product-id');
     var variationId = $(this).closest('tr').find('.remove-item').data('variation-id');
-    updateCartQuantity(productId, variationId, 'increase');
+    var variationColorId = $(this).closest('tr').find('.remove-item').data('variation-color-id');
+
+    updateCartQuantity(productId, variationId, variationColorId, 'increase');
   });
 
-  $(document).on('click', '.decrease', function (event) {
+  $(document).on('click', '.decrease', function(event) {
     var productId = $(this).closest('tr').find('.remove-item').data('product-id');
     var variationId = $(this).closest('tr').find('.remove-item').data('variation-id');
-    updateCartQuantity(productId, variationId, 'decrease');
+    var variationColorId = $(this).closest('tr').find('.remove-item').data('variation-color-id');
+
+    updateCartQuantity(productId, variationId, variationColorId, 'decrease');
   });
 
   // Call the updateCart function to render the cart on page load
-  $(document).ready(function () {
+  $(document).ready(function() {
     updateCart();
   });
 
-  $('#checkoutModal').on('show.bs.modal', function () {
+  $('#checkoutModal').on('show.bs.modal', function() {
     var isLoggedIn = <?php echo json_encode(isset($_SESSION['user_id'])); ?>;
 
     if (isLoggedIn) {
@@ -484,13 +504,13 @@
         type: 'POST',
         url: '/blutmedical/controllers/users/fetch_cart_last_process.php',
         dataType: 'json',
-        success: function (response) {
+        success: function(response) {
           if (response.success) {
             var cartItemsHtml = '';
             var totalPrice = 0;
 
             // Loop through cart items and create table rows
-            response.cartItems.forEach(function (item) {
+            response.cartItems.forEach(function(item) {
               var productPrice = parseFloat(item.product_sellingprice) || 0;
               var cartQuantity = parseInt(item.cart_quantity, 10) || 0;
               var variationId = item.variation_id;
@@ -519,7 +539,7 @@
             alert('Error fetching cart items');
           }
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
           console.error('Error fetching cart:', error);
           alert('An error occurred while fetching the cart.');
         }
@@ -531,7 +551,7 @@
       var totalPrice = 0;
 
       // Loop through localStorage cart items and create table rows
-      cart.forEach(function (item) {
+      cart.forEach(function(item) {
         var productPrice = parseFloat(item.product_sellingprice) || 0;
         var cartQuantity = parseInt(item.cart_quantity, 10) || 0;
         var variationId = item.variation_id;
