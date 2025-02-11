@@ -160,11 +160,11 @@ if (isset($_GET['product_id'])) {
                       <br>
 
                       <!-- Hidden fields for selected color and color ID -->
-                      <input type="text" name="selected_color_id" id="selectedColorId" value="<?php echo trim($colors[0]['variation_color_id'] ?? '-'); ?>">
-                      <input type="text" name="selected_color_name" id="selectedColorName" value="<?php echo trim($colors[0]['color'] ?? '-'); ?>">
+
                     <?php } ?>
                   </div>
-
+                  <input type="hidden" name="selected_color_id" id="selectedColorId" value="<?php echo trim($colors[0]['variation_color_id'] ?? ''); ?>">
+                  <input type="hidden" name="selected_color_name" id="selectedColorName" value="<?php echo trim($colors[0]['color'] ?? '-'); ?>">
                   <!-- Other hidden inputs -->
                   <input type="hidden" name="product_name" id="product_name" value="<?php echo $product_name; ?>">
                   <input type="hidden" name="product_image" id="product_image" value="<?php echo $product_image_no_base; ?>">
@@ -188,7 +188,7 @@ if (isset($_GET['product_id'])) {
                   }
                 </style>
 
-
+                <br>
                 <!-- Quantity Selector -->
                 <div>
                   <div class="input-group" style="max-width: 13rem;">
@@ -587,8 +587,8 @@ if (isset($_GET['product_id'])) {
           product_name: product_name,
           product_image: product_image,
           product_sellingprice: product_sellingprice,
-          variation_color_id: selectedColorId,
-          color: selectedColorName,
+          variation_color_id: selectedColorId || null,
+          color: selectedColorName || null,
 
 
         };

@@ -67,7 +67,7 @@ if ($result) {
             </div>
             <div class="form-group col-md-6">
               <label for="product_image">Main Product Image:</label>
-              <input type="file" class="form-control" id="product_image" name="fileToUpload" required>
+              <input type="file" class="form-control" id="product_image" name="fileToUpload">
             </div>
           </div>
 

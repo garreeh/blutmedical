@@ -9,6 +9,7 @@ if (isset($_POST['add_product'])) {
 
     $target_dir = "../../uploads/";
     $uploaded_main_file = "";
+    $main_picture = NULL; // Set main_picture to NULL initially
     $additional_files_uploaded = [];
 
     // Handle the main product image (single file)

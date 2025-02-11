@@ -177,7 +177,7 @@
                 cartContent += '<tr>';
                 cartContent += '<td class="product-thumbnail"><img src="' + baseURL + item.product_image.replace(/^\.\.\//, baseURL + '') + '" alt="' + item.name + '" class="img-fluid"></td>';
                 cartContent += '<td>' + item.product_name + '</td>';
-                cartContent += '<td>₱ ' + variationPrice.toFixed(2) + '</td>'; // Display variation price if available, otherwise product price
+                cartContent += '<td>$ ' + variationPrice.toFixed(2) + '</td>'; // Display variation price if available, otherwise product price
                 cartContent += '<td>' + variationValue + '</td>';
 
                 cartContent += '<td>';
@@ -191,7 +191,7 @@
                 cartContent += '</div>';
                 cartContent += '</div>';
                 cartContent += '</td>';
-                cartContent += '<td>₱ ' + (variationPrice * cartQuantity).toFixed(2) + '</td>'; // Display total price with variation if available
+                cartContent += '<td>$ ' + (variationPrice * cartQuantity).toFixed(2) + '</td>'; // Display total price with variation if available
                 cartContent += '<td><a href="#" class="btn btn-black btn-sm remove-item" data-product-id="' + productId + '" data-variation-id="' + variationId + '" data-variation-color-id="' + variationColorId + '">X</a></td>';
 
 
@@ -201,8 +201,8 @@
               });
 
               $('#cart-items').html(cartContent);
-              $('#cart-subtotal').text('₱ ' + totalPrice.toFixed(2));
-              $('#cart-total').text('₱ ' + (totalPrice + 35).toFixed(2));
+              $('#cart-subtotal').text('$ ' + totalPrice.toFixed(2));
+              $('#cart-total').text('$ ' + (totalPrice).toFixed(2));
 
               if (response.items.length > 0) {
                 $('#checkout-button').show();
@@ -212,8 +212,8 @@
             } else {
               cartContent = '<tr><td colspan="6" class="text-center">Cart is empty</td></tr>';
               $('#cart-items').html(cartContent);
-              $('#cart-subtotal').text('₱ 0.00');
-              $('#cart-total').text('₱ 0.00');
+              $('#cart-subtotal').text('$ 0.00');
+              $('#cart-total').text('$ 0.00');
               $('#checkout-button').hide();
             }
 
@@ -248,7 +248,7 @@
 
           cartContentRow += '<td class="product-thumbnail"><img src="' + baseURL + item.product_image.replace(/^\.\.\//, baseURL + '') + '" alt="' + item.product_image + '" class="img-fluid"></td>';
           cartContentRow += '<td>' + item.product_name + '</td>';
-          cartContentRow += '<td>₱ ' + variationPrice.toFixed(2) + '</td>';
+          cartContentRow += '<td>$ ' + variationPrice.toFixed(2) + '</td>';
           cartContentRow += '<td>' + (item.value !== null ? item.value : '-') + '</td>';
           cartContentRow += '<td>';
           cartContentRow += '<div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">';
@@ -261,7 +261,7 @@
           cartContentRow += '</div>';
           cartContentRow += '</div>';
           cartContentRow += '</td>';
-          cartContentRow += '<td>₱ ' + (variationPrice * cartQuantity).toFixed(2) + '</td>';
+          cartContentRow += '<td>$ ' + (variationPrice * cartQuantity).toFixed(2) + '</td>';
           cartContentRow += '<td><a href="#" class="btn btn-black btn-sm remove-item" data-product-id="' + productId + '" data-variation-id="' + variationId + '" data-variation-color-id="' + variationColorId + '">X</a></td>';
           cartContentRow += '</tr>';
 
@@ -271,8 +271,8 @@
         });
 
         $('#cart-items').html(cartContent);
-        $('#cart-subtotal').text('₱ ' + totalPrice.toFixed(2));
-        $('#cart-total').text('₱ ' + (totalPrice + 35).toFixed(2));
+        $('#cart-subtotal').text('$ ' + totalPrice.toFixed(2));
+        $('#cart-total').text('$ ' + (totalPrice).toFixed(2));
 
         if (guestCart.length > 0) {
           $('#checkout-button').show();
@@ -281,8 +281,8 @@
         }
       } else {
         $('#cart-items').html('<tr><td colspan="6" class="text-center">Cart is empty</td></tr>');
-        $('#cart-subtotal').text('₱ 0.00');
-        $('#cart-total').text('₱ 0.00');
+        $('#cart-subtotal').text('$ 0.00');
+        $('#cart-total').text('$ 0.00');
         $('#checkout-button').hide();
       }
 
@@ -525,8 +525,8 @@
               cartItemsHtml += '<tr>';
               cartItemsHtml += '<td>' + item.product_name + '</td>';
               cartItemsHtml += '<td>' + cartQuantity + '</td>';
-              cartItemsHtml += '<td>₱ ' + variationPrice.toFixed(2) + '</td>';
-              cartItemsHtml += '<td>₱ ' + itemTotal.toFixed(2) + '</td>';
+              cartItemsHtml += '<td>$ ' + variationPrice.toFixed(2) + '</td>';
+              cartItemsHtml += '<td>$ ' + itemTotal.toFixed(2) + '</td>';
               cartItemsHtml += '</tr>';
 
               totalPrice += itemTotal;
@@ -534,7 +534,7 @@
 
             // Update the cart content and total price in the modal
             $('#order-summary').html(cartItemsHtml);
-            $('#total-amount').text('₱ ' + totalPrice.toFixed(2));
+            $('#total-amount').text('$ ' + totalPrice.toFixed(2));
           } else {
             alert('Error fetching cart items');
           }
@@ -567,8 +567,8 @@
         cartItemsHtml += '<tr>';
         cartItemsHtml += '<td>' + item.product_name + '</td>';
         cartItemsHtml += '<td>' + cartQuantity + '</td>';
-        cartItemsHtml += '<td>₱ ' + variationPrice.toFixed(2) + '</td>';
-        cartItemsHtml += '<td>₱ ' + itemTotal.toFixed(2) + '</td>';
+        cartItemsHtml += '<td>$ ' + variationPrice.toFixed(2) + '</td>';
+        cartItemsHtml += '<td>$ ' + itemTotal.toFixed(2) + '</td>';
         cartItemsHtml += '</tr>';
 
         totalPrice += itemTotal;
@@ -576,7 +576,7 @@
 
       // Update the cart content and total price in the modal
       $('#order-summary').html(cartItemsHtml);
-      $('#total-amount').text('₱ ' + totalPrice.toFixed(2));
+      $('#total-amount').text('$ ' + totalPrice.toFixed(2));
     }
   });
 </script>

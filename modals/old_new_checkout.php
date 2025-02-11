@@ -79,11 +79,11 @@
   </div>
 </div>
 
-<!-- <script
-  src="https://www.paypal.com/sdk/js?client-id=AYwMIA4BQ3ThhTRprUJQMbfrjA4ZyiXwaMh5mZ28cKJAo_wngfye9Bsq1JK4SbJhuWxn0MNx6iynWRzR&currency=USD"></script> -->
-
 <script
-  src="https://www.paypal.com/sdk/js?client-id=AfcJOedIT9WM3IBgUd8D4uEiAXppkMsftrR2DRtcm8CUco5sptEShId2hujHrtNd_FK7gzOyzbV53zsX"></script>
+  src="https://www.paypal.com/sdk/js?client-id=AYwMIA4BQ3ThhTRprUJQMbfrjA4ZyiXwaMh5mZ28cKJAo_wngfye9Bsq1JK4SbJhuWxn0MNx6iynWRzR&currency=USD"></script>
+
+<!-- <script
+  src="https://www.paypal.com/sdk/js?client-id=AfcJOedIT9WM3IBgUd8D4uEiAXppkMsftrR2DRtcm8CUco5sptEShId2hujHrtNd_FK7gzOyzbV53zsX"></script> -->
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 

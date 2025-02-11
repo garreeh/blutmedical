@@ -232,7 +232,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
   $(document).ready(function() {
     // Function to handle click event on datatable rows
-    $('#product_table').on('click', 'tr td:nth-child(6) .fetchDataProductDelete', function() {
+    $('#product_table').on('click', 'tr td:nth-child(7) .fetchDataProductDelete', function() {
       event.preventDefault();
       var product_id = $(this).closest('tr').find('td').first().text(); // Get the product_id from the clicked row
 

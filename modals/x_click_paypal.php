@@ -27,8 +27,9 @@
         </div>
         <hr>
 
-        <!-- Payment Section -->
-        <form id="checkoutForm">
+        <form name="_xclick" action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
+          <!-- Live -->
+          <!-- <form id="checkoutForm" action="https://www.paypal.com/webapps/mpp/paypal-popup" method="POST"> -->
           <div class="form-group">
             <label for="payment-category">Select Payment Method:</label>
             <div>
@@ -64,10 +65,25 @@
                 placeholder="Enter Email">
             </div>
           </div>
-          <div id="paypal-button-container" style="display: none;"></div>
 
+          <div style="display: none;">
+            <input type="hidden" name="cmd" value="_xclick">
+            <!-- Sandbox Account -->
+            <input type="hidden" name="business" value="sb-k0bzq36921768@business.example.com">
 
+            <!-- Live Pendragon Veterinary Account -->
+            <!-- <input type="hidden" name="business" value="admin@pendragonvet.com"> -->
 
+            <input type="hidden" name="currency_code" value="USD">
+            <!-- <input type="hidden" name="item_name" value="Biling"> -->
+            <input type="hidden" name="amount" id="paypal-amount" value="0.00"> <!-- Total amount will be set dynamically -->
+            <input type="hidden" name="return" value="http://localhost/blutmedical/thankyou.php"> <!-- Replace with your return URL -->
+            <input type="hidden" name="cancel_return" value="http://localhost/blutmedical/cancel.php"> <!-- Replace with your cancel URL -->
+          </div>
+
+          <button type="submit" id="paypal-submit-button" style="display: none !important; width: 29rem !important;" class="btn btn-primary">
+            <img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-large.png" alt="Pay with PayPal" />
+          </button>
         </form>
       </div>
       <div class="modal-footer">
@@ -80,10 +96,10 @@
 </div>
 
 <!-- <script
-  src="https://www.paypal.com/sdk/js?client-id=AYwMIA4BQ3ThhTRprUJQMbfrjA4ZyiXwaMh5mZ28cKJAo_wngfye9Bsq1JK4SbJhuWxn0MNx6iynWRzR&currency=USD"></script> -->
+  src="https://www.paypal.com/sdk/js?client-id=AYwMIA4BQ3ThhTRprUJQMbfrjA4ZyiXwaMh5mZ28cKJAo_wngfye9Bsq1JK4SbJhuWxn0MNx6iynWRzR&currency=PHP"></script> -->
 
-<script
-  src="https://www.paypal.com/sdk/js?client-id=AfcJOedIT9WM3IBgUd8D4uEiAXppkMsftrR2DRtcm8CUco5sptEShId2hujHrtNd_FK7gzOyzbV53zsX"></script>
+<!-- <script
+  src="https://www.paypal.com/sdk/js?client-id=AfcJOedIT9WM3IBgUd8D4uEiAXppkMsftrR2DRtcm8CUco5sptEShId2hujHrtNd_FK7gzOyzbV53zsX"></script> -->
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -326,11 +342,11 @@
 
       // Enable/Disable the submit button based on field values
       if (fullname && address && contactNumber && email) {
-        $('#paypal-button-container').css('pointer-events', 'auto'); // Enable PayPal container clicks
-        $('#paypal-button-container').css('opacity', '1'); // Reset opacity
+        $('#paypal-submit-button').css('pointer-events', 'auto'); // Enable PayPal container clicks
+        $('#paypal-submit-button').css('opacity', '1'); // Reset opacity
       } else {
-        $('#paypal-button-container').css('pointer-events', 'none'); // Disable PayPal container clicks
-        $('#paypal-button-container').css('opacity', '0.5'); // Optional: to visually indicate it's disabled
+        $('#paypal-submit-button').css('pointer-events', 'none'); // Disable PayPal container clicks
+        $('#paypal-submit-button').css('opacity', '0.5'); // Optional: to visually indicate it's disabled
       }
     }
 
@@ -348,153 +364,131 @@
     const selectedPayment = $(this).val();
 
     if (selectedPayment === 'Paypal') {
-      $('#paypal-button-container').show(); // Show PayPal button container
+      $('#paypal-submit-button').show(); // Show PayPal button container
 
 
 
       $('#submitCheckout').hide(); // Hide the Confirm Payment button
       renderPayPalButton(); // Render the PayPal button
     } else {
-      $('#paypal-button-container').hide(); // Hide PayPal button container
+      $('#paypal-submit-button').hide(); // Hide PayPal button container
       $('#submitCheckout').show(); // Hide the Confirm Payment button
 
     }
   });
 
   if (!userId) {
-    function renderPayPalButton() {
-      $('#paypal-button-container').empty(); // Clear existing button to avoid duplicates
+    function updatePaypalAmount() {
+      const cartData = JSON.parse(localStorage.getItem('guestCart')) || [];
+      let totalAmount = 0;
 
-      paypal.Buttons({
-        createOrder: function(data, actions) {
-          // Retrieve and process cart data from localStorage
-          const cartData = JSON.parse(localStorage.getItem('guestCart')) || [];
-          let totalAmount = 0; // Initialize totalAmount to 0
-          let localStorageItems = [];
+      cartData.forEach(item => {
+        const price = item.variation_id === '-' ?
+          parseFloat(item.product_sellingprice) :
+          parseFloat(item.price);
+        totalAmount += price * item.cart_quantity;
+      });
 
-          cartData.forEach(item => {
-            const price = item.variation_id === '-' ?
-              parseFloat(item.product_sellingprice) :
-              parseFloat(item.price);
-            totalAmount += price * item.cart_quantity;
-
-            localStorageItems.push({
-              product_id: item.product_id,
-              cart_quantity: item.cart_quantity,
-              variation_id: item.variation_id,
-              product_sellingprice: item.product_sellingprice,
-              price: item.price,
-            });
-          });
-
-          return actions.order.create({
-            purchase_units: [{
-              amount: {
-                value: totalAmount.toFixed(2) // Convert total to 2 decimal places
-              }
-            }]
-          });
-        },
-
-        onApprove: function(data, actions) {
-          return actions.order.capture().then(function(details) {
-            console.log('Transaction completed: ', details);
-            const cartData = JSON.parse(localStorage.getItem('guestCart')) || [];
-            let totalAmount = 0; // Initialize totalAmount to 0
-            let localStorageItems = [];
-
-            cartData.forEach(item => {
-              const price = item.variation_id === '-' ?
-                parseFloat(item.product_sellingprice) :
-                parseFloat(item.price);
-              totalAmount += price * item.cart_quantity;
-
-              localStorageItems.push({
-                product_id: item.product_id,
-                cart_quantity: item.cart_quantity,
-                variation_id: item.variation_id,
-                product_sellingprice: item.product_sellingprice,
-                price: item.price,
-              });
-            });
-
-            // Prepare formData
-            const formData = {
-              localStorageItems: localStorageItems,
-              totalAmount: totalAmount.toFixed(2),
-              orderID: data.orderID,
-              payerID: details.payer.payer_id,
-              paypalPayerName: details.payer.name.given_name + ' ' + details.payer.name.surname,
-              paypalPayerEmail: details.payer.email_address,
-              paypalPayerContact: details.payer.phone ? details.payer.phone.phone_number.national_number : null,
-              paypalPayerAddress: details.payer.address ? details.payer.address.address_line_1 + ', ' + details.payer.address.admin_area_2 + ', ' + details.payer.address.country_code : null,
-              transaction_id: details.id // PayPal transaction ID
-            };
-
-            if (!userId) {
-              formData.fullname = $('#delivery_guest_fullname').val();
-              formData.address = $('#delivery_address').val();
-              formData.contact_number = $('#delivery_guest_contact_number').val();
-              formData.email = $('#delivery_guest_email').val();
-            }
-
-            $.ajax({
-              type: 'POST',
-              url: '/blutmedical/controllers/users/checkout_guest_paypal_process.php',
-              data: JSON.stringify(formData), // Send the correct formData here
-              contentType: 'application/json', // Set header to send JSON
-              dataType: 'json',
-              success: function(response) {
-                if (response.status === 'success') {
-                  Toastify({
-                    text: response.message,
-                    duration: 3000,
-                    gravity: 'top',
-                    position: 'right',
-                    backgroundColor: '#4CAF50', // Green for success
-                  }).showToast();
-
-                  setTimeout(function() {
-                    updateCart();
-                    updateCartBadge();
-                  }, 500); // Give the DOM time to update
-
-                  $('#checkoutModal').modal('hide');
-                  // Optionally, clear the localStorage after successful checkout
-                  localStorage.removeItem('guestCart');
-                } else {
-                  Toastify({
-                    text: response.message || 'An error occurred.',
-                    duration: 3000,
-                    gravity: 'top',
-                    position: 'right',
-                    backgroundColor: '#f44336', // Red for error
-                  }).showToast();
-                }
-              },
-              error: function(xhr, status, error) {
-                console.error('XHR Status:', status); // Log the status
-                console.error('Error:', error); // Log the actual error
-                console.error('Server Response:', xhr.responseText); // Log the server response text
-
-                Toastify({
-                  text: 'Something went wrong. Please try again.',
-                  duration: 3000,
-                  gravity: 'top',
-                  position: 'right',
-                  backgroundColor: '#f44336', // Red for error
-                }).showToast();
-
-                $button.text('Confirm Payment');
-              },
-            });
-          });
-        }
-      }).render('#paypal-button-container'); // Render the PayPal button
+      // Set the total amount dynamically
+      $('#paypal-amount').val(totalAmount.toFixed(2)); // Update the amount field
     }
+
+
+    function handlePayPalTransaction(details) {
+      const cartData = JSON.parse(localStorage.getItem('guestCart')) || [];
+      let totalAmount = 0;
+      let localStorageItems = [];
+
+      cartData.forEach(item => {
+        const price = item.variation_id === '-' ?
+          parseFloat(item.product_sellingprice) :
+          parseFloat(item.price);
+        totalAmount += price * item.cart_quantity;
+
+        localStorageItems.push({
+          product_id: item.product_id,
+          cart_quantity: item.cart_quantity,
+          variation_id: item.variation_id,
+          product_sellingprice: item.product_sellingprice,
+          price: item.price,
+        });
+      });
+
+      // Prepare formData for AJAX call
+      const formData = {
+        localStorageItems: localStorageItems,
+        totalAmount: totalAmount.toFixed(2),
+        orderID: details.orderID,
+        payerID: details.payer.payer_id,
+        paypalPayerName: details.payer.name.given_name + ' ' + details.payer.name.surname,
+        paypalPayerEmail: details.payer.email_address,
+        paypalPayerContact: details.payer.phone ? details.payer.phone.phone_number.national_number : null,
+        paypalPayerAddress: details.payer.address ? details.payer.address.address_line_1 + ', ' + details.payer.address.admin_area_2 + ', ' + details.payer.address.country_code : null,
+        transaction_id: details.id // PayPal transaction ID
+      };
+
+      if (!userId) {
+        formData.fullname = $('#delivery_guest_fullname').val();
+        formData.address = $('#delivery_address').val();
+        formData.contact_number = $('#delivery_guest_contact_number').val();
+        formData.email = $('#delivery_guest_email').val();
+      }
+
+      // Send the AJAX request after successful PayPal transaction
+      $.ajax({
+        type: 'POST',
+        url: '/blutmedical/controllers/users/checkout_guest_paypal_process.php',
+        data: JSON.stringify(formData), // Send the correct formData here
+        contentType: 'application/json', // Set header to send JSON
+        dataType: 'json',
+        success: function(response) {
+          if (response.status === 'success') {
+            Toastify({
+              text: response.message,
+              duration: 3000,
+              gravity: 'top',
+              position: 'right',
+              backgroundColor: '#4CAF50', // Green for success
+            }).showToast();
+
+            setTimeout(function() {
+              updateCart();
+              updateCartBadge();
+            }, 500); // Give the DOM time to update
+
+            $('#checkoutModal').modal('hide');
+            // Optionally, clear the localStorage after successful checkout
+            localStorage.removeItem('guestCart');
+          } else {
+            Toastify({
+              text: response.message || 'An error occurred.',
+              duration: 3000,
+              gravity: 'top',
+              position: 'right',
+              backgroundColor: '#f44336', // Red for error
+            }).showToast();
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error('XHR Status:', status); // Log the status
+          console.error('Error:', error); // Log the actual error
+          console.error('Server Response:', xhr.responseText); // Log the server response text
+
+          Toastify({
+            text: 'Something went wrong. Please try again.',
+            duration: 3000,
+            gravity: 'top',
+            position: 'right',
+            backgroundColor: '#f44336', // Red for error
+          }).showToast();
+        },
+      });
+    }
+
+
   } else {
     function renderPayPalButton() {
-      $('#paypal-button-container').empty(); // Clear existing button to avoid duplicates
+      $('#paypal-submit-button').empty(); // Clear existing button to avoid duplicates
 
       paypal.Buttons({
         createOrder: function(data, actions) {
@@ -596,7 +590,7 @@
             });
           });
         }
-      }).render('#paypal-button-container'); // Render the PayPal button
+      }).render('#paypal-submit-button'); // Render the PayPal button
     }
   }
 </script>

@@ -2,9 +2,13 @@
 include '../../connections/connections.php';
 session_start();
 
-// PayPal API credentials (get these from PayPal developer dashboard)
+// PayPal Sandbox
 $paypalClientId = 'AfcJOedIT9WM3IBgUd8D4uEiAXppkMsftrR2DRtcm8CUco5sptEShId2hujHrtNd_FK7gzOyzbV53zsX';
 $paypalSecret = 'EGS6Unh1tDJqJZlDz452qIXxa6i5XbHx9ZRg0vHhI6MZWT7QWWlu70KGTWuW6TnEIXJGN01ZGPL__KwM';
+
+// PayPal Live
+// $paypalClientId = 'AYwMIA4BQ3ThhTRprUJQMbfrjA4ZyiXwaMh5mZ28cKJAo_wngfye9Bsq1JK4SbJhuWxn0MNx6iynWRzR';
+// $paypalSecret = 'EPiwRjfhnHSA-BQXABXaJlPa44R7NBeY1Ff_K2eqcpAQdrl8lYH2G9re08POLDAZdENu5DMrhv5TWdPs';
 
 // Get PayPal API access token
 $ch = curl_init();
