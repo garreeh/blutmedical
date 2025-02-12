@@ -103,8 +103,10 @@
                   <h3 class="product-title" style="font-size: 1rem; text-align: center; margin-top: 10px;">
                     <?php echo htmlspecialchars($row['product_name']); ?>
                   </h3>
-                  <strong class="product-price" style="font-size: 1.2rem; margin-top: auto;">$
-                    <?php echo number_format($row['product_sellingprice'], 2); ?></strong>
+                  <strong class="product-price" style="font-size: 1.2rem; margin-top: auto;">
+                    <?php echo ($row['product_sellingprice'] == 0) ? 'Ask for Price' : '$ ' . number_format($row['product_sellingprice'], 2); ?>
+                  </strong>
+
                 </div>
               </a>
             </div>

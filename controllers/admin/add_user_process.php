@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Insert user into the database
     $sql = "INSERT INTO users (user_fullname, username, user_address, user_contact, user_email, user_password, user_confirm_password, is_admin, account_status, user_type_id) 
-            VALUES ('$user_fullname', '$username', '$user_address', '$user_contact', '$user_email', '$hashed_password', '$user_password', '1', 'Inactive', '$user_type_id')";
+            VALUES ('$user_fullname', '$username', '$user_address', '$user_contact', '$user_email', '$hashed_password', '$user_password', '1', 'Active', '$user_type_id')";
 
     if (mysqli_query($conn, $sql)) {
         $response = array('success' => true, 'message' => 'User added successfully.');
@@ -52,5 +52,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     echo json_encode($response);
     exit();
 }
-
-?>

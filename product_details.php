@@ -116,12 +116,17 @@ if (isset($_GET['product_id'])) {
                 ?>
 
                 <!-- Display the price -->
-                <p class="text-muted">$ <span id="productPrice"><?php echo number_format($initialPrice, 2); ?></span></p>
-                <p><?php echo htmlspecialchars($product['product_description']); ?></p>
+
+                <p class="text-muted">
+                  <span id="productPrice">
+                    <?php echo ($product_sellingprice == 0) ? 'Ask for Price' : '$ ' . number_format($initialPrice, 2); ?>
+                  </span>
+                </p>
+                <!-- <p></?php echo htmlspecialchars($product['product_description']); ?></p> -->
 
                 <!-- Product Form -->
                 <form id="productForm">
-                  <div class="variation-container">
+                  <div class="variation-container" id='variationhide'>
                     <!-- Size Variations -->
                     <?php if (!empty($variations)) { ?>
                       <h4>Available Sizes:</h4>
@@ -171,6 +176,26 @@ if (isset($_GET['product_id'])) {
                   <input type="hidden" name="product_sellingprice" id="product_sellingprice" value="<?php echo $product_sellingprice; ?>">
                 </form>
 
+                <script>
+                  document.addEventListener("DOMContentLoaded", function() {
+                    var productSellingPrice = parseFloat(document.getElementById("product_sellingprice").value);
+                    var addToCartBtn = document.getElementById("addToCartBtn");
+                    var controlPlusMinus = document.getElementById("controlplusminus");
+
+                    var variationhide = document.getElementById("variationhide");
+                    var productPriceText = document.getElementById("productPrice");
+
+                    if (productSellingPrice === 0) {
+                      addToCartBtn.style.display = "none"; // Hide Add to Cart button
+                      controlPlusMinus.style.display = "none"; // Hide Add to Cart button
+                      variationhide.style.display = "none"; // Hide Add to Cart button
+
+
+                    }
+                  });
+                </script>
+
+
                 <!-- CSS Styling -->
                 <style>
                   .variation-container {
@@ -191,7 +216,7 @@ if (isset($_GET['product_id'])) {
                 <br>
                 <!-- Quantity Selector -->
                 <div>
-                  <div class="input-group" style="max-width: 13rem;">
+                  <div class="input-group" style="max-width: 13rem;" id='controlplusminus'>
                     <button class="btn btn-outline-secondary" type="button" id="btn-minus">-</button>
                     <input type="number" id="quantity" name="quantity" class="form-control text-center" value="1" readonly>
                     <button class="btn btn-outline-secondary" type="button" id="btn-plus">+</button>
