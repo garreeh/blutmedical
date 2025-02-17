@@ -22,6 +22,16 @@ if ($result) {
     $category_names[] = $row;
   }
 }
+
+$sql = "SELECT * FROM subcategory";
+$resultSubCategory = mysqli_query($conn, $sql);
+
+$subcategory_names = [];
+if ($result) {
+  while ($row = mysqli_fetch_assoc($resultSubCategory)) {
+    $subcategory_names[] = $row;
+  }
+}
 ?>
 <style>
   /* Custom CSS for label color */
@@ -80,7 +90,7 @@ if ($result) {
           </div>
 
           <div class="form-row">
-            <div class="form-group col-md-6">
+            <div class="form-group col-md-4">
               <label for="supplier_id">Supplier:</label>
               <select class="form-control" id="supplier_id" name="supplier_id" required>
                 <option value="">Select Supplier</option>
@@ -92,13 +102,25 @@ if ($result) {
               </select>
             </div>
 
-            <div class="form-group col-md-6">
+            <div class="form-group col-md-4">
               <label for="category_id">Category:</label>
               <select class="form-control" id="category_id" name="category_id" required>
                 <option value="">Select Category</option>
                 <?php foreach ($category_names as $category_rows): ?>
                   <option value="<?php echo $category_rows['category_id']; ?>">
                     <?php echo $category_rows['category_name']; ?>
+                  </option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+
+            <div class="form-group col-md-4">
+              <label for="subcategory_id">Sub Category:</label>
+              <select class="form-control" id="subcategory_id" name="subcategory_id" required>
+                <option value="">Select Sub Category</option>
+                <?php foreach ($subcategory_names as $subcategory_rows): ?>
+                  <option value="<?php echo $subcategory_rows['subcategory_id']; ?>">
+                    <?php echo $subcategory_rows['subcategory_name']; ?>
                   </option>
                 <?php endforeach; ?>
               </select>
@@ -157,7 +179,7 @@ if ($result) {
 
 <script>
   const addVariationButton = document.getElementById('add-variation-button');
-  addVariationButton.addEventListener('click', function() {
+  addVariationButton.addEventListener('click', function () {
     const container = document.getElementById('variations-container');
 
     const row = document.createElement('div');
@@ -204,7 +226,7 @@ if ($result) {
 
     // Add event listener for remove button
     const removeButton = row.querySelector('.remove-add-variation');
-    removeButton.addEventListener('click', function() {
+    removeButton.addEventListener('click', function () {
       container.removeChild(row);
     });
   });
@@ -218,14 +240,14 @@ if ($result) {
   }
 
   // Attach to existing inputs (if any)
-  document.querySelectorAll('.variation-price').forEach(function(input) {
+  document.querySelectorAll('.variation-price').forEach(function (input) {
     input.addEventListener('input', restrictPriceInput);
   });
 
 
   // Add Variation Color functionality with remove button
   const addVariationColorButton = document.getElementById('add-variation-color-button');
-  addVariationColorButton.addEventListener('click', function() {
+  addVariationColorButton.addEventListener('click', function () {
     const container = document.getElementById('variations-colors-container');
 
     const row = document.createElement('div');
@@ -252,7 +274,7 @@ if ($result) {
 
     // Add event listener for remove button
     const removeButton = row.querySelector('.remove-add-color');
-    removeButton.addEventListener('click', function() {
+    removeButton.addEventListener('click', function () {
       container.removeChild(row);
     });
   });
@@ -260,7 +282,7 @@ if ($result) {
 
   // Add Image functionality with remove button
   const addImageButton = document.getElementById('add-image-button');
-  addImageButton.addEventListener('click', function() {
+  addImageButton.addEventListener('click', function () {
     const container = document.getElementById('images-container');
 
     const row = document.createElement('div');
@@ -286,13 +308,13 @@ if ($result) {
 
     // Add event listener for remove button
     const removeButton = row.querySelector('.remove-add-image');
-    removeButton.addEventListener('click', function() {
+    removeButton.addEventListener('click', function () {
       container.removeChild(row);
     });
   });
 
 
-  document.getElementById('product_sellingprice').addEventListener('input', function(e) {
+  document.getElementById('product_sellingprice').addEventListener('input', function (e) {
     // Allow only numbers and dots, and ensure only one dot
     this.value = this.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters except dot
     if ((this.value.match(/\./g) || []).length > 1) {
@@ -302,8 +324,8 @@ if ($result) {
 
 
 
-  $(document).ready(function() {
-    $('#addProductModal form').submit(function(event) {
+  $(document).ready(function () {
+    $('#addProductModal form').submit(function (event) {
       event.preventDefault(); // Prevent default form submission
 
       // Store a reference to $(this)
@@ -324,7 +346,7 @@ if ($result) {
         data: formData,
         contentType: false,
         processData: false,
-        success: function(response) {
+        success: function (response) {
           // Handle success response
           console.log(response); // Log the response for debugging
           response = JSON.parse(response);
@@ -352,7 +374,7 @@ if ($result) {
             }).showToast();
           }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           // Handle error response
           console.error(xhr.responseText);
           Toastify({
@@ -361,7 +383,7 @@ if ($result) {
             backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
           }).showToast();
         },
-        complete: function() {
+        complete: function () {
           // Reset button text and re-enable it
           $addButton.text('Add');
           $addButton.prop('disabled', false);
@@ -369,7 +391,7 @@ if ($result) {
       });
     });
 
-    $('#addProductModal').on('hidden.bs.modal', function() {
+    $('#addProductModal').on('hidden.bs.modal', function () {
 
       // Reset the dropdowns to their default states
       $('#category_id')[0].selectize.clear();

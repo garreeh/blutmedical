@@ -46,6 +46,16 @@ if ($result) {
   }
 }
 
+$sql = "SELECT * FROM subcategory";
+$resultSubCategory = mysqli_query($conn, $sql);
+
+$subcategory_names = [];
+if ($result) {
+  while ($row = mysqli_fetch_assoc($resultSubCategory)) {
+    $subcategory_names[] = $row;
+  }
+}
+
 if (isset($_POST['product_id'])) {
   $product_id = $_POST['product_id'];
   $sql = "SELECT * FROM product WHERE product_id = '$product_id'";
@@ -87,7 +97,7 @@ if (isset($_POST['product_id'])) {
       $product_image = basename($row['product_image']);
 
       $image_url = '../../uploads/' . $product_image; // Construct the image URL
-?>
+      ?>
       <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-labelledby="requestModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-xl" role="document">
@@ -147,7 +157,7 @@ if (isset($_POST['product_id'])) {
                 </div>
 
                 <div class="form-row">
-                  <div class="form-group col-md-6">
+                  <div class="form-group col-md-4">
                     <label for="supplier_id">Supplier:</label>
                     <select class="form-control" id="supplier_id" name="supplier_id" required>
                       <option value="" disabled>Select Supplier</option>
@@ -163,7 +173,7 @@ if (isset($_POST['product_id'])) {
                   </div>
 
 
-                  <div class="form-group col-md-6">
+                  <div class="form-group col-md-4">
                     <label for="category_id">Category:</label>
                     <select class="form-control" id="category_id" name="category_id" required>
                       <option value="" disabled>Select Category</option>
@@ -173,6 +183,21 @@ if (isset($_POST['product_id'])) {
                         // Set selected if the category_id matches
                         $selected = ($category_rows['category_id'] == $row['category_id']) ? 'selected' : '';
                         echo "<option value='" . $category_rows['category_id'] . "' $selected>" . $category_rows['category_name'] . "</option>";
+                      }
+                      ?>
+                    </select>
+                  </div>
+
+                  <div class="form-group col-md-4">
+                    <label for="subcategory_id">Sub Category:</label>
+                    <select class="form-control" id="subcategory_id" name="subcategory_id" required>
+                      <option value="" disabled>Select Category</option>
+                      <?php
+                      // Loop through category names to populate the dropdown
+                      foreach ($subcategory_names as $subcategory_rows) {
+                        // Set selected if the category_id matches
+                        $selected = ($subcategory_rows['subcategory_id'] == $row['subcategory_id']) ? 'selected' : '';
+                        echo "<option value='" . $subcategory_rows['subcategory_id'] . "' $selected>" . $subcategory_rows['subcategory_name'] . "</option>";
                       }
                       ?>
                     </select>
@@ -299,7 +324,7 @@ if (isset($_POST['product_id'])) {
         integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
 
       <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
           $('select').selectize({
             sortField: 'text'
           });
@@ -307,7 +332,7 @@ if (isset($_POST['product_id'])) {
       </script>
       <!-- END OF SELECT -->
 
-<?php
+      <?php
     }
   }
 }
@@ -315,7 +340,7 @@ if (isset($_POST['product_id'])) {
 
 <script>
   // Add Variation Functionality
-  document.getElementById('add-variation-button_update').addEventListener('click', function() {
+  document.getElementById('add-variation-button_update').addEventListener('click', function () {
     const container = document.getElementById('variations-container_update');
 
     const newVariation = document.createElement('div');
@@ -346,8 +371,8 @@ if (isset($_POST['product_id'])) {
     //   newVariation.remove();
     // });
     const priceInputs = document.querySelectorAll('.variation-price');
-    priceInputs.forEach(function(priceInput) {
-      priceInput.addEventListener('input', function(e) {
+    priceInputs.forEach(function (priceInput) {
+      priceInput.addEventListener('input', function (e) {
         this.value = this.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters except dot
         if ((this.value.match(/\./g) || []).length > 1) {
           this.value = this.value.slice(0, -1); // Remove the last character if there's more than one dot
@@ -357,14 +382,14 @@ if (isset($_POST['product_id'])) {
   });
 
   // Remove Variation Functionality
-  document.querySelectorAll('.remove-variation').forEach(function(button) {
-    button.addEventListener('click', function() {
+  document.querySelectorAll('.remove-variation').forEach(function (button) {
+    button.addEventListener('click', function () {
       this.parentElement.parentElement.remove();
     });
   });
 
   // Add Variation Functionality
-  document.getElementById('add-color-button_update').addEventListener('click', function() {
+  document.getElementById('add-color-button_update').addEventListener('click', function () {
     const container = document.getElementById('color-container_update');
 
     const newVariationColor = document.createElement('div');
@@ -385,14 +410,14 @@ if (isset($_POST['product_id'])) {
   });
 
   // Remove Variation Functionality
-  document.querySelectorAll('.remove-color').forEach(function(button) {
-    button.addEventListener('click', function() {
+  document.querySelectorAll('.remove-color').forEach(function (button) {
+    button.addEventListener('click', function () {
       this.parentElement.parentElement.remove();
     });
   });
 
   // Add Image Functionality
-  document.getElementById('add-image-button_update').addEventListener('click', function() {
+  document.getElementById('add-image-button_update').addEventListener('click', function () {
     const container = document.getElementById('images-container_update');
 
     const newImage = document.createElement('div');
@@ -412,28 +437,28 @@ if (isset($_POST['product_id'])) {
     container.appendChild(newImage);
 
     // Add event listener to newly added Remove button
-    newImage.querySelector('.remove-image').addEventListener('click', function() {
+    newImage.querySelector('.remove-image').addEventListener('click', function () {
       newImage.remove();
     });
   });
 
   // Remove Image Functionality
-  document.querySelectorAll('.remove-image').forEach(function(button) {
-    button.addEventListener('click', function() {
+  document.querySelectorAll('.remove-image').forEach(function (button) {
+    button.addEventListener('click', function () {
       this.parentElement.parentElement.remove();
     });
   });
 
   // Varation Remove AJAX
-  document.getElementById('product_sellingprice_update').addEventListener('input', function(e) {
+  document.getElementById('product_sellingprice_update').addEventListener('input', function (e) {
     this.value = this.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters except dot
     if ((this.value.match(/\./g) || []).length > 1) {
       this.value = this.value.slice(0, -1); // Remove the last character if there's more than one dot
     }
   });
 
-  document.querySelectorAll('.variation-price').forEach(function(priceInput) {
-    priceInput.addEventListener('input', function(e) {
+  document.querySelectorAll('.variation-price').forEach(function (priceInput) {
+    priceInput.addEventListener('input', function (e) {
       this.value = this.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters except dot
       if ((this.value.match(/\./g) || []).length > 1) {
         this.value = this.value.slice(0, -1); // Remove the last character if there's more than one dot
@@ -443,7 +468,7 @@ if (isset($_POST['product_id'])) {
 
 
   // Other Image Remove AJAX
-  $(document).off('click', '.remove-image').on('click', '.remove-image', function() {
+  $(document).off('click', '.remove-image').on('click', '.remove-image', function () {
     var product_image_id = $(this).data('id');
     var $btn = $(this); // Reference to the button
     if (product_image_id) {
@@ -456,7 +481,7 @@ if (isset($_POST['product_id'])) {
         data: {
           remove_image_id: [product_image_id]
         },
-        success: function(response) {
+        success: function (response) {
           try {
             response = JSON.parse(response);
 
@@ -485,7 +510,7 @@ if (isset($_POST['product_id'])) {
             }).showToast();
           }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.error(xhr.responseText);
           Toastify({
             text: "Error occurred while removing image. Please try again later.",
@@ -493,7 +518,7 @@ if (isset($_POST['product_id'])) {
             backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
           }).showToast();
         },
-        complete: function() {
+        complete: function () {
           // Hide spinner and re-enable the button after the request is complete
           $btn.prop('disabled', false).html('Remove');
         }
@@ -511,7 +536,7 @@ if (isset($_POST['product_id'])) {
 
 
   // Variation Remove AJAX
-  $(document).off('click', '.remove-variation').on('click', '.remove-variation', function() {
+  $(document).off('click', '.remove-variation').on('click', '.remove-variation', function () {
     var variation_id = $(this).data('id');
 
     if (variation_id) {
@@ -522,7 +547,7 @@ if (isset($_POST['product_id'])) {
         data: {
           remove_variation_id: [variation_id]
         },
-        success: function(response) {
+        success: function (response) {
           try {
             response = JSON.parse(response);
 
@@ -551,7 +576,7 @@ if (isset($_POST['product_id'])) {
             }).showToast();
           }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.error(xhr.responseText);
           Toastify({
             text: "Error occurred while removing variation. Please try again later.",
@@ -571,7 +596,7 @@ if (isset($_POST['product_id'])) {
     }
   });
 
-  $(document).off('click', '.remove-color').on('click', '.remove-color', function() {
+  $(document).off('click', '.remove-color').on('click', '.remove-color', function () {
     var variation_color_id = $(this).data('id');
 
     if (variation_color_id) {
@@ -582,7 +607,7 @@ if (isset($_POST['product_id'])) {
         data: {
           remove_variation_id: [variation_color_id]
         },
-        success: function(response) {
+        success: function (response) {
           try {
             response = JSON.parse(response);
 
@@ -611,7 +636,7 @@ if (isset($_POST['product_id'])) {
             }).showToast();
           }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.error(xhr.responseText);
           Toastify({
             text: "Error occurred while removing variation. Please try again later.",
@@ -633,9 +658,9 @@ if (isset($_POST['product_id'])) {
 
 
   // Submit Button AJAX
-  $(document).ready(function() {
+  $(document).ready(function () {
     // Form submission handling
-    $('#editProductModal form').submit(function(event) {
+    $('#editProductModal form').submit(function (event) {
       event.preventDefault(); // Prevent default form submission
 
       var $form = $(this);
@@ -655,7 +680,7 @@ if (isset($_POST['product_id'])) {
         data: formData,
         processData: false, // Prevent jQuery from automatically transforming the data into a query string
         contentType: false, // Let the browser set the content type for the FormData
-        success: function(response) {
+        success: function (response) {
           try {
             response = JSON.parse(response); // Ensure response is fully parsed
 
@@ -684,7 +709,7 @@ if (isset($_POST['product_id'])) {
             }).showToast();
           }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.error(xhr.responseText);
           Toastify({
             text: "Error occurred while editing product. Please try again later.",
@@ -692,7 +717,7 @@ if (isset($_POST['product_id'])) {
             backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
           }).showToast();
         },
-        complete: function() {
+        complete: function () {
           // Reset button text and re-enable it
           $saveButton.text('Save');
           $saveButton.prop('disabled', false);

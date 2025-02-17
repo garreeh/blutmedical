@@ -84,6 +84,8 @@ if (isset($_POST['edit_product'])) {
     $product_description = $conn->real_escape_string($_POST['product_description']);
     $product_sellingprice = $conn->real_escape_string($_POST['product_sellingprice']);
     $category_id = $conn->real_escape_string($_POST['category_id']);
+    $subcategory_id = $conn->real_escape_string($_POST['subcategory_id']);
+
     $supplier_id = $conn->real_escape_string($_POST['supplier_id']);
 
     // Update SQL query with full path
@@ -93,7 +95,8 @@ if (isset($_POST['edit_product'])) {
             product_description='$product_description', 
             product_sellingprice='$product_sellingprice', 
             product_image='$new_filename',
-            category_id='$category_id', 
+            category_id='$category_id',
+            subcategory_id='$subcategory_id',
             supplier_id='$supplier_id'
             WHERE product_id='$product_id'";
 

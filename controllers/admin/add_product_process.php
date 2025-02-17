@@ -43,10 +43,12 @@ if (isset($_POST['add_product'])) {
     $product_sellingprice = $conn->real_escape_string($_POST['product_sellingprice']);
     $supplier_id = $conn->real_escape_string($_POST['supplier_id']);
     $category_id = $conn->real_escape_string($_POST['category_id']);
+    $subcategory_id = $conn->real_escape_string($_POST['subcategory_id']);
+
 
     // Insert product into the `product` table
-    $sql = "INSERT INTO `product` (product_name, product_sku, product_description, product_sellingprice, product_stocks, product_image, supplier_id, category_id)
-            VALUES ('$product_name', '$product_sku', '$product_description', '$product_sellingprice', '0', '$main_picture', '$supplier_id', '$category_id')";
+    $sql = "INSERT INTO `product` (product_name, product_sku, product_description, product_sellingprice, product_stocks, product_image, supplier_id, category_id, subcategory_id)
+            VALUES ('$product_name', '$product_sku', '$product_description', '$product_sellingprice', '0', '$main_picture', '$supplier_id', '$category_id', '$subcategory_id')";
 
     if (mysqli_query($conn, $sql)) {
         $product_id = $conn->insert_id; // Get the last inserted product ID

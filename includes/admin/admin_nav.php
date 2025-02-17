@@ -146,6 +146,7 @@ if ($result) {
               <div class="bg-white py-2 collapse-inner rounded">
                 <!-- <h6 class="collapse-header">Setup:</h6> -->
                 <a class="collapse-item" href="/blutmedical/views/admin/supplier_module.php">Suppliers</a>
+                <a class="collapse-item" href="/blutmedical/views/admin/subcategory_module.php">Sub Category</a>
                 <a class="collapse-item" href="/blutmedical/views/admin/category_module.php">Category</a>
                 <a class="collapse-item" href="/blutmedical/views/admin/product_module.php">Products</a>
                 <!-- <a class="collapse-item" href="/blutmedical/views/admin/variation_module.php">Variation</a> -->

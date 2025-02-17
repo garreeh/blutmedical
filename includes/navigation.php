@@ -1,4 +1,6 @@
 <?php
+include './connections/connections.php';
+
 if (session_status() == PHP_SESSION_NONE) {
   session_start();
 }
@@ -13,6 +15,9 @@ if (session_status() == PHP_SESSION_NONE) {
 //   }
 //   exit();
 // }
+
+$sql = "SELECT * FROM subcategory";
+$resultSubCategory = mysqli_query($conn, $sql);
 
 ?>
 
@@ -34,7 +39,23 @@ if (session_status() == PHP_SESSION_NONE) {
         <li>
           <a class="nav-link" href="index.php">Home</a>
         </li>
-        <li><a class="nav-link" href="products.php">Shop</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            Shop
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="userDropdown">
+            <?php while ($row = mysqli_fetch_assoc($resultSubCategory)): ?>
+              <li>
+                <a style="color: black !important;" class="dropdown-item"
+                  href="/blutmedical/subcategory.php?subcategory_id=<?= $row['subcategory_id']; ?>">
+                  <?= htmlspecialchars($row['subcategory_name']); ?>
+                </a>
+              </li>
+            <?php endwhile; ?>
+          </ul>
+        </li>
+        <!-- <li><a class="nav-link" href="products.php">Shop</a></li> -->
         <li><a class="nav-link" href="about.php">About us</a></li>
         <li><a class="nav-link" href="contact.php">Contact us</a></li>
       </ul>
