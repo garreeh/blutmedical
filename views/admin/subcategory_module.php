@@ -19,7 +19,7 @@ if (session_status() == PHP_SESSION_NONE) {
   <link href="./../../assets/img/favicon.ico" rel="icon">
 
 
-  <title>Admin | Sub Category</title>
+  <title>Admin | Shop Category</title>
 
   <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
@@ -59,11 +59,11 @@ if (session_status() == PHP_SESSION_NONE) {
 
           <!-- Page Heading -->
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Sub Category Module</h1>
+            <h1 class="h3 mb-0 text-gray-800">Shop Category Module</h1>
           </div>
 
           <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mb-4" data-toggle="modal"
-            data-target="#addCategoryModal"> <i class="fas fa-plus"></i> Add Sub Category</a>
+            data-target="#addCategoryModal"> <i class="fas fa-plus"></i> Add Shop Category</a>
           <!-- <a href="./../../excels/supplier_export.php" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mb-4"><i class="fas fa-file-excel"></i> Export Excel</a> -->
 
           <div class="row">
@@ -76,8 +76,8 @@ if (session_status() == PHP_SESSION_NONE) {
                   <table class="table custom-table table-hover" name="subcategory_table" id="subcategory_table">
                     <thead>
                       <tr>
-                        <th>Sub Category ID</th>
-                        <th>Sub Category Name</th>
+                        <th>Shop Category ID</th>
+                        <th>Shop Category Name</th>
                         <th>Date Created</th>
                         <th>Date Updated</th>
                         <th>Manage</th>
@@ -121,13 +121,13 @@ if (session_status() == PHP_SESSION_NONE) {
 </html>
 
 <script>
-  $('#sidebarToggle').click(function () {
+  $('#sidebarToggle').click(function() {
     $('#subcategory_table').css('width', '100%');
     // console.log(table) //This is for testing only
   });
 
   //Table for Supplier
-  $(document).ready(function () {
+  $(document).ready(function() {
     var subcategory_table = $('#subcategory_table').DataTable({
       "pagingType": "numbers",
       "processing": true,
@@ -135,16 +135,16 @@ if (session_status() == PHP_SESSION_NONE) {
       "ajax": "./../../controllers/tables/subcategory_table.php",
     });
 
-    window.reloadDataTable = function () {
+    window.reloadDataTable = function() {
       subcategory_table.ajax.reload();
     };
 
   });
 
   //Column 5
-  $(document).ready(function () {
+  $(document).ready(function() {
     // Function to handle click event on datatable rows
-    $('#subcategory_table').on('click', 'tr td:nth-child(5) .fetchDataCategory', function () {
+    $('#subcategory_table').on('click', 'tr td:nth-child(5) .fetchDataCategory', function() {
       var subcategory_id = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
 
       $.ajax({
@@ -153,12 +153,12 @@ if (session_status() == PHP_SESSION_NONE) {
         data: {
           subcategory_id: subcategory_id
         },
-        success: function (response) {
+        success: function(response) {
           $('#modalContainerCategory').html(response);
           $('#editCategoryModal').modal('show');
           console.log("#editCategoryModal" + subcategory_id);
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
           console.error(xhr.responseText);
         }
       });

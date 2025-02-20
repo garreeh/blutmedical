@@ -45,6 +45,8 @@ $resultSubCategory = mysqli_query($conn, $sql);
             Shop
           </a>
           <ul class="dropdown-menu" aria-labelledby="userDropdown">
+            <li><a style="color: black !important;" class="dropdown-item" href="products.php">All</a></li>
+
             <?php while ($row = mysqli_fetch_assoc($resultSubCategory)): ?>
               <li>
                 <a style="color: black !important;" class="dropdown-item"

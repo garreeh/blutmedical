@@ -17,13 +17,13 @@ if (isset($_POST['subcategory_id'])) {
 
   if ($result) {
     while ($row = mysqli_fetch_assoc($result)) {
-      ?>
+?>
       <div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-labelledby="requestModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-l" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Update Category ID: <?php echo $row['subcategory_id']; ?></h5>
+              <h5 class="modal-title">Update Shop Category ID: <?php echo $row['subcategory_id']; ?></h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -34,9 +34,9 @@ if (isset($_POST['subcategory_id'])) {
                 <input type="hidden" name="subcategory_id" value="<?php echo $row['subcategory_id']; ?>">
                 <div class="form-row">
                   <div class="form-group col-md-12">
-                    <label for="subcategory_name">Category Name:</label>
+                    <label for="subcategory_name">Shop Category Name:</label>
                     <input type="text" class="form-control" id="subcategory_name" name="subcategory_name"
-                      placeholder="Enter Category Name" value="<?php echo $row['subcategory_name']; ?>" required>
+                      placeholder="Enter Shop Category Name" value="<?php echo $row['subcategory_name']; ?>" required>
                   </div>
                 </div>
 
@@ -54,7 +54,7 @@ if (isset($_POST['subcategory_id'])) {
         </div>
       </div>
 
-      <?php
+<?php
     }
   }
 }
@@ -62,8 +62,8 @@ if (isset($_POST['subcategory_id'])) {
 
 <script>
   // Save Button in Edit Category
-  $(document).ready(function () {
-    $('#editCategoryModal form').submit(function (event) {
+  $(document).ready(function() {
+    $('#editCategoryModal form').submit(function(event) {
       event.preventDefault(); // Prevent default form submission
       // Store a reference to $(this)
       var $form = $(this);
@@ -81,7 +81,7 @@ if (isset($_POST['subcategory_id'])) {
         type: 'POST',
         url: '/blutmedical/controllers/admin/edit_subcategory_process.php',
         data: formData,
-        success: function (response) {
+        success: function(response) {
           // Handle success response
           console.log(response); // Log the response for debugging
           response = JSON.parse(response);
@@ -104,7 +104,7 @@ if (isset($_POST['subcategory_id'])) {
             }).showToast();
           }
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
           // Handle error response
           console.error(xhr.responseText);
           Toastify({
@@ -113,7 +113,7 @@ if (isset($_POST['subcategory_id'])) {
             backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
           }).showToast();
         },
-        complete: function () {
+        complete: function() {
           // Reset button text and re-enable it
           $saveButton.text('Save');
           $saveButton.prop('disabled', false);

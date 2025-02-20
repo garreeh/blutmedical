@@ -2,9 +2,11 @@
 include '../../connections/connections.php';
 
 $category_id = isset($_GET['category_id']) ? intval($_GET['category_id']) : null;
+$subcategory_id = isset($_GET['subcategory_id']) ? intval($_GET['subcategory_id']) : null;
+
 
 if ($category_id) {
-  $sql = "SELECT * FROM product WHERE category_id = $category_id";
+  $sql = "SELECT * FROM product WHERE category_id = $category_id AND subcategory_id = $subcategory_id";
 } else {
   $sql = "SELECT * FROM product"; // If no category is selected, show all products
 }
@@ -27,6 +29,7 @@ if ($result->num_rows > 0) {
           </h3>
           <strong class="product-price" style="font-size: 1.2rem; margin-top: auto;">
             <?php echo ($row['product_sellingprice'] == 0) ? 'Ask for Price' : '$ ' . number_format($row['product_sellingprice'], 2); ?>
+
           </strong>
         </div>
       </a>

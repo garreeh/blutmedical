@@ -12,7 +12,7 @@
   <div class="modal-dialog modal-l" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="addCategoryModalLabel">Add Sub Category</h5>
+        <h5 class="modal-title" id="addCategoryModalLabel">Add Shop Category</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -22,9 +22,9 @@
         <form method="post" enctype="multipart/form-data">
           <div class="form-row">
             <div class="form-group col-md-12">
-              <label for="subcategory_name">Sub Category Name:</label>
+              <label for="subcategory_name">Shop Category Name:</label>
               <input type="text" class="form-control" id="subcategory_name" name="subcategory_name"
-                placeholder="Enter Supplier Name" required>
+                placeholder="Enter Shop Category Name" required>
             </div>
           </div>
 
@@ -47,8 +47,8 @@
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
 <script>
-  $(document).ready(function () {
-    $('#addCategoryModal form').submit(function (event) {
+  $(document).ready(function() {
+    $('#addCategoryModal form').submit(function(event) {
       event.preventDefault(); // Prevent default form submission
 
       // Store a reference to $(this)
@@ -67,7 +67,7 @@
         type: 'POST',
         url: '/blutmedical/controllers/admin/add_subcategory_process.php',
         data: formData,
-        success: function (response) {
+        success: function(response) {
           // Handle success response
           console.log(response); // Log the response for debugging
           response = JSON.parse(response);
@@ -93,7 +93,7 @@
             }).showToast();
           }
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
           // Handle error response
           console.error(xhr.responseText);
           Toastify({
@@ -102,7 +102,7 @@
             backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
           }).showToast();
         },
-        complete: function () {
+        complete: function() {
           // Reset button text and re-enable it
           $addButton.text('Add');
           $addButton.prop('disabled', false);
