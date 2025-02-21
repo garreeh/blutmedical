@@ -15,11 +15,11 @@ $columns = array(
 	),
 
 	array(
-		'db' => 'reference_no',
+		'db' => 'paypal_order_id',
 		'dt' => 1,
-		'field' => 'reference_no',
+		'field' => 'paypal_order_id',
 		'formatter' => function ($lab1, $row) {
-			return $row['reference_no'];
+			return empty($row['paypal_order_id']) ? '-' : $row['paypal_order_id'];
 		}
 	),
 
@@ -28,7 +28,7 @@ $columns = array(
 		'dt' => 2,
 		'field' => 'user_fullname',
 		'formatter' => function ($lab2, $row) {
-			return $row['user_fullname'];
+			return empty($row['user_fullname']) ? $row['delivery_guest_fullname'] : $row['user_fullname'];
 		}
 	),
 
@@ -37,16 +37,28 @@ $columns = array(
 		'dt' => 3,
 		'field' => 'cart_status',
 		'formatter' => function ($lab3, $row) {
-			return $row['cart_status'];
+
+			$cart_status = $row['cart_status'];
+
+			// Define styles for different statuses
+			$style = '';
+			if ($cart_status === 'Processing') {
+				$style = 'background-color: lightyellow; border-radius: 5px; padding: 5px;';
+			} elseif ($cart_status === 'Shipped') {
+				$style = 'background-color: lightyellow; border-radius: 5px; padding: 5px;';
+			} elseif ($cart_status === 'Delivered') {
+				$style = 'background-color: lightgreen; border-radius: 5px; padding: 5px;';
+			}
+
+			return "<span style=\"$style\">{$cart_status}</span>";
 		}
 	),
-
 	array(
 		'db' => 'total_price',
 		'dt' => 4,
 		'field' => 'total_price',
 		'formatter' => function ($lab4, $row) {
-			return $row['total_price'];
+			return '$ ' . $row['total_price'];
 		}
 	),
 
@@ -99,6 +111,15 @@ $columns = array(
 
           </div>
       </div>';
+		}
+	),
+
+	array(
+		'db' => 'delivery_guest_fullname',
+		'dt' => 9,
+		'field' => 'delivery_guest_fullname',
+		'formatter' => function ($lab5, $row) {
+			return $row['delivery_guest_fullname'];
 		}
 	),
 );

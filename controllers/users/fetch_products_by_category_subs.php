@@ -2,9 +2,11 @@
 include '../../connections/connections.php';
 
 $category_id = isset($_GET['category_id']) ? intval($_GET['category_id']) : null;
+$subcategory_id = isset($_GET['subcategory_id']) ? intval($_GET['subcategory_id']) : null;
+
 
 if ($category_id) {
-  $sql = "SELECT * FROM product WHERE category_id = $category_id";
+  $sql = "SELECT * FROM product WHERE category_id = $category_id AND subcategory_id = $subcategory_id";
 } else {
   $sql = "SELECT * FROM product"; // If no category is selected, show all products
 }

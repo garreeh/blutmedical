@@ -20,7 +20,6 @@ $columns = array(
 		'field' => 'paypal_order_id',
 		'formatter' => function ($lab1, $row) {
 			return empty($row['paypal_order_id']) ? '-' : $row['paypal_order_id'];
-
 		}
 	),
 
@@ -30,7 +29,6 @@ $columns = array(
 		'field' => 'user_fullname',
 		'formatter' => function ($lab2, $row) {
 			return empty($row['user_fullname']) ? $row['delivery_guest_fullname'] : $row['user_fullname'];
-
 		}
 	),
 
@@ -71,7 +69,6 @@ $columns = array(
 		'field' => 'proof_of_payment',
 		'formatter' => function ($lab4, $row) {
 			return '<a class="fetchCustomerDetails" href="#"> Click to View</a> ';
-
 		}
 	),
 
@@ -80,7 +77,7 @@ $columns = array(
 		'dt' => 6,
 		'field' => 'total_price',
 		'formatter' => function ($lab4, $row) {
-			return $row['total_price'];
+			return '$ ' . $row['total_price'];
 		}
 	),
 

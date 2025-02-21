@@ -97,13 +97,12 @@ if (session_status() == PHP_SESSION_NONE) {
                     <tr>
                       <th>ID</th>
                       <th>Ref No.</th>
-                      <th>Customer Name</th>
+                      <th>Customer Details</th>
                       <th>Status</th>
                       <th>Total Payment</th>
                       <th>Payment Method</th>
                       <th>Proof of Payment</th>
                       <th>Date Created</th>
-                      <th>Manage</th>
                     </tr>
                   </thead>
                 </table>

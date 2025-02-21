@@ -29,6 +29,20 @@
   include './includes/navigation.php';
   include './connections/connections.php';
 
+  $subcategory_id = isset($_GET['subcategory_id']) ? intval($_GET['subcategory_id']) : 0;
+
+  // Fetch subcategory_name
+  $subcategory_name = "All Products"; // Default value
+  if ($subcategory_id > 0) {
+    $query = "SELECT subcategory_name FROM subcategory WHERE subcategory_id = $subcategory_id";
+    $result = mysqli_query($conn, $query);
+
+    if ($result && mysqli_num_rows($result) > 0) {
+      $row = mysqli_fetch_assoc($result);
+      $subcategory_name = $row['subcategory_name'];
+    }
+  }
+
   ?>
 
   <!-- Start Product Section -->
@@ -38,7 +52,7 @@
         <!-- Breadcrumb on the left -->
         <ol class="breadcrumb mb-0">
           <li class="breadcrumb-item"><a href="index.php">Home</a></li>
-          <li class="breadcrumb-item active" aria-current="page">All Products</li>
+          <li class="breadcrumb-item active" aria-current="page"><?php echo htmlspecialchars($subcategory_name); ?></li>
         </ol>
 
         <div class="search-bar">
@@ -157,7 +171,7 @@
       // Fetch products by selected category
       $.ajax({
         type: 'GET',
-        url: '/blutmedical/controllers/users/fetch_products_by_category.php',
+        url: '/blutmedical/controllers/users/fetch_products_by_category_subs.php',
         data: {
           category_id: categoryId,
           subcategory_id: subcategoryId
