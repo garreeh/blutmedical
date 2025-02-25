@@ -126,10 +126,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         <p>Thank you for registering with us. To complete your registration, please verify your email address by clicking the button below:</p>
                                         <a href='http://localhost/blutmedical/controllers/verification_process.php?email=" . $user_email . "' class='verify-button'>Verify Email</a>
                                         <p>If you did not sign up for this account, please disregard this email.</p>
-                                        <p>Best Regards,<br>Sterling</p>
+                                        <p>Best Regards,<br>Blut Medical</p>
                                     </div>
                                     <div class='email-footer'>
-                                        &copy; 2024 Sterling. All rights reserved.
+                                        &copy; 2025 Blut Medical. All rights reserved.
                                     </div>
                                 </div>
                             </body>
