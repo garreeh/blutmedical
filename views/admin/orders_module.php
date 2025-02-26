@@ -75,7 +75,7 @@ if (session_status() == PHP_SESSION_NONE) {
                     <thead>
                       <tr>
                         <th>ID</th>
-                        <th>Ref No Paypal.</th>
+                        <th>Ref No.</th>
                         <th>Customer Name</th>
                         <th>Status</th>
                         <th>Payment Method</th>
