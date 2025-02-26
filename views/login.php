@@ -30,7 +30,7 @@ if (session_status() == PHP_SESSION_NONE) {
 	<meta name="description" content="">
 	<meta name="author" content="">
 
-	<title>Sterling</title>
+	<title>Blut Medical | Login</title>
 
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 	<!-- Custom fonts for this template-->
@@ -132,8 +132,8 @@ if (session_status() == PHP_SESSION_NONE) {
 
 </html>
 <script>
-	document.addEventListener('DOMContentLoaded', function() {
-		document.getElementById('togglePassword').addEventListener('click', function() {
+	document.addEventListener('DOMContentLoaded', function () {
+		document.getElementById('togglePassword').addEventListener('click', function () {
 			var passwordInput = document.getElementById('user_password');
 			var type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
 			passwordInput.setAttribute('type', type);
@@ -142,7 +142,7 @@ if (session_status() == PHP_SESSION_NONE) {
 		});
 	});
 
-	document.getElementById('loginForm').addEventListener('keydown', function(e) {
+	document.getElementById('loginForm').addEventListener('keydown', function (e) {
 		if (e.key === 'Enter') {
 			submitForm();
 		}
@@ -189,7 +189,7 @@ if (session_status() == PHP_SESSION_NONE) {
 			url: '../controllers/login_process.php',
 			data: data,
 			dataType: 'json',
-			success: function(response) {
+			success: function (response) {
 				console.log(response);
 				if (response.success) {
 					// Check if the user is an admin
@@ -202,7 +202,7 @@ if (session_status() == PHP_SESSION_NONE) {
 					showToast(response.message);
 				}
 			},
-			error: function(xhr, status, error) {
+			error: function (xhr, status, error) {
 				showToast('Error occurred while processing the request.');
 			}
 		});

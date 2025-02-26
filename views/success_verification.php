@@ -20,12 +20,14 @@ unset($_SESSION['email_verified']);
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Sterling | Verification Successful</title>
+    <title>Blut Medical | Verification Successful</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <!-- Custom fonts for this template -->
     <link href="./../assets/admin/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
     <!-- Custom styles for this template -->
     <link href="./../assets/admin/css/sb-admin-2.min.css" rel="stylesheet">
 </head>
@@ -43,7 +45,8 @@ unset($_SESSION['email_verified']);
                                 <div class="p-5">
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4">Verification Successful!</h1>
-                                        <p class="mb-4">Your email has been successfully verified. You can now log in to your account.</p>
+                                        <p class="mb-4">Your email has been successfully verified. You can now log in to
+                                            your account.</p>
                                         <a href="./login.php" class="btn btn-primary btn-user btn-block">
                                             Back to Login Page
                                         </a>
