@@ -33,6 +33,7 @@
             <label for="payment-category">Select Payment Method:</label>
             <div>
               <label><input type="radio" name="paymentCategory" value="Paypal"> Paypal</label>
+              <!-- <label><input type="radio" name="paymentCategory" value="GCash"> Gcash</label> -->
               <label><input type="radio" name="paymentCategory" value="Cash on Delivery"> Cash on Delivery (COD)</label>
             </div>
           </div>
@@ -83,12 +84,12 @@
   src="https://www.paypal.com/sdk/js?client-id=AYwMIA4BQ3ThhTRprUJQMbfrjA4ZyiXwaMh5mZ28cKJAo_wngfye9Bsq1JK4SbJhuWxn0MNx6iynWRzR&currency=USD"></script> -->
 
 <script
-  src="https://www.paypal.com/sdk/js?client-id=AfcJOedIT9WM3IBgUd8D4uEiAXppkMsftrR2DRtcm8CUco5sptEShId2hujHrtNd_FK7gzOyzbV53zsX"></script>
+  src="https://www.paypal.com/sdk/js?client-id=AR4DFDz9j-s1s4O9bvAfIqeKsDHD8b-q-rPUW7Ay4hm5L_O9K02gyoze73IF1tEA09CF6vm6v1BCBq9D&currency=USD"></script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
-  $('#checkoutModal').on('hidden.bs.modal', function() {
+  $('#checkoutModal').on('hidden.bs.modal', function () {
     console.log('Modal is fully hidden now');
   });
   const userId = <?= isset($_SESSION['user_id']) ? json_encode($_SESSION['user_id']) : 'null' ?>;
@@ -114,7 +115,7 @@
   }
 
   if (!userId) {
-    $('#submitCheckout').on('click', function(e) {
+    $('#submitCheckout').on('click', function (e) {
       e.preventDefault();
       var $button = $(this); // Cache the button element
 
@@ -127,6 +128,8 @@
       let url;
       if (paymentCategory === 'Cash on Delivery') {
         url = '/blutmedical/controllers/users/checkout_guest_process.php';
+      } else if (paymentCategory === 'GCash') {
+        url = '/blutmedical/controllers/users/checkout_guest_gcash.php';
       } else {
         Toastify({
           text: 'Please select a payment method.',
@@ -139,6 +142,7 @@
 
         return; // Exit if no payment method is selected
       }
+
 
       // Retrieve localStorage contents
       const cartData = JSON.parse(localStorage.getItem('guestCart')) || [];
@@ -188,7 +192,7 @@
         data: JSON.stringify(formData), // JSON.stringify encodes the formData into a string
         contentType: 'application/json', // Set header to send JSON
         dataType: 'json',
-        success: function(response) {
+        success: function (response) {
           if (response.status === 'success') {
             Toastify({
               text: response.message,
@@ -198,7 +202,7 @@
               backgroundColor: '#4CAF50', // Green for success
             }).showToast();
 
-            setTimeout(function() {
+            setTimeout(function () {
               updateCart();
               updateCartBadge();
             }, 500); // Give the DOM time to update
@@ -217,7 +221,7 @@
           }
           $button.text('Confirm Payment');
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.error('XHR Status:', status); // Log the status
           console.error('Error:', error); // Log the actual error
           console.error('Server Response:', xhr.responseText); // Log the server response text
@@ -236,7 +240,7 @@
       });
     });
   } else {
-    $('#submitCheckout').click(function(e) {
+    $('#submitCheckout').click(function (e) {
       e.preventDefault(); // Prevent default form submission
       // Serialize form data
       var formData = new FormData($('#checkoutForm')[0]);
@@ -246,6 +250,8 @@
       let url;
       if (paymentCategory === 'Cash on Delivery') {
         url = '/blutmedical/controllers/users/checkout_process.php';
+      } else if (paymentCategory === 'GCash') {
+        url = '/blutmedical/controllers/users/checkout_gcash.php';
       } else {
         Toastify({
           text: 'Please select a payment method.',
@@ -264,7 +270,7 @@
         data: formData,
         contentType: false,
         processData: false,
-        success: function(response) {
+        success: function (response) {
           if (typeof response === 'string') {
             try {
               response = JSON.parse(response);
@@ -304,7 +310,7 @@
             }).showToast();
           }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.error('AJAX Error:', status, error);
           Toastify({
             text: "An error occurred while processing your request.",
@@ -335,7 +341,7 @@
     }
 
     // Monitor input fields for changes
-    $('#delivery_guest_fullname, #delivery_address, #delivery_guest_contact_number, #delivery_guest_email').on('input', function() {
+    $('#delivery_guest_fullname, #delivery_address, #delivery_guest_contact_number, #delivery_guest_email').on('input', function () {
       checkFormFields(); // Recheck fields whenever user inputs something
     });
 
@@ -344,7 +350,7 @@
   }
 
   //Paypal Checkout here do not remove
-  $('input[name="paymentCategory"]').on('change', function() {
+  $('input[name="paymentCategory"]').on('change', function () {
     const selectedPayment = $(this).val();
 
     if (selectedPayment === 'Paypal') {
@@ -366,7 +372,7 @@
       $('#paypal-button-container').empty(); // Clear existing button to avoid duplicates
 
       paypal.Buttons({
-        createOrder: function(data, actions) {
+        createOrder: function (data, actions) {
           // Retrieve and process cart data from localStorage
           const cartData = JSON.parse(localStorage.getItem('guestCart')) || [];
           let totalAmount = 0; // Initialize totalAmount to 0
@@ -396,8 +402,8 @@
           });
         },
 
-        onApprove: function(data, actions) {
-          return actions.order.capture().then(function(details) {
+        onApprove: function (data, actions) {
+          return actions.order.capture().then(function (details) {
             console.log('Transaction completed: ', details);
             const cartData = JSON.parse(localStorage.getItem('guestCart')) || [];
             let totalAmount = 0; // Initialize totalAmount to 0
@@ -444,7 +450,7 @@
               data: JSON.stringify(formData), // Send the correct formData here
               contentType: 'application/json', // Set header to send JSON
               dataType: 'json',
-              success: function(response) {
+              success: function (response) {
                 if (response.status === 'success') {
                   Toastify({
                     text: response.message,
@@ -454,7 +460,7 @@
                     backgroundColor: '#4CAF50', // Green for success
                   }).showToast();
 
-                  setTimeout(function() {
+                  setTimeout(function () {
                     updateCart();
                     updateCartBadge();
                   }, 500); // Give the DOM time to update
@@ -472,7 +478,7 @@
                   }).showToast();
                 }
               },
-              error: function(xhr, status, error) {
+              error: function (xhr, status, error) {
                 console.error('XHR Status:', status); // Log the status
                 console.error('Error:', error); // Log the actual error
                 console.error('Server Response:', xhr.responseText); // Log the server response text
@@ -497,17 +503,17 @@
       $('#paypal-button-container').empty(); // Clear existing button to avoid duplicates
 
       paypal.Buttons({
-        createOrder: function(data, actions) {
+        createOrder: function (data, actions) {
           return $.ajax({
             url: '/blutmedical/controllers/users/fetch_cart_process.php',
             method: 'GET',
             dataType: 'json',
-          }).then(function(response) {
+          }).then(function (response) {
             if (response.success) {
               let totalAmount = 0;
 
               // Calculate total amount based on cart data
-              response.items.forEach(function(item) {
+              response.items.forEach(function (item) {
                 const price = item.variation_id ? parseFloat(item.price) : parseFloat(item.product_sellingprice);
                 totalAmount += price * parseInt(item.cart_quantity, 10);
               });
@@ -524,15 +530,15 @@
               console.error('Failed to fetch cart items:', response.message || 'Unknown error');
               return Promise.reject(new Error('Failed to fetch cart data'));
             }
-          }).catch(function(error) {
+          }).catch(function (error) {
             console.error('AJAX error while fetching cart data:', error);
             return Promise.reject(new Error('Failed to fetch cart data'));
           });
         },
 
 
-        onApprove: function(data, actions) {
-          return actions.order.capture().then(function(details) {
+        onApprove: function (data, actions) {
+          return actions.order.capture().then(function (details) {
             // Serialize form data
             var formData = new FormData($('#checkoutForm')[0]);
 
@@ -544,7 +550,7 @@
               data: formData,
               contentType: false,
               processData: false,
-              success: function(response) {
+              success: function (response) {
                 if (typeof response === 'string') {
                   try {
                     response = JSON.parse(response);
@@ -584,7 +590,7 @@
                   }).showToast();
                 }
               },
-              error: function(xhr, status, error) {
+              error: function (xhr, status, error) {
                 console.error('AJAX Error:', status, error);
                 Toastify({
                   text: "An error occurred while processing your request.",

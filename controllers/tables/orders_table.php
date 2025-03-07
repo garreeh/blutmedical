@@ -76,17 +76,26 @@ $columns = array(
 	),
 
 	array(
-		'db' => 'total_price',
+		'db' => 'cart_id',
 		'dt' => 6,
+		'field' => 'cart_id',
+		'formatter' => function ($lab4, $row) {
+			return '<a class="fetchOrderDetails" href="#"> Click to View</a> ';
+		}
+	),
+
+	array(
+		'db' => 'total_price',
+		'dt' => 7,
 		'field' => 'total_price',
 		'formatter' => function ($lab4, $row) {
-			return '$ ' . $row['total_price'];
+			return '₱ ' . $row['total_price'];
 		}
 	),
 
 	array(
 		'db' => 'cart_id',
-		'dt' => 7,
+		'dt' => 8,
 		'field' => 'cart_id',
 		'formatter' => function ($lab5, $row) {
 			return '
@@ -104,7 +113,7 @@ $columns = array(
 
 	array(
 		'db' => 'delivery_guest_fullname',
-		'dt' => 8,
+		'dt' => 9,
 		'field' => 'delivery_guest_fullname',
 		'formatter' => function ($lab5, $row) {
 			return $row['delivery_guest_fullname'];
@@ -126,7 +135,10 @@ $where = "cart_status = 'Processing'";
 // Fetch and encode ONLY WHERE
 // echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $where));
 
-$joinQuery = "FROM $table LEFT JOIN users ON $table.user_id = users.user_id";
+$joinQuery = "FROM $table LEFT JOIN users ON $table.user_id = users.user_id
+				LEFT JOIN product ON $table.product_id = product.product_id
+				LEFT JOIN variations ON $table.variation_id = variations.variation_id
+				LEFT JOIN variations_colors ON $table.variation_color_id = variations_colors.variation_color_id";
 
 // Fetch and encode JOIN AND WHERE
 echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $joinQuery, $where));
