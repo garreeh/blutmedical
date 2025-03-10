@@ -10,6 +10,16 @@
 <?php
 include './../../connections/connections.php';
 
+$sql = "SELECT * FROM subcategory";
+$resultSubCategory = mysqli_query($conn, $sql);
+
+$subcategory_names = [];
+if ($resultSubCategory) {
+  while ($row = mysqli_fetch_assoc($resultSubCategory)) {
+    $subcategory_names[] = $row;
+  }
+}
+
 if (isset($_POST['category_id'])) {
   $category_id = $_POST['category_id'];
   $sql = "SELECT * FROM category WHERE category_id = '$category_id'";
@@ -38,6 +48,21 @@ if (isset($_POST['category_id'])) {
                     <input type="text" class="form-control" id="category_name" name="category_name"
                       placeholder="Enter Category Name" value="<?php echo $row['category_name']; ?>" required>
                   </div>
+
+                  <div class="form-group col-md-12">
+                    <label for="subcategory_id">Shop Category:</label>
+                    <select class="form-control" id="subcategory_id" name="subcategory_id" required>
+                      <option value="" disabled>Select Shop Category</option>
+                      <?php
+                      // Loop through category names to populate the dropdown
+                      foreach ($subcategory_names as $subcategory_rows) {
+                        // Set selected if the category_id matches
+                        $selected = ($subcategory_rows['subcategory_id'] == $row['subcategory_id']) ? 'selected' : '';
+                        echo "<option value='" . $subcategory_rows['subcategory_id'] . "' $selected>" . $subcategory_rows['subcategory_name'] . "</option>";
+                      }
+                      ?>
+                    </select>
+                  </div>
                 </div>
 
                 <!-- Add a hidden input field to submit the form with the button click -->
@@ -54,7 +79,7 @@ if (isset($_POST['category_id'])) {
         </div>
       </div>
 
-    <?php
+      <?php
     }
   }
 }

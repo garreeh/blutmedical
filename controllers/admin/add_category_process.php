@@ -3,12 +3,14 @@
 include '../../connections/connections.php';
 
 if (isset($_POST['add_category'])) {
-	// Get form data
-	$category_name = $conn->real_escape_string($_POST['category_name']);
+  // Get form data
+  $category_name = $conn->real_escape_string($_POST['category_name']);
+  $subcategory_id = $conn->real_escape_string($_POST['subcategory_id']);
+
 
   // Construct SQL query
-  $sql = "INSERT INTO `category` (category_name)
-          VALUES ('$category_name')";
+  $sql = "INSERT INTO `category` (category_name, subcategory_id)
+          VALUES ('$category_name', '$subcategory_id')";
 
   // Execute SQL query
   if (mysqli_query($conn, $sql)) {
@@ -21,6 +23,6 @@ if (isset($_POST['add_category'])) {
     $response = array('success' => false, 'message' => 'Error Adding Category!: ' . mysqli_error($conn));
     echo json_encode($response);
     exit();
-  } 
+  }
 }
 ?>

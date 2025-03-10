@@ -5,12 +5,15 @@ include '../../connections/connections.php';
 if (isset($_POST['edit_supplier'])) {
 
   $category_id = $conn->real_escape_string($_POST['category_id']);
-	$category_name = $conn->real_escape_string($_POST['category_name']);
+  $subcategory_id = $conn->real_escape_string($_POST['subcategory_id']);
+
+  $category_name = $conn->real_escape_string($_POST['category_name']);
 
   // Construct SQL query for UPDATE
   $sql = "UPDATE `category` 
           SET 
-            category_name = '$category_name'
+            category_name = '$category_name',
+            subcategory_id = '$subcategory_id'
           WHERE category_id = '$category_id'";
 
   // Execute SQL query
@@ -24,6 +27,6 @@ if (isset($_POST['edit_supplier'])) {
     $response = array('success' => false, 'message' => 'Error updating Category: ' . mysqli_error($conn));
     echo json_encode($response);
     exit();
-  } 
+  }
 }
 ?>

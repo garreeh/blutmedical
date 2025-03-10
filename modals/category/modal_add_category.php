@@ -6,7 +6,20 @@
     font-weight: bolder;
   }
 </style>
+<?php
+include './../../connections/connections.php';
 
+$sql = "SELECT * FROM subcategory";
+$resultSubCategory = mysqli_query($conn, $sql);
+
+$subcategory_names = [];
+if ($result) {
+  while ($row = mysqli_fetch_assoc($resultSubCategory)) {
+    $subcategory_names[] = $row;
+  }
+}
+
+?>
 <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel"
   aria-hidden="true">
   <div class="modal-dialog modal-l" role="document">
@@ -26,7 +39,20 @@
               <input type="text" class="form-control" id="category_name" name="category_name"
                 placeholder="Enter Supplier Name" required>
             </div>
+            <div class="form-group col-md-12">
+              <label for="subcategory_id">Shop Category:</label>
+              <select class="form-control" id="subcategory_id" name="subcategory_id" required>
+                <option value="">Select Shop Category</option>
+                <?php foreach ($subcategory_names as $subcategory_rows): ?>
+                  <option value="<?php echo $subcategory_rows['subcategory_id']; ?>">
+                    <?php echo $subcategory_rows['subcategory_name']; ?>
+                  </option>
+                <?php endforeach; ?>
+              </select>
+            </div>
           </div>
+
+
 
           <!-- Add a hidden input field to submit the form with the button click -->
           <input type="hidden" name="add_category" value="1">

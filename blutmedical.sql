@@ -11,7 +11,7 @@
  Target Server Version : 100432
  File Encoding         : 65001
 
- Date: 17/02/2025 17:59:46
+ Date: 10/03/2025 18:15:31
 */
 
 SET NAMES utf8mb4;
@@ -74,13 +74,15 @@ CREATE TABLE `cart`  (
   `paypal_transaction_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `variation_color_id` int(11) NULL DEFAULT NULL,
   PRIMARY KEY (`cart_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 308 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 310 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of cart
 -- ----------------------------
 INSERT INTO `cart` VALUES (302, NULL, 28, 5, 1, 'Processing', NULL, 3.00, 'Paypal', 'Unpad', NULL, '2025-02-11 12:20:50', '2025-02-11 12:20:50', NULL, 'Garry', 'qwe', 'qwe', 'q@gmail.com', '5EJ59692FR1890104', 'CCSRW7G4Z8NBS', 'Garry Sandbox', 'sb-hjaz836856231@personal.example.com', '', 'undefined, undefined, US', '5EJ59692FR1890104', NULL);
 INSERT INTO `cart` VALUES (303, NULL, 28, 5, 1, 'Processing', NULL, 3.00, 'Paypal', 'Unpad', NULL, '2025-02-11 12:20:50', '2025-02-11 12:20:50', NULL, 'Garry', 'qwe', 'qwe', 'q@gmail.com', '5EJ59692FR1890104', 'CCSRW7G4Z8NBS', 'Garry Sandbox', 'sb-hjaz836856231@personal.example.com', '', 'undefined, undefined, US', '5EJ59692FR1890104', NULL);
+INSERT INTO `cart` VALUES (308, NULL, 24, 0, 1, 'Processing', NULL, 257.00, 'Cash on Delivery', 'Unpaid', NULL, '2025-03-06 14:16:32', '2025-03-06 14:16:32', NULL, 'q', 'q', 'q', 'q', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
+INSERT INTO `cart` VALUES (309, 1, 28, 5, 1, 'Cart', NULL, 3.00, NULL, '', NULL, '2025-03-06 14:19:05', '2025-03-06 14:19:05', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 11);
 
 -- ----------------------------
 -- Table structure for category
@@ -91,16 +93,33 @@ CREATE TABLE `category`  (
   `category_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `created_at` timestamp(0) NOT NULL DEFAULT current_timestamp(0),
   `updated_at` timestamp(0) NOT NULL DEFAULT current_timestamp(0) ON UPDATE CURRENT_TIMESTAMP(0),
+  `subcategory_id` int(11) NULL DEFAULT NULL,
   PRIMARY KEY (`category_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of category
 -- ----------------------------
-INSERT INTO `category` VALUES (1, 'Scissors', '2024-05-14 17:48:46', '2025-01-06 11:55:42');
-INSERT INTO `category` VALUES (2, 'Machines', '2024-05-14 17:48:30', '2025-01-06 11:55:49');
-INSERT INTO `category` VALUES (5, 'SampeCategory1', '2024-09-04 17:23:29', '2025-01-06 11:56:02');
-INSERT INTO `category` VALUES (6, 'SampeCategory2', '2024-09-06 21:20:13', '2025-01-06 11:56:06');
+INSERT INTO `category` VALUES (1, 'Scissors', '2024-05-14 17:48:46', '2025-03-10 17:06:08', 12);
+INSERT INTO `category` VALUES (2, 'Machines', '2024-05-14 17:48:30', '2025-03-10 16:58:11', 12);
+INSERT INTO `category` VALUES (5, 'SampeCategory1', '2024-09-04 17:23:29', '2025-03-10 17:06:06', 12);
+INSERT INTO `category` VALUES (6, 'SampeCategory2', '2024-09-06 21:20:13', '2025-03-10 17:06:07', 12);
+INSERT INTO `category` VALUES (10, 'qq', '2025-03-10 16:54:49', '2025-03-10 16:54:49', 11);
+
+-- ----------------------------
+-- Table structure for currency
+-- ----------------------------
+DROP TABLE IF EXISTS `currency`;
+CREATE TABLE `currency`  (
+  `dollar_id` int(11) NOT NULL,
+  `dollar_currency` int(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`dollar_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of currency
+-- ----------------------------
+INSERT INTO `currency` VALUES (1, 57);
 
 -- ----------------------------
 -- Table structure for order
@@ -185,9 +204,9 @@ CREATE TABLE `product`  (
 -- ----------------------------
 -- Records of product
 -- ----------------------------
-INSERT INTO `product` VALUES (22, 26, 5, 'Scissor 3', 'Test Description', '../../uploads/sampleqwe.png', 'Scissor 3', 0, '177.00', '188.00', '2024-11-08 22:11:48', '2025-02-17 16:54:50', 11);
+INSERT INTO `product` VALUES (22, 26, 5, 'Scissor 3', 'Test Description', '../../uploads/sampleqwe.png', 'Scissor 3', 0, '177.00', '188.00', '2024-11-08 22:11:48', '2025-03-10 16:57:31', 12);
 INSERT INTO `product` VALUES (23, 26, 6, 'Scissor 4', 'Test Description', '../../uploads/dreamy-watercolor-delicate-dusty-blue-heart-clipart-white-background_983420-312343.png', 'Noodles', 0, '77.00', '99.00', '2024-11-08 22:12:38', '2025-01-09 13:03:43', NULL);
-INSERT INTO `product` VALUES (24, 26, 5, 'Test Product', 'Test Test Description', '../../uploads/wilcon.jpg', 'Test Product', 0, '244.00', '257.00', '2025-01-06 11:55:33', '2025-01-09 13:03:45', NULL);
+INSERT INTO `product` VALUES (24, 26, 6, 'Test Product', 'Test Test Description', '../../uploads/wilcon.jpg', 'Test Product', 0, '244.00', '257.00', '2025-01-06 11:55:33', '2025-03-10 17:19:16', NULL);
 INSERT INTO `product` VALUES (25, 28, 2, 'TestWFH', 'Test', '../../uploads/blutfront.png', 'TestWFH', 0, NULL, '13333.2991', '2025-01-14 10:18:47', '2025-01-14 10:18:47', NULL);
 INSERT INTO `product` VALUES (26, 32, 5, '123', '1', '../../uploads/IMG_20241213_111820_00_merged.jpg', 'Test', 0, NULL, '0', '2025-01-24 11:00:00', '2025-02-12 09:58:15', NULL);
 INSERT INTO `product` VALUES (28, 32, 2, 'TEST LAST', '11', '../../uploads/Front ID Garry.jpeg', 'TEST LAST', 0, NULL, '123123', '2025-02-10 15:25:49', '2025-02-10 15:25:49', NULL);
@@ -316,15 +335,17 @@ CREATE TABLE `users`  (
   `account_status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `user_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`user_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 43 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 45 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of users
 -- ----------------------------
 INSERT INTO `users` VALUES (1, 'Garry Gajultos', 'garry', '123123@gmail.com', '123123123', '$2y$10$RTgvXGAH1Z10iRnE5bHnW.U1VwX2xCp/2vsobgHyqUg9ugM1stSUi', '123123', '', '2024-04-07 16:08:00', '2025-01-14 09:31:28', 1, '1', 'Active', '1');
 INSERT INTO `users` VALUES (2, 'Test Account', 'Ron', '123123@gmail.comm', NULL, '$2y$10$Wtj4pYEWKXHYe4DUwLPTveZdPJUNrXwfkfeZRWXO4bnmbNd9NOA9y', 'test1005', NULL, '2024-05-13 18:18:17', '2024-11-08 22:57:38', 1, '1', 'Active', 'qweqwe');
-INSERT INTO `users` VALUES (39, '1', 'test', 'gajultos.garrydev@gmail.com', '1', '$2y$10$XX19Ar6P.ig1stK9lZ0N2eP89FY5FughUlK0xhgDfLj1P60tMMPva', '1', NULL, '2024-09-13 23:58:14', '2024-10-23 22:12:51', 4, '1', 'Active', '123123123');
+INSERT INTO `users` VALUES (39, '1', 'test', 'gajultos.garry@gmail.com', '1', '$2y$10$XX19Ar6P.ig1stK9lZ0N2eP89FY5FughUlK0xhgDfLj1P60tMMPva', '1', NULL, '2024-09-13 23:58:14', '2025-02-26 17:24:07', 4, '1', 'Active', '123123123');
 INSERT INTO `users` VALUES (40, 'LCC WQE', 'testacc', 'Test@gmail.com', '123123', '$2y$10$9KeTSQ5PmtdiiqdqmsiUSuQs7OujRChozbhCai948a1DGo8Xq.mSe', 'test1005', NULL, '2024-09-13 23:58:14', '2024-11-08 22:55:25', 0, '0', 'Active', '123123123');
+INSERT INTO `users` VALUES (43, 'Ronnel Cruz', 'gar', 'gajultos.garryde@gmail.com', '09611560419', '$2y$10$hv1pitl12GqTbs.f2iRd1.m559WPYnIl7/M88ZhYAXIUjFxaoqc9u', '123123', NULL, '2025-02-26 17:24:40', '2025-02-26 17:31:13', NULL, '0', 'Inactive', 'Test Address');
+INSERT INTO `users` VALUES (44, 'Ronnel Cruz', 'EMP-6601', 'gajultos.garrydev@gmail.com', '1', '$2y$10$SGqi92A1btRijwHYbLzhbuSPFa16lsMeakx5u/TeKvlx1x7KINQeC', '11', NULL, '2025-02-26 17:31:36', '2025-02-26 17:31:36', NULL, '0', 'Inactive', '1');
 
 -- ----------------------------
 -- Table structure for usertype

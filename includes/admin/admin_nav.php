@@ -33,7 +33,7 @@ $result = mysqli_query($conn, $sql);
 
 if ($result) {
   while ($row = mysqli_fetch_assoc($result)) {
-?>
+    ?>
     <!DOCTYPE html>
     <html lang="en">
 
@@ -157,6 +157,12 @@ if ($result) {
 
             </div>
           </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="/blutmedical/views/admin/dollar_module.php">
+              <i class="fas fa-fw fa-money-bill"></i>
+              <span>Peso Currency</span></a>
+          </li>
         <?php endif; ?>
 
         <!-- Divider -->
@@ -209,7 +215,7 @@ if ($result) {
 
     </html>
 
-<?php
+    <?php
   }
 }
 ?>

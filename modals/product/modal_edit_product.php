@@ -40,7 +40,7 @@ $sql = "SELECT * FROM category";
 $resultCategory = mysqli_query($conn, $sql);
 
 $category_names = [];
-if ($result) {
+if ($resultCategory) {
   while ($row = mysqli_fetch_assoc($resultCategory)) {
     $category_names[] = $row;
   }
@@ -50,7 +50,7 @@ $sql = "SELECT * FROM subcategory";
 $resultSubCategory = mysqli_query($conn, $sql);
 
 $subcategory_names = [];
-if ($result) {
+if ($resultSubCategory) {
   while ($row = mysqli_fetch_assoc($resultSubCategory)) {
     $subcategory_names[] = $row;
   }
@@ -189,9 +189,9 @@ if (isset($_POST['product_id'])) {
                   </div>
 
                   <div class="form-group col-md-4">
-                    <label for="subcategory_id">Sub Category:</label>
+                    <label for="subcategory_id">Shop Category:</label>
                     <select class="form-control" id="subcategory_id" name="subcategory_id" required>
-                      <option value="" disabled>Select Category</option>
+                      <option value="" disabled>Select Shop Category</option>
                       <?php
                       // Loop through category names to populate the dropdown
                       foreach ($subcategory_names as $subcategory_rows) {
