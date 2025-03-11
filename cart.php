@@ -160,6 +160,7 @@
           var totalPrice = 0;
 
           if (response.success) {
+            cartItems = response.items;
             if (response.items.length > 0) {
               $.each(response.items, function(index, item) {
                 var productPrice = parseFloat(item.product_sellingprice) || 0;
@@ -288,6 +289,8 @@
 
     }
   }
+
+
 
   // Delete cart item (handles both database and localStorage-based carts)
   function deleteCartItem(productId, variationId, variationColorId) {

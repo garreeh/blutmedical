@@ -86,7 +86,12 @@ $columns = array(
 		'dt' => 7,
 		'field' => 'total_price',
 		'formatter' => function ($lab4, $row) {
-			return '₱ ' . $row['total_price'];
+			// Check if the payment method is GCash, use Peso sign, otherwise Dollar sign
+			if ($row['payment_method'] == 'GCash') {
+				return '₱ ' . number_format($row['total_price'], 2);
+			} else {
+				return '$ ' . number_format($row['total_price'], 2);
+			}
 		}
 	),
 
