@@ -82,7 +82,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
     }
 
-    echo json_encode(['status' => 'success', 'message' => 'Items saved to cart successfully!']);
+    echo json_encode([
+      'status' => 'success',
+      'message' => 'Items saved to cart successfully!',
+      'paypal_order_id' => $paypal_order_id // Send PayPal Order ID back
+    ]);
   } catch (Exception $e) {
     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
   }

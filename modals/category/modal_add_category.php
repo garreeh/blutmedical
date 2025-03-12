@@ -50,6 +50,11 @@ if ($result) {
                 <?php endforeach; ?>
               </select>
             </div>
+
+            <div class="form-group col-md-12">
+              <label for="fileToUpload">Category Image:</label>
+              <input type="file" class="form-control" id="fileToUpload" name="fileToUpload">
+            </div>
           </div>
 
 
@@ -77,26 +82,23 @@ if ($result) {
     $('#addCategoryModal form').submit(function (event) {
       event.preventDefault(); // Prevent default form submission
 
-      // Store a reference to $(this)
       var $form = $(this);
+      var formData = new FormData(this); // Use FormData to handle file uploads
 
-      // Serialize form data
-      var formData = $form.serialize();
-
-      // Change button text to "Adding..." and disable it
       var $addButton = $('#addCategoryButton');
       $addButton.text('Adding...');
       $addButton.prop('disabled', true);
 
-      // Send AJAX request
       $.ajax({
         type: 'POST',
         url: '/blutmedical/controllers/admin/add_category_process.php',
         data: formData,
+        contentType: false,  // Important: Prevent jQuery from setting content type
+        processData: false,  // Important: Prevent jQuery from converting data
         success: function (response) {
-          // Handle success response
-          console.log(response); // Log the response for debugging
+          console.log(response); // Debugging
           response = JSON.parse(response);
+
           if (response.success) {
             Toastify({
               text: response.message,
@@ -104,13 +106,9 @@ if ($result) {
               backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)"
             }).showToast();
 
-            // Optionally, reset the form
             $form.trigger('reset');
-
-            // Optionally, close the modal
             $('#addCategoryModal').modal('hide');
             window.reloadDataTable();
-
           } else {
             Toastify({
               text: response.message,
@@ -120,7 +118,6 @@ if ($result) {
           }
         },
         error: function (xhr, status, error) {
-          // Handle error response
           console.error(xhr.responseText);
           Toastify({
             text: "Error occurred while adding category. Please try again later.",
@@ -129,11 +126,11 @@ if ($result) {
           }).showToast();
         },
         complete: function () {
-          // Reset button text and re-enable it
           $addButton.text('Add');
           $addButton.prop('disabled', false);
         }
       });
     });
   });
+
 </script>

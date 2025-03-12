@@ -83,33 +83,43 @@
         if ($result->num_rows > 0) {
           while ($row = $result->fetch_assoc()) {
             $category_id = $row['category_id'];
+            $category_name = htmlspecialchars($row['category_name']);
+            $category_image = !empty($row['category_image']) ? 'uploads/category/' . htmlspecialchars($row['category_image']) : null;
             ?>
             <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-5">
               <a href="category_based.php?category_id=<?php echo $category_id; ?>"
                 style="text-decoration: none; color: inherit;">
-                <div class="product-item"
-                  style="text-align: center; padding: 20px; border: 1px solid #ddd; border-radius: 15px; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); transition: all 0.3s ease-in-out;">
+                <div class="product-item" style="text-align: center; padding: 20px; border: 1px solid #ddd; border-radius: 15px; 
+                                      box-shadow: 0px 4px 10px rgba(0,0,0,0.1); transition: all 0.3s ease-in-out;
+                                      background: #fff;">
 
-                  <!-- Icon inside a nice gradient circle -->
-                  <div style="width: 80px; height: 80px; background: linear-gradient(45deg, rgb(86, 13, 210), #feb47b); 
-                              display: flex; align-items: center; justify-content: center; 
-                              border-radius: 50%; margin: 0 auto 15px;">
-                    <i class="fas fa-tags" style="font-size: 2rem; color: #fff;"></i>
-                  </div>
+                  <!-- Category Image or Default Icon -->
+                  <?php if ($category_image && file_exists($category_image)) { ?>
+                    <div style="width: 100%; height: 180px; overflow: hidden; border-radius: 10px; margin-bottom: 15px;">
+                      <img src="<?php echo $category_image; ?>" alt="<?php echo $category_name; ?>"
+                        style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                  <?php } else { ?>
+                    <div style="width: 100%; height: 180px; background: linear-gradient(45deg, rgb(86, 13, 210), #feb47b); 
+                                              display: flex; align-items: center; justify-content: center; 
+                                              border-radius: 10px; margin-bottom: 15px;">
+                      <i class="fas fa-tags" style="font-size: 4rem; color: #fff;"></i>
+                    </div>
+                  <?php } ?>
 
-                  <!-- Category Name -->
-                  <p class="product-text" style="font-size: 1.3rem; font-weight: bold; color: #333; padding: 15px; 
-                              border-radius: 10px; box-shadow: inset 0px 2px 5px rgba(0,0,0,0.1);">
-                    <?php echo htmlspecialchars($row['category_name']); ?>
+                  <!-- Category Name with ellipsis for long text -->
+                  <p class="product-text" style="font-size: 1.2rem; font-weight: bold; color: #333; padding: 10px; 
+                                                             border-radius: 10px; box-shadow: inset 0px 2px 5px rgba(0,0,0,0.1);
+                                                             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+                                                             max-width: 100%;">
+                    <?php echo $category_name; ?>
                   </p>
-
                 </div>
               </a>
             </div>
             <?php
           }
         } else {
-          // Display a message if no categories are found
           ?>
           <div class="col-12 text-center mt-5">
             <p style="font-size: 1.5rem; font-weight: bold; color: #555;">There’s no category here.</p>
@@ -118,6 +128,9 @@
         }
         ?>
       </div>
+
+
+
 
     </div>
   </div>

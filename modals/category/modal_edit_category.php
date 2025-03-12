@@ -27,6 +27,11 @@ if (isset($_POST['category_id'])) {
 
   if ($result) {
     while ($row = mysqli_fetch_assoc($result)) {
+
+      $category_image = basename($row['category_image']);
+
+      $image_url = '../../uploads/category/' . $category_image; // Construct the image URL
+
       ?>
       <div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-labelledby="requestModalLabel"
         aria-hidden="true">
@@ -63,6 +68,19 @@ if (isset($_POST['category_id'])) {
                       ?>
                     </select>
                   </div>
+
+                  <div class="form-group col-md-12">
+                    <label for="fileToUpload">Category Image:</label>
+                    <input type="file" class="form-control" id="fileToUpload" name="fileToUpload">
+                    <!-- Display existing image filename -->
+                    <div class="file-info">
+                      <?php if (!empty($category_image) && file_exists('../../uploads/category/' . $category_image)): ?>
+                        <p><strong>Current Image:</strong> <?php echo $category_image; ?></p>
+                      <?php else: ?>
+                        <p>No image available.</p>
+                      <?php endif; ?>
+                    </div>
+                  </div>
                 </div>
 
                 <!-- Add a hidden input field to submit the form with the button click -->
@@ -90,25 +108,21 @@ if (isset($_POST['category_id'])) {
   $(document).ready(function () {
     $('#editCategoryModal form').submit(function (event) {
       event.preventDefault(); // Prevent default form submission
-      // Store a reference to $(this)
-      var $form = $(this);
 
-      // Serialize form data
-      var formData = $form.serialize();
+      var formData = new FormData(this); // Use FormData to include file inputs
 
-      // Change button text to "Saving..." and disable it
       var $saveButton = $('#saveCategoryButton');
       $saveButton.text('Saving...');
       $saveButton.prop('disabled', true);
 
-      // Send AJAX request
       $.ajax({
         type: 'POST',
         url: '/blutmedical/controllers/admin/edit_category_process.php',
         data: formData,
+        processData: false,  // Required for FormData
+        contentType: false,  // Required for FormData
         success: function (response) {
-          // Handle success response
-          console.log(response); // Log the response for debugging
+          console.log(response);
           response = JSON.parse(response);
           if (response.success) {
             Toastify({
@@ -117,10 +131,8 @@ if (isset($_POST['category_id'])) {
               backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)"
             }).showToast();
 
-            // Optionally, close the modal
             $('#editCategoryModal').modal('hide');
             window.reloadDataTable();
-
           } else {
             Toastify({
               text: response.message,
@@ -130,7 +142,6 @@ if (isset($_POST['category_id'])) {
           }
         },
         error: function (xhr, status, error) {
-          // Handle error response
           console.error(xhr.responseText);
           Toastify({
             text: "Error occurred while editing category. Please try again later.",
@@ -139,11 +150,11 @@ if (isset($_POST['category_id'])) {
           }).showToast();
         },
         complete: function () {
-          // Reset button text and re-enable it
           $saveButton.text('Save');
           $saveButton.prop('disabled', false);
         }
       });
     });
   });
+
 </script>

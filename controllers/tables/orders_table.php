@@ -19,10 +19,11 @@ $columns = array(
 		'dt' => 1,
 		'field' => 'paypal_order_id',
 		'formatter' => function ($lab1, $row) {
-			return empty($row['paypal_order_id']) ? '-' : $row['paypal_order_id'];
+			return ($row['payment_method'] === 'Paypal')
+				? ($row['paypal_order_id'] ?: '-')
+				: ($row['reference_no'] ?: '-');
 		}
 	),
-
 
 	array(
 		'db' => 'users.user_fullname',
@@ -122,6 +123,15 @@ $columns = array(
 		'field' => 'delivery_guest_fullname',
 		'formatter' => function ($lab5, $row) {
 			return $row['delivery_guest_fullname'];
+		}
+	),
+
+	array(
+		'db' => 'reference_no',
+		'dt' => 10,
+		'field' => 'reference_no',
+		'formatter' => function ($lab5, $row) {
+			return $row['reference_no'];
 		}
 	),
 );

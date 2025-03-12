@@ -10,29 +10,22 @@ use PHPMailer\PHPMailer\Exception;
 // Initialize the response array
 $response = array('success' => false, 'message' => '');
 
-// Retrieve form data
-$fname = $_POST['fname'];
-$lname = $_POST['lname'];
 
-$senderEmail = $_POST['email']; // The email entered by the user in the form
-$contact = $_POST['contact'];
-$fullName = $fname . ' ' . $lname;
 $messageContent = nl2br($_POST['message']); // Converts newlines to <br> for HTML
 
 $mail = new PHPMailer;
 $mail->IsSMTP(); // Enable SMTP
 // $mail->SMTPDebug = 1; // Debugging: 1 = errors and messages, 2 = messages only : FOR LIVE
 
-$mail->Host = 'smtp.office365.com';
-$mail->SMTPAuth = true;                                      // Enable SMTP authentication
-$mail->Username = 'admin@vetaidonline.info';             // SMTP username
-$mail->Password = 'Mybossrocks081677!';                        // SMTP password
-$mail->SMTPSecure = 'tls';
-$mail->Port = 587;
+$mail->Host = 'smtp.secureserver.net'; // GoDaddy SMTP server
+$mail->Port = 465; // Gmail SMTP Port for SSL (or use 587 for TLS)
+$mail->SMTPAuth = true;
+$mail->SMTPSecure = 'ssl'; // Use 'ssl' for Port 465, 'tls' for Port 587
+$mail->Username = 'admin@vetaidonline.info'; // Your Gmail email
+$mail->Password = 'mimiRocks081677'; // Your Gmail app-specific password or regular password
 
 // Set the sender's email address (from the form)
-$mail->setFrom('admin@vetaidonline.info', 'Blut Medical');
-
+$mail->setFrom($senderEmail, $fullName);
 $mail->addAddress('admin@vetaidonline.info'); // The GoDaddy email you're sending to
 
 $mail->isHTML(true);
@@ -92,7 +85,7 @@ $message = "
       <p>$messageContent</p>
     </div>
     <div class='email-footer'>
-      <p>&copy; " . date('Y') . " Blut Medical. All Rights Reserved.</p>
+      <p>&copy; " . date('Y') . " Blüt Medical. All Rights Reserved.</p>
     </div>
   </div>
 </body>

@@ -16,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       throw new Exception('Missing required data');
     }
 
+    $order_id = 'ORD-' . strtoupper(bin2hex(random_bytes(4)));
     $cartData = $formData['localStorageItems'];
     $payment_category = $formData['payment_category'];
     $delivery_guest_fullname = isset($formData['fullname']) ? $formData['fullname'] : null;
@@ -32,15 +33,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $productTotalPrice = $productPrice * $cart_quantity;
 
       // Insert into cart table
-      $sql = "INSERT INTO cart (product_id, cart_quantity, variation_id, total_price, cart_status, payment_method, delivery_guest_fullname, delivery_address, delivery_guest_contact_number, delivery_guest_email, payment_status) 
-                        VALUES ('$product_id', '$cart_quantity', '$variation_id', '$productTotalPrice', 'Processing', 'Cash on Delivery', '$delivery_guest_fullname', '$delivery_address', '$delivery_guest_contact_number', '$delivery_guest_email', 'Unpaid')";
+      $sql = "INSERT INTO cart (reference_no, product_id, cart_quantity, variation_id, total_price, cart_status, payment_method, delivery_guest_fullname, delivery_address, delivery_guest_contact_number, delivery_guest_email, payment_status) 
+                        VALUES ('$order_id', '$product_id', '$cart_quantity', '$variation_id', '$productTotalPrice', 'Processing', 'Cash on Delivery', '$delivery_guest_fullname', '$delivery_address', '$delivery_guest_contact_number', '$delivery_guest_email', 'Unpaid')";
 
       if (!mysqli_query($conn, $sql)) {
         throw new Exception('Error saving cart: ' . mysqli_error($conn));
       }
     }
 
-    echo json_encode(['status' => 'success', 'message' => 'Items saved to cart successfully!']);
+    echo json_encode([
+      'status' => 'success',
+      'message' => 'Items saved to cart successfully!',
+      'order_id' => $order_id
+    ]);
+
   } catch (Exception $e) {
     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
   }
