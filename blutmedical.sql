@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : PendragonDB
+ Source Server         : PersonalProjectDB
  Source Server Type    : MySQL
- Source Server Version : 100432
+ Source Server Version : 100432 (10.4.32-MariaDB)
  Source Host           : localhost:3306
  Source Schema         : blutmedical
 
  Target Server Type    : MySQL
- Target Server Version : 100432
+ Target Server Version : 100432 (10.4.32-MariaDB)
  File Encoding         : 65001
 
- Date: 10/03/2025 18:15:31
+ Date: 13/03/2025 18:11:37
 */
 
 SET NAMES utf8mb4;
@@ -22,16 +22,16 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 DROP TABLE IF EXISTS `billing`;
 CREATE TABLE `billing`  (
-  `billing_id` int(11) NOT NULL AUTO_INCREMENT,
-  `product_id` int(11) NULL DEFAULT NULL,
-  `sub_total` int(11) NOT NULL DEFAULT 0,
-  `discount` int(11) NOT NULL,
-  `total_less_discount` int(11) NOT NULL,
+  `billing_id` int NOT NULL AUTO_INCREMENT,
+  `product_id` int NULL DEFAULT NULL,
+  `sub_total` int NOT NULL DEFAULT 0,
+  `discount` int NOT NULL,
+  `total_less_discount` int NOT NULL,
   `payment_status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Unpaid',
   `remarks` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `user_id` int(11) NOT NULL,
-  `created_at` timestamp(0) NOT NULL DEFAULT current_timestamp(0),
-  `updated_at` timestamp(0) NOT NULL DEFAULT current_timestamp(0) ON UPDATE CURRENT_TIMESTAMP(0),
+  `user_id` int NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`billing_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 23 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
@@ -47,20 +47,20 @@ INSERT INTO `billing` VALUES (22, NULL, 0, 0, 0, 'Unpaid', '', 1, '2024-05-14 10
 -- ----------------------------
 DROP TABLE IF EXISTS `cart`;
 CREATE TABLE `cart`  (
-  `cart_id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NULL DEFAULT NULL,
-  `product_id` int(11) NULL DEFAULT NULL,
-  `variation_id` int(11) NULL DEFAULT NULL,
-  `cart_quantity` int(11) NULL DEFAULT NULL,
+  `cart_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NULL DEFAULT NULL,
+  `product_id` int NULL DEFAULT NULL,
+  `variation_id` int NULL DEFAULT NULL,
+  `cart_quantity` int NULL DEFAULT NULL,
   `cart_status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `proof_of_payment` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `total_price` decimal(11, 2) NULL DEFAULT NULL,
   `payment_method` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `payment_status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `reference_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `created_at` timestamp(0) NULL DEFAULT current_timestamp(0),
-  `updated_at` timestamp(0) NULL DEFAULT current_timestamp(0) ON UPDATE CURRENT_TIMESTAMP(0),
-  `delivery_rider_id` int(11) NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp,
+  `updated_at` timestamp NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
+  `delivery_rider_id` int NULL DEFAULT NULL,
   `delivery_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `delivery_guest_fullname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `delivery_guest_contact_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
@@ -72,9 +72,9 @@ CREATE TABLE `cart`  (
   `paypal_contact_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `paypal_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `paypal_transaction_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `variation_color_id` int(11) NULL DEFAULT NULL,
+  `variation_color_id` int NULL DEFAULT NULL,
   PRIMARY KEY (`cart_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 310 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 320 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of cart
@@ -82,18 +82,28 @@ CREATE TABLE `cart`  (
 INSERT INTO `cart` VALUES (302, NULL, 28, 5, 1, 'Processing', NULL, 3.00, 'Paypal', 'Unpad', NULL, '2025-02-11 12:20:50', '2025-02-11 12:20:50', NULL, 'Garry', 'qwe', 'qwe', 'q@gmail.com', '5EJ59692FR1890104', 'CCSRW7G4Z8NBS', 'Garry Sandbox', 'sb-hjaz836856231@personal.example.com', '', 'undefined, undefined, US', '5EJ59692FR1890104', NULL);
 INSERT INTO `cart` VALUES (303, NULL, 28, 5, 1, 'Processing', NULL, 3.00, 'Paypal', 'Unpad', NULL, '2025-02-11 12:20:50', '2025-02-11 12:20:50', NULL, 'Garry', 'qwe', 'qwe', 'q@gmail.com', '5EJ59692FR1890104', 'CCSRW7G4Z8NBS', 'Garry Sandbox', 'sb-hjaz836856231@personal.example.com', '', 'undefined, undefined, US', '5EJ59692FR1890104', NULL);
 INSERT INTO `cart` VALUES (308, NULL, 24, 0, 1, 'Processing', NULL, 257.00, 'Cash on Delivery', 'Unpaid', NULL, '2025-03-06 14:16:32', '2025-03-06 14:16:32', NULL, 'q', 'q', 'q', 'q', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
-INSERT INTO `cart` VALUES (309, 1, 28, 5, 1, 'Cart', NULL, 3.00, NULL, '', NULL, '2025-03-06 14:19:05', '2025-03-06 14:19:05', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 11);
+INSERT INTO `cart` VALUES (309, 1, 28, 5, 1, 'Processing', NULL, 0.00, 'Cash on Delivery', 'Unpaid', '711438B67C', '2025-03-06 14:19:05', '2025-03-13 13:35:00', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 11);
+INSERT INTO `cart` VALUES (310, 1, 22, 9, 1, 'Processing', NULL, 2222.00, 'Cash on Delivery', 'Unpaid', '711438B67C', '2025-03-13 13:19:18', '2025-03-13 13:35:00', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 0);
+INSERT INTO `cart` VALUES (311, NULL, 23, 7, 1, 'Processing', NULL, 1.00, 'Cash on Delivery', 'Unpaid', 'ORD-4E7E987B', '2025-03-13 13:38:34', '2025-03-13 13:38:34', NULL, 'qwe', 'Garry', 'qwe', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
+INSERT INTO `cart` VALUES (312, NULL, 25, 0, 1, 'Processing', NULL, 13333.30, 'Cash on Delivery', 'Unpaid', 'ORD-4E7E987B', '2025-03-13 13:38:34', '2025-03-13 13:38:34', NULL, 'qwe', 'Garry', 'qwe', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
+INSERT INTO `cart` VALUES (313, NULL, 23, 7, 2, 'Processing', NULL, 2.00, 'Cash on Delivery', 'Unpaid', 'ORD-ABCF1839', '2025-03-13 13:39:38', '2025-03-13 13:39:38', NULL, 'qq', 'qwe', '2323', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
+INSERT INTO `cart` VALUES (314, NULL, 25, 0, 1, 'Processing', NULL, 13333.30, 'Cash on Delivery', 'Unpaid', 'ORD-ABCF1839', '2025-03-13 13:39:38', '2025-03-13 13:39:38', NULL, 'qq', 'qwe', '2323', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
+INSERT INTO `cart` VALUES (315, NULL, 25, 0, 6, 'Processing', NULL, 79999.79, 'Cash on Delivery', 'Unpaid', 'ORD-2881520B', '2025-03-13 13:40:57', '2025-03-13 13:40:57', NULL, '2qwe', 'Garry', '34', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
+INSERT INTO `cart` VALUES (316, NULL, 22, 8, 1, 'Processing', NULL, 111.00, 'Cash on Delivery', 'Unpaid', 'ORD-2881520B', '2025-03-13 13:40:57', '2025-03-13 13:40:57', NULL, '2qwe', 'Garry', '34', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
+INSERT INTO `cart` VALUES (317, NULL, 22, 8, 1, 'Cart', NULL, 6327.00, 'GCash', 'Unpaid', 'order-id-67d273ca207a7', '2025-03-13 13:57:30', '2025-03-13 13:57:30', NULL, 'qwe', 'qwe', 'qwe', 'gajultos.garry123@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
+INSERT INTO `cart` VALUES (318, 1, 22, 8, 2, 'Cart', NULL, 222.00, NULL, '', NULL, '2025-03-13 16:01:24', '2025-03-13 16:04:46', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 0);
+INSERT INTO `cart` VALUES (319, 1, 24, 0, 4, 'Cart', NULL, 1028.00, NULL, '', NULL, '2025-03-13 16:08:14', '2025-03-13 16:08:34', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 0);
 
 -- ----------------------------
 -- Table structure for category
 -- ----------------------------
 DROP TABLE IF EXISTS `category`;
 CREATE TABLE `category`  (
-  `category_id` int(11) NOT NULL AUTO_INCREMENT,
+  `category_id` int NOT NULL AUTO_INCREMENT,
   `category_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `created_at` timestamp(0) NOT NULL DEFAULT current_timestamp(0),
-  `updated_at` timestamp(0) NOT NULL DEFAULT current_timestamp(0) ON UPDATE CURRENT_TIMESTAMP(0),
-  `subcategory_id` int(11) NULL DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
+  `subcategory_id` int NULL DEFAULT NULL,
   PRIMARY KEY (`category_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
@@ -111,10 +121,10 @@ INSERT INTO `category` VALUES (10, 'qq', '2025-03-10 16:54:49', '2025-03-10 16:5
 -- ----------------------------
 DROP TABLE IF EXISTS `currency`;
 CREATE TABLE `currency`  (
-  `dollar_id` int(11) NOT NULL,
-  `dollar_currency` int(11) NULL DEFAULT NULL,
+  `dollar_id` int NOT NULL,
+  `dollar_currency` int NULL DEFAULT NULL,
   PRIMARY KEY (`dollar_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of currency
@@ -126,16 +136,16 @@ INSERT INTO `currency` VALUES (1, 57);
 -- ----------------------------
 DROP TABLE IF EXISTS `order`;
 CREATE TABLE `order`  (
-  `order_id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NULL DEFAULT NULL,
-  `product_id` int(11) NOT NULL,
-  `payment_category_id` int(11) NULL DEFAULT NULL,
-  `order_quantity` int(11) NULL DEFAULT NULL,
+  `order_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NULL DEFAULT NULL,
+  `product_id` int NOT NULL,
+  `payment_category_id` int NULL DEFAULT NULL,
+  `order_quantity` int NULL DEFAULT NULL,
   `order_status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `total_cost` int(11) NULL DEFAULT NULL,
+  `total_cost` int NULL DEFAULT NULL,
   `proof_of_payment` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `created_at` timestamp(0) NULL DEFAULT current_timestamp(0),
-  `updated_at` timestamp(0) NULL DEFAULT current_timestamp(0) ON UPDATE CURRENT_TIMESTAMP(0),
+  `created_at` timestamp NULL DEFAULT current_timestamp,
+  `updated_at` timestamp NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`order_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
@@ -148,13 +158,13 @@ CREATE TABLE `order`  (
 -- ----------------------------
 DROP TABLE IF EXISTS `payment`;
 CREATE TABLE `payment`  (
-  `payment_id` int(11) NOT NULL AUTO_INCREMENT,
+  `payment_id` int NOT NULL AUTO_INCREMENT,
   `payment_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `payment_category` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `payment_amount` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `remarks` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `created_at` timestamp(0) NOT NULL DEFAULT current_timestamp(0),
-  `updated_at` timestamp(0) NOT NULL DEFAULT current_timestamp(0) ON UPDATE CURRENT_TIMESTAMP(0),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`payment_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
@@ -167,10 +177,10 @@ CREATE TABLE `payment`  (
 -- ----------------------------
 DROP TABLE IF EXISTS `payment_category`;
 CREATE TABLE `payment_category`  (
-  `payment_category_id` int(11) NOT NULL AUTO_INCREMENT,
+  `payment_category_id` int NOT NULL AUTO_INCREMENT,
   `payment_category_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `created_at` datetime(0) NOT NULL DEFAULT current_timestamp(0),
-  `updated_at` datetime(0) NOT NULL DEFAULT current_timestamp(0) ON UPDATE CURRENT_TIMESTAMP(0),
+  `created_at` datetime NOT NULL DEFAULT current_timestamp,
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`payment_category_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
@@ -185,19 +195,19 @@ INSERT INTO `payment_category` VALUES (2, 'Gcash', '2024-09-18 09:43:01', '2024-
 -- ----------------------------
 DROP TABLE IF EXISTS `product`;
 CREATE TABLE `product`  (
-  `product_id` int(11) NOT NULL AUTO_INCREMENT,
-  `supplier_id` int(11) NULL DEFAULT NULL,
-  `category_id` int(11) NULL DEFAULT NULL,
+  `product_id` int NOT NULL AUTO_INCREMENT,
+  `supplier_id` int NULL DEFAULT NULL,
+  `category_id` int NULL DEFAULT NULL,
   `product_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `product_description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `product_image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `product_sku` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `product_stocks` int(11) NULL DEFAULT NULL,
+  `product_stocks` int NULL DEFAULT NULL,
   `product_unitprice` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `product_sellingprice` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `created_at` timestamp(0) NOT NULL DEFAULT current_timestamp(0),
-  `updated_at` timestamp(0) NOT NULL DEFAULT current_timestamp(0) ON UPDATE CURRENT_TIMESTAMP(0),
-  `subcategory_id` int(11) NULL DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
+  `subcategory_id` int NULL DEFAULT NULL,
   PRIMARY KEY (`product_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 32 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
@@ -218,11 +228,11 @@ INSERT INTO `product` VALUES (30, 33, 2, '1', '1', '', '1', 0, NULL, '1', '2025-
 -- ----------------------------
 DROP TABLE IF EXISTS `product_image`;
 CREATE TABLE `product_image`  (
-  `product_image_id` int(11) NOT NULL AUTO_INCREMENT,
-  `product_id` int(11) NULL DEFAULT NULL,
+  `product_image_id` int NOT NULL AUTO_INCREMENT,
+  `product_id` int NULL DEFAULT NULL,
   `product_image_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `created_at` timestamp(0) NULL DEFAULT current_timestamp(0),
-  `updated_at` timestamp(0) NULL DEFAULT current_timestamp(0) ON UPDATE CURRENT_TIMESTAMP(0),
+  `created_at` timestamp NULL DEFAULT current_timestamp,
+  `updated_at` timestamp NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`product_image_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
@@ -236,13 +246,13 @@ INSERT INTO `product_image` VALUES (1, 17, '../../uploads/sampleqwe.png', '2025-
 -- ----------------------------
 DROP TABLE IF EXISTS `purchase_order`;
 CREATE TABLE `purchase_order`  (
-  `purchase_order_id` int(11) NOT NULL AUTO_INCREMENT,
-  `purchase_number` int(11) NULL DEFAULT NULL,
-  `supplier_id` int(11) NULL DEFAULT NULL,
-  `product_id` int(11) NULL DEFAULT NULL,
-  `quantity` int(11) NULL DEFAULT NULL,
-  `created_at` timestamp(0) NOT NULL DEFAULT current_timestamp(0),
-  `updated_at` timestamp(0) NOT NULL DEFAULT current_timestamp(0) ON UPDATE CURRENT_TIMESTAMP(0),
+  `purchase_order_id` int NOT NULL AUTO_INCREMENT,
+  `purchase_number` int NULL DEFAULT NULL,
+  `supplier_id` int NULL DEFAULT NULL,
+  `product_id` int NULL DEFAULT NULL,
+  `quantity` int NULL DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`purchase_order_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 18 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
@@ -265,10 +275,10 @@ INSERT INTO `purchase_order` VALUES (17, 123123, 26, 17, 20, '2024-11-08 22:43:2
 -- ----------------------------
 DROP TABLE IF EXISTS `subcategory`;
 CREATE TABLE `subcategory`  (
-  `subcategory_id` int(11) NOT NULL AUTO_INCREMENT,
+  `subcategory_id` int NOT NULL AUTO_INCREMENT,
   `subcategory_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `created_at` timestamp(0) NOT NULL DEFAULT current_timestamp(0),
-  `updated_at` timestamp(0) NOT NULL DEFAULT current_timestamp(0) ON UPDATE CURRENT_TIMESTAMP(0),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`subcategory_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
@@ -283,15 +293,15 @@ INSERT INTO `subcategory` VALUES (12, 'w', '2025-02-17 15:35:57', '2025-02-17 15
 -- ----------------------------
 DROP TABLE IF EXISTS `supplier`;
 CREATE TABLE `supplier`  (
-  `supplier_id` int(11) NOT NULL AUTO_INCREMENT,
+  `supplier_id` int NOT NULL AUTO_INCREMENT,
   `supplier_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `landline` int(11) NULL DEFAULT NULL,
-  `mobile_number` int(11) NULL DEFAULT NULL,
+  `landline` int NULL DEFAULT NULL,
+  `mobile_number` int NULL DEFAULT NULL,
   `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `tin` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `created_at` timestamp(0) NOT NULL DEFAULT current_timestamp(0),
-  `updated_at` timestamp(0) NOT NULL DEFAULT current_timestamp(0) ON UPDATE CURRENT_TIMESTAMP(0),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`supplier_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 42 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
@@ -320,7 +330,7 @@ INSERT INTO `supplier` VALUES (41, '1', '12', 3, 4, 'agbalahadia@scpa.com.ph', '
 -- ----------------------------
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users`  (
-  `user_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL AUTO_INCREMENT,
   `user_fullname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `user_email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
@@ -328,9 +338,9 @@ CREATE TABLE `users`  (
   `user_password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `user_confirm_password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `remember_me` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `created_at` timestamp(0) NOT NULL DEFAULT current_timestamp(0),
-  `updated_at` timestamp(0) NOT NULL DEFAULT current_timestamp(0) ON UPDATE CURRENT_TIMESTAMP(0),
-  `user_type_id` int(11) NULL DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
+  `user_type_id` int NULL DEFAULT NULL,
   `is_admin` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `account_status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `user_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
@@ -340,7 +350,7 @@ CREATE TABLE `users`  (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES (1, 'Garry Gajultos', 'garry', '123123@gmail.com', '123123123', '$2y$10$RTgvXGAH1Z10iRnE5bHnW.U1VwX2xCp/2vsobgHyqUg9ugM1stSUi', '123123', '', '2024-04-07 16:08:00', '2025-01-14 09:31:28', 1, '1', 'Active', '1');
+INSERT INTO `users` VALUES (1, 'Garry Gajultos', 'garry', 'tanginathis213012@gmail.com', '123123123', '$2y$10$RTgvXGAH1Z10iRnE5bHnW.U1VwX2xCp/2vsobgHyqUg9ugM1stSUi', '123123', '', '2024-04-07 16:08:00', '2025-03-13 13:34:42', 1, '1', 'Active', '1');
 INSERT INTO `users` VALUES (2, 'Test Account', 'Ron', '123123@gmail.comm', NULL, '$2y$10$Wtj4pYEWKXHYe4DUwLPTveZdPJUNrXwfkfeZRWXO4bnmbNd9NOA9y', 'test1005', NULL, '2024-05-13 18:18:17', '2024-11-08 22:57:38', 1, '1', 'Active', 'qweqwe');
 INSERT INTO `users` VALUES (39, '1', 'test', 'gajultos.garry@gmail.com', '1', '$2y$10$XX19Ar6P.ig1stK9lZ0N2eP89FY5FughUlK0xhgDfLj1P60tMMPva', '1', NULL, '2024-09-13 23:58:14', '2025-02-26 17:24:07', 4, '1', 'Active', '123123123');
 INSERT INTO `users` VALUES (40, 'LCC WQE', 'testacc', 'Test@gmail.com', '123123', '$2y$10$9KeTSQ5PmtdiiqdqmsiUSuQs7OujRChozbhCai948a1DGo8Xq.mSe', 'test1005', NULL, '2024-09-13 23:58:14', '2024-11-08 22:55:25', 0, '0', 'Active', '123123123');
@@ -352,10 +362,10 @@ INSERT INTO `users` VALUES (44, 'Ronnel Cruz', 'EMP-6601', 'gajultos.garrydev@gm
 -- ----------------------------
 DROP TABLE IF EXISTS `usertype`;
 CREATE TABLE `usertype`  (
-  `user_type_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_type_id` int NOT NULL AUTO_INCREMENT,
   `user_type_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `created_at` timestamp(0) NULL DEFAULT current_timestamp(0),
-  `updated_at` timestamp(0) NULL DEFAULT current_timestamp(0) ON UPDATE CURRENT_TIMESTAMP(0),
+  `created_at` timestamp NULL DEFAULT current_timestamp,
+  `updated_at` timestamp NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
   `ship_order` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
   `view_order` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
   `client_order_module` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
@@ -381,12 +391,12 @@ INSERT INTO `usertype` VALUES (4, 'Delivery Rider', '2024-10-12 11:21:06', '2025
 -- ----------------------------
 DROP TABLE IF EXISTS `variations`;
 CREATE TABLE `variations`  (
-  `variation_id` int(11) NOT NULL AUTO_INCREMENT,
-  `product_id` int(11) NULL DEFAULT NULL,
+  `variation_id` int NOT NULL AUTO_INCREMENT,
+  `product_id` int NULL DEFAULT NULL,
   `attribute` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `created_at` timestamp(0) NULL DEFAULT current_timestamp(0),
-  `updated_at` timestamp(0) NULL DEFAULT current_timestamp(0) ON UPDATE CURRENT_TIMESTAMP(0),
+  `created_at` timestamp NULL DEFAULT current_timestamp,
+  `updated_at` timestamp NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
   `price` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `product_code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`variation_id`) USING BTREE
@@ -408,12 +418,11 @@ INSERT INTO `variations` VALUES (9, 22, NULL, '22', '2025-02-10 15:54:35', '2025
 -- ----------------------------
 DROP TABLE IF EXISTS `variations_colors`;
 CREATE TABLE `variations_colors`  (
-  `variation_color_id` int(11) NOT NULL AUTO_INCREMENT,
-  `product_id` int(11) NULL DEFAULT NULL,
+  `variation_color_id` int NOT NULL AUTO_INCREMENT,
+  `product_id` int NULL DEFAULT NULL,
   `attribute` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `created_at` timestamp(0) NULL DEFAULT current_timestamp(0),
-  `updated_at` timestamp(0) NULL DEFAULT current_timestamp(0) ON UPDATE CURRENT_TIMESTAMP(0),
+  `created_at` timestamp NULL DEFAULT current_timestamp,
+  `updated_at` timestamp NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
   `price` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `color` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`variation_color_id`) USING BTREE
@@ -422,9 +431,9 @@ CREATE TABLE `variations_colors`  (
 -- ----------------------------
 -- Records of variations_colors
 -- ----------------------------
-INSERT INTO `variations_colors` VALUES (1, 17, 'Size', 'Value13', '2025-01-06 15:08:02', '2025-01-08 15:30:46', '2', NULL);
-INSERT INTO `variations_colors` VALUES (2, 17, 'Color', 'Value233', '2025-01-06 15:21:07', '2025-01-08 16:17:33', '23', NULL);
-INSERT INTO `variations_colors` VALUES (11, 28, NULL, NULL, '2025-02-10 17:39:43', '2025-02-11 08:16:33', NULL, 'Onyx');
-INSERT INTO `variations_colors` VALUES (12, 28, NULL, NULL, '2025-02-10 17:39:47', '2025-02-11 08:17:12', NULL, 'Sapphire');
+INSERT INTO `variations_colors` VALUES (1, 17, 'Size', '2025-01-06 15:08:02', '2025-01-08 15:30:46', '2', NULL);
+INSERT INTO `variations_colors` VALUES (2, 17, 'Color', '2025-01-06 15:21:07', '2025-01-08 16:17:33', '23', NULL);
+INSERT INTO `variations_colors` VALUES (11, 28, NULL, '2025-02-10 17:39:43', '2025-02-11 08:16:33', NULL, 'Onyx');
+INSERT INTO `variations_colors` VALUES (12, 28, NULL, '2025-02-10 17:39:47', '2025-02-11 08:17:12', NULL, 'Sapphire');
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -26,4 +26,3 @@ if (isset($_POST['tag_as_complete'])) {
     exit();
   }
 }
-?>

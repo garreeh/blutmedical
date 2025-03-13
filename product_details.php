@@ -635,6 +635,24 @@ if (isset($_GET['product_id'])) {
                 backgroundColor: response.success ? '#4CAF50' : '#FF0000',
               }).showToast();
 
+
+              fetch('/blutmedical/controllers/users/send_email_left_cart.php', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    order_id: response.order_id
+                  })
+                }).then(res => res.json())
+                .then(emailResponse => {
+                  if (emailResponse.success) {
+                    console.log("Emails sent successfully.");
+                  } else {
+                    console.error("Email sending failed:", emailResponse.message);
+                  }
+                }).catch(err => console.error("Email AJAX Error:", err));
+
               // Update the cart badge
               updateCartBadge();
             },

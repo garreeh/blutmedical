@@ -72,10 +72,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $variation_id = $item['variation_id'];
       $productPrice = ($variation_id === '-') ? $item['product_sellingprice'] : $item['price'];
       $productTotalPrice = $productPrice * $cart_quantity;
+      $variation_color_id = $item['variation_color_id'];
 
       // Insert into cart table
-      $sql = "INSERT INTO cart (product_id, cart_quantity, variation_id, total_price, cart_status, payment_method, delivery_guest_fullname, delivery_address, delivery_guest_contact_number, delivery_guest_email, payment_status, paypal_order_id, paypal_payer_id, paypal_name, paypal_email, paypal_contact_number, paypal_address, paypal_transaction_id) 
-                        VALUES ('$product_id', '$cart_quantity', '$variation_id', '$productTotalPrice', 'Processing', 'Paypal', '$delivery_guest_fullname', '$delivery_address', '$delivery_guest_contact_number', '$delivery_guest_email', 'Unpad', '$paypal_order_id', '$paypal_payer_id', '$paypal_name', '$paypal_email', '$paypal_contact_number', '$paypal_address', '$paypal_transaction_id')";
+      $sql = "INSERT INTO cart (product_id, variation_color_id, cart_quantity, variation_id, total_price, cart_status, payment_method, delivery_guest_fullname, delivery_address, delivery_guest_contact_number, delivery_guest_email, payment_status, paypal_order_id, paypal_payer_id, paypal_name, paypal_email, paypal_contact_number, paypal_address, paypal_transaction_id) 
+                        VALUES ('$product_id', '$variation_color_id', '$cart_quantity', '$variation_id', '$productTotalPrice', 'Processing', 'Paypal', '$delivery_guest_fullname', '$delivery_address', '$delivery_guest_contact_number', '$delivery_guest_email', 'Unpad', '$paypal_order_id', '$paypal_payer_id', '$paypal_name', '$paypal_email', '$paypal_contact_number', '$paypal_address', '$paypal_transaction_id')";
 
       if (!mysqli_query($conn, $sql)) {
         throw new Exception('Error saving cart: ' . mysqli_error($conn));

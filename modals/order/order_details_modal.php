@@ -32,7 +32,7 @@ if (isset($_POST['cart_id'])) {
 
   if ($result) {
     while ($row = mysqli_fetch_assoc($result)) {
-      ?>
+?>
       <div class="modal fade" id="showPhoto" tabindex="-1" role="dialog" aria-labelledby="showPhotoLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
@@ -75,7 +75,7 @@ if (isset($_POST['cart_id'])) {
         </div>
       </div>
 
-      <?php
+<?php
     }
   }
 }

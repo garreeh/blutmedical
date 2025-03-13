@@ -29,12 +29,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $product_id = $item['product_id'];
       $cart_quantity = $item['cart_quantity'];
       $variation_id = $item['variation_id'];
+      $variation_color_id = $item['variation_color_id'];
+
       $productPrice = ($variation_id === '-') ? $item['product_sellingprice'] : $item['price'];
       $productTotalPrice = $productPrice * $cart_quantity;
 
       // Insert into cart table
-      $sql = "INSERT INTO cart (reference_no, product_id, cart_quantity, variation_id, total_price, cart_status, payment_method, delivery_guest_fullname, delivery_address, delivery_guest_contact_number, delivery_guest_email, payment_status) 
-                        VALUES ('$order_id', '$product_id', '$cart_quantity', '$variation_id', '$productTotalPrice', 'Processing', 'Cash on Delivery', '$delivery_guest_fullname', '$delivery_address', '$delivery_guest_contact_number', '$delivery_guest_email', 'Unpaid')";
+      $sql = "INSERT INTO cart (reference_no, product_id, cart_quantity, variation_id, total_price, cart_status, payment_method, delivery_guest_fullname, delivery_address, delivery_guest_contact_number, delivery_guest_email, payment_status, variation_color_id) 
+                        VALUES ('$order_id', '$product_id', '$cart_quantity', '$variation_id', '$productTotalPrice', 'Processing', 'Cash on Delivery', '$delivery_guest_fullname', '$delivery_address', '$delivery_guest_contact_number', '$delivery_guest_email', 'Unpaid', '$variation_color_id')";
 
       if (!mysqli_query($conn, $sql)) {
         throw new Exception('Error saving cart: ' . mysqli_error($conn));
@@ -46,7 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       'message' => 'Items saved to cart successfully!',
       'order_id' => $order_id
     ]);
-
   } catch (Exception $e) {
     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
   }

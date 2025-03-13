@@ -56,8 +56,8 @@ if ($result) {
 </div>
 
 <script>
-  $(document).ready(function () {
-    $('#addDeliveredModal form').submit(function (event) {
+  $(document).ready(function() {
+    $('#addDeliveredModal form').submit(function(event) {
       event.preventDefault(); // Prevent default form submission
 
       // Store a reference to $(this)
@@ -76,7 +76,7 @@ if ($result) {
         type: 'POST',
         url: '/blutmedical/controllers/admin/tas_as_delivered_process.php',
         data: formData,
-        success: function (response) {
+        success: function(response) {
           // Handle success response
           console.log(response); // Log the response for debugging
           response = JSON.parse(response);
@@ -86,6 +86,23 @@ if ($result) {
               duration: 2000,
               backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)"
             }).showToast();
+
+            fetch('/blutmedical/controllers/admin/send_email_shipped.php', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  cart_id: response.cart_id
+                })
+              }).then(res => res.json())
+              .then(emailResponse => {
+                if (emailResponse.success) {
+                  console.log("Emails sent successfully.");
+                } else {
+                  console.error("Email sending failed:", emailResponse.message);
+                }
+              }).catch(err => console.error("Email AJAX Error:", err));
 
             // Optionally, reset the form
             $form.trigger('reset');
@@ -102,7 +119,7 @@ if ($result) {
             }).showToast();
           }
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
           // Handle error response
           console.error(xhr.responseText);
           Toastify({
@@ -111,7 +128,7 @@ if ($result) {
             backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
           }).showToast();
         },
-        complete: function () {
+        complete: function() {
           // Reset button text and re-enable it
           $addButton.text('Yes');
           $addButton.prop('disabled', false);

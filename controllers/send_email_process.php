@@ -23,6 +23,16 @@ $mail = new PHPMailer;
 $mail->IsSMTP(); // Enable SMTP
 // $mail->SMTPDebug = 1; // Debugging: 1 = errors and messages, 2 = messages only : FOR LIVE
 
+// This settings is for Godaddy Live
+// $mail->Host = 'relay-hosting.secureserver.net';
+// $mail->SMTPAuth = false;                                      // Enable SMTP authentication
+// $mail->Username = 'admin@vetaidonline.info';             // SMTP username
+// $mail->Password = 'Mybossrocks081677!';                        // SMTP password
+// $mail->SMTPSecure = false;
+// $mail->Port = 25;
+
+// This Setting is for testing it locally
+
 $mail->Host = 'smtp.office365.com';
 $mail->SMTPAuth = true;                                      // Enable SMTP authentication
 $mail->Username = 'admin@vetaidonline.info';             // SMTP username
@@ -111,4 +121,3 @@ if ($mail->send()) {
 
 // Return JSON response
 echo json_encode($response);
-?>
