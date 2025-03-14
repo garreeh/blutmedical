@@ -71,7 +71,9 @@ while ($row = mysqli_fetch_assoc($result)) {
 }
 
 // Send email notifications with cart details
+// $adminEmail = "admin@vetaidonline.info";
 $adminEmail = "gajultos.garry123@gmail.com";
+
 sendAdminEmail($adminEmail, "New Order Received", $order_id, $cartItems);
 sendUserEmail($userEmail, "Order Confirmation", $order_id, $cartItems);
 
@@ -107,21 +109,20 @@ function sendAdminEmail($toEmail, $subject, $order_id, $cartItems)
 
     $totalAmount = 0;
     $productDetails = "";
+
     foreach ($cartItems as $item) {
         $totalAmount += $item['total_price']; // Sum the total price
 
         $productDetails .= "
     <tr>
         <td style='padding: 10px; border: 1px solid #ddd;'>{$item['product_name']}</td>
-        <td style='padding: 10px; border: 1px solid #ddd;'>{$item['cart_quantity']}</td>
-        <td style='padding: 10px; border: 1px solid #ddd;'>$ " . number_format($item['total_price'], 2, '.', ',') . "</td>";
-
+        <td style='padding: 10px; border: 1px solid #ddd;'>{$item['cart_quantity']}</td>";
 
         // Only show variation value and product code if variation_id is not null
         if (!empty($item['variation_id'])) {
             $productDetails .= "
-                <td style='padding: 10px; border: 1px solid #ddd;'>{$item['variation_value']}</td>
-                <td style='padding: 10px; border: 1px solid #ddd;'>{$item['product_code']}</td>";
+            <td style='padding: 10px; border: 1px solid #ddd;'>{$item['variation_value']}</td>
+            <td style='padding: 10px; border: 1px solid #ddd;'>{$item['product_code']}</td>";
         } else {
             $productDetails .= "<td colspan='2' style='padding: 10px; border: 1px solid #ddd;'>No variation</td>";
         }
@@ -133,18 +134,18 @@ function sendAdminEmail($toEmail, $subject, $order_id, $cartItems)
             $productDetails .= "<td style='padding: 10px; border: 1px solid #ddd;'>No color</td>";
         }
 
+        // Move total price to the rightmost column
+        $productDetails .= "<td style='padding: 10px; border: 1px solid #ddd;'>$ " . number_format($item['total_price'], 2, '.', ',') . "</td>";
         $productDetails .= "</tr>";
     }
 
     $productDetails .= "
-    <tr>
-        <td colspan='2' style='padding: 10px; border: 1px solid #ddd; text-align: right; font-weight: bold;'>Total Amount:</td>
-        <td style='padding: 10px; border: 1px solid #ddd; font-weight: bold;'>
-            $ " . number_format($totalAmount, 2, '.', ',') . "
-        </td>
-        <td colspan='3' style='padding: 10px; border: 1px solid #ddd;'></td>
-    </tr>";
-
+<tr>
+    <td colspan='5' style='padding: 10px; border: 1px solid #ddd; text-align: right; font-weight: bold;'>Total Amount:</td>
+    <td style='padding: 10px; border: 1px solid #ddd; font-weight: bold;'>
+        $ " . number_format($totalAmount, 2, '.', ',') . "
+    </td>
+</tr>";
 
     // Construct the email body
     $mail->Body = "
@@ -201,10 +202,11 @@ function sendAdminEmail($toEmail, $subject, $order_id, $cartItems)
                     <tr>
                         <th>Product Name</th>
                         <th>Quantity</th>
-                        <th>Sub Total</th>
                         <th>Variation</th>
                         <th>Product Code</th>
                         <th>Color</th>
+                        <th>Price</th>
+
                     </tr>
                     $productDetails
                 </table>
@@ -245,21 +247,20 @@ function sendUserEmail($toEmail, $subject, $order_id, $cartItems)
 
     $totalAmount = 0;
     $productDetails = "";
+
     foreach ($cartItems as $item) {
         $totalAmount += $item['total_price']; // Sum the total price
 
         $productDetails .= "
-            <tr>
-                <td style='padding: 10px; border: 1px solid #ddd;'>{$item['product_name']}</td>
-                <td style='padding: 10px; border: 1px solid #ddd;'>{$item['cart_quantity']}</td>
-                <td style='padding: 10px; border: 1px solid #ddd;'>$ " . number_format($item['total_price'], 2, '.', ',') . "</td>";
-
+    <tr>
+        <td style='padding: 10px; border: 1px solid #ddd;'>{$item['product_name']}</td>
+        <td style='padding: 10px; border: 1px solid #ddd;'>{$item['cart_quantity']}</td>";
 
         // Only show variation value and product code if variation_id is not null
         if (!empty($item['variation_id'])) {
             $productDetails .= "
-                <td style='padding: 10px; border: 1px solid #ddd;'>{$item['variation_value']}</td>
-                <td style='padding: 10px; border: 1px solid #ddd;'>{$item['product_code']}</td>";
+            <td style='padding: 10px; border: 1px solid #ddd;'>{$item['variation_value']}</td>
+            <td style='padding: 10px; border: 1px solid #ddd;'>{$item['product_code']}</td>";
         } else {
             $productDetails .= "<td colspan='2' style='padding: 10px; border: 1px solid #ddd;'>No variation</td>";
         }
@@ -271,17 +272,18 @@ function sendUserEmail($toEmail, $subject, $order_id, $cartItems)
             $productDetails .= "<td style='padding: 10px; border: 1px solid #ddd;'>No color</td>";
         }
 
+        // Move total price to the rightmost column
+        $productDetails .= "<td style='padding: 10px; border: 1px solid #ddd;'>$ " . number_format($item['total_price'], 2, '.', ',') . "</td>";
         $productDetails .= "</tr>";
     }
 
     $productDetails .= "
-    <tr>
-        <td colspan='2' style='padding: 10px; border: 1px solid #ddd; text-align: right; font-weight: bold;'>Total Amount:</td>
-        <td style='padding: 10px; border: 1px solid #ddd; font-weight: bold;'>
-            $ " . number_format($totalAmount, 2, '.', ',') . "
-        </td>
-        <td colspan='3' style='padding: 10px; border: 1px solid #ddd;'></td>
-    </tr>";
+<tr>
+    <td colspan='5' style='padding: 10px; border: 1px solid #ddd; text-align: right; font-weight: bold;'>Total Amount:</td>
+    <td style='padding: 10px; border: 1px solid #ddd; font-weight: bold;'>
+        $ " . number_format($totalAmount, 2, '.', ',') . "
+    </td>
+</tr>";
 
 
     // Construct the email body
@@ -339,10 +341,11 @@ function sendUserEmail($toEmail, $subject, $order_id, $cartItems)
                     <tr>
                         <th>Product Name</th>
                         <th>Quantity</th>
-                        <th>Sub Total</th>
                         <th>Variation</th>
                         <th>Product Code</th>
                         <th>Color</th>
+                        <th>Price</th>
+
                     </tr>
                     $productDetails
                 </table>

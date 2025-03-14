@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Insert into cart table
     $sql = "INSERT INTO cart (product_id, variation_color_id, reference_no, cart_quantity, variation_id, total_price, cart_status, payment_method, delivery_guest_fullname, delivery_address, delivery_guest_contact_number, delivery_guest_email, payment_status) 
-                        VALUES ('$product_id', '$variation_color_id', '$referenceId', '$cart_quantity', '$variation_id', '$productTotalPrice', 'Cart', 'GCash', '$delivery_guest_fullname', '$delivery_address', '$delivery_guest_contact_number', '$delivery_guest_email', 'Unpaid')";
+                        VALUES ('$product_id', '$variation_color_id', '$referenceId', '$cart_quantity', '$variation_id', '$productPrice', 'Cart', 'GCash', '$delivery_guest_fullname', '$delivery_address', '$delivery_guest_contact_number', '$delivery_guest_email', 'Unpaid')";
 
     if (!mysqli_query($conn, $sql)) {
       throw new Exception('Error saving cart: ' . mysqli_error($conn));
