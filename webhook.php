@@ -9,10 +9,10 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 // Live Webhook
-// $xenditXCallbackToken = 'MGy04Msqrgv08FW0ZLlyl7VAVhwn1ak8yBoy3j3IIOy3Osvv';
+$xenditXCallbackToken = 'MGy04Msqrgv08FW0ZLlyl7VAVhwn1ak8yBoy3j3IIOy3Osvv';
 
 // Dummy Webhook
-$xenditXCallbackToken = 'DE4pAuRgm0SL8IAZHjH9LU0UdUBoo5XlzqLPJGEnvJaWaeZc';
+// $xenditXCallbackToken = 'DE4pAuRgm0SL8IAZHjH9LU0UdUBoo5XlzqLPJGEnvJaWaeZc';
 
 
 // Get headers
@@ -60,12 +60,13 @@ file_put_contents("debug_webhook_log.txt", print_r($arrRequestInput, true));
 $_referenceId = $arrRequestInput['data']['reference_id'] ?? null;
 $_status = $arrRequestInput['data']['status'] ?? null;
 $user_id = $_SESSION['user_id'] ?? null; // Get user_id from session
+$_paidAmount = $arrRequestInput['data']['charge_amount'] ?? null; // Get actual paid amount
 
 // Process payment success
 if ($_referenceId && $_status === 'SUCCEEDED') {
   try {
     // Update the order status to 'Processing' using reference_no (when user_id is not available)
-    $updateOrderQuery = "UPDATE cart SET cart_status = 'Processing' WHERE reference_no = '$_referenceId'";
+    $updateOrderQuery = "UPDATE cart SET cart_status = 'Processing', total_price = '$_paidAmount' WHERE reference_no = '$_referenceId'";
     if (!mysqli_query($conn, $updateOrderQuery)) {
       throw new Exception('Error updating order: ' . mysqli_error($conn));
     }
@@ -99,7 +100,8 @@ if ($_referenceId && $_status === 'SUCCEEDED') {
     }
 
     // Send email notifications with cart details
-    $adminEmail = "gajultos.garry123@gmail.com";
+    // $adminEmail = "gajultos.garry123@gmail.com";
+    $adminEmail = "admin@vetaidonline.info";
     sendAdminEmail($adminEmail, "New Order Received", $_referenceId, $cartItems);
     // sendUserEmail($userEmail, "Order Confirmation", $_referenceId, $cartItems);
 
@@ -149,22 +151,20 @@ function sendAdminEmail($toEmail, $subject, $_referenceId, $cartItems)
 
   $totalAmount = 0;
   $productDetails = "";
+
   foreach ($cartItems as $item) {
     $totalAmount += $item['total_price']; // Sum the total price
 
     $productDetails .= "
     <tr>
         <td style='padding: 10px; border: 1px solid #ddd;'>{$item['product_name']}</td>
-        <td style='padding: 10px; border: 1px solid #ddd;'>{$item['cart_quantity']}</td>
-        <td style='padding: 10px; border: 1px solid #ddd;'>₱ " . number_format($item['total_price'], 2, '.', ',') . "</td>";
-
-
+        <td style='padding: 10px; border: 1px solid #ddd;'>{$item['cart_quantity']}</td>";
 
     // Only show variation value and product code if variation_id is not null
     if (!empty($item['variation_id'])) {
       $productDetails .= "
-                <td style='padding: 10px; border: 1px solid #ddd;'>{$item['variation_value']}</td>
-                <td style='padding: 10px; border: 1px solid #ddd;'>{$item['product_code']}</td>";
+            <td style='padding: 10px; border: 1px solid #ddd;'>{$item['variation_value']}</td>
+            <td style='padding: 10px; border: 1px solid #ddd;'>{$item['product_code']}</td>";
     } else {
       $productDetails .= "<td colspan='2' style='padding: 10px; border: 1px solid #ddd;'>No variation</td>";
     }
@@ -176,17 +176,18 @@ function sendAdminEmail($toEmail, $subject, $_referenceId, $cartItems)
       $productDetails .= "<td style='padding: 10px; border: 1px solid #ddd;'>No color</td>";
     }
 
+    // Move total price to the rightmost column
+    $productDetails .= "<td style='padding: 10px; border: 1px solid #ddd;'>₱ " . number_format($item['total_price'], 2, '.', ',') . "</td>";
     $productDetails .= "</tr>";
   }
 
   $productDetails .= "
-    <tr>
-        <td colspan='2' style='padding: 10px; border: 1px solid #ddd; text-align: right; font-weight: bold;'>Total Amount:</td>
-        <td style='padding: 10px; border: 1px solid #ddd; font-weight: bold;'>
-            ₱ " . number_format($totalAmount, 2, '.', ',') . "
-        </td>
-        <td colspan='3' style='padding: 10px; border: 1px solid #ddd;'></td>
-    </tr>";
+<tr>
+    <td colspan='5' style='padding: 10px; border: 1px solid #ddd; text-align: right; font-weight: bold;'>Total Amount:</td>
+    <td style='padding: 10px; border: 1px solid #ddd; font-weight: bold;'>
+        ₱ " . number_format($totalAmount, 2, '.', ',') . "
+    </td>
+</tr>";
 
 
   // Construct the email body

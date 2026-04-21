@@ -57,8 +57,7 @@ if ($user_id) {
   $sql = "UPDATE cart 
           SET reference_no = '$referenceId', 
               payment_method = 'GCash', 
-              payment_status = 'Unpaid', 
-              total_price = '$amount'
+              payment_status = 'Unpaid'
           WHERE user_id = '$user_id' AND cart_status = 'Cart'";
 
   if (!mysqli_query($conn, $sql)) {
