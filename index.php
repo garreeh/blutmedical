@@ -37,9 +37,9 @@
       <div class="row justify-content-between">
         <div class="col-lg-7">
           <div class="intro-excerpt">
-            <h1>Welcome to BLüT Medical
+            <h1 style="color:black !important; opacity: 100%;">Welcome to BLüT Medical
             </h1>
-            <p class="mb-4">We are a provider of innovative premium quality products that will elevate any medical
+            <p class="mb-4" style="color:black !important; opacity: 100%;">We are a provider of innovative premium quality products that will elevate any medical
               practice be it for veterinarians or human doctors.</p>
             <p><a href="products.php" class="btn btn-secondary me-2">Shop Now</a></p>
           </div>

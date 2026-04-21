@@ -137,8 +137,8 @@ if (isset($_SESSION['user_id'])) {
 
 </html>
 <script>
-	document.addEventListener('DOMContentLoaded', function () {
-		document.getElementById('togglePassword').addEventListener('click', function () {
+	document.addEventListener('DOMContentLoaded', function() {
+		document.getElementById('togglePassword').addEventListener('click', function() {
 			var passwordInput = document.getElementById('user_password');
 			var type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
 			passwordInput.setAttribute('type', type);
@@ -148,7 +148,7 @@ if (isset($_SESSION['user_id'])) {
 	});
 
 
-	document.getElementById('registerForm').addEventListener('keydown', function (e) {
+	document.getElementById('registerForm').addEventListener('keydown', function(e) {
 		if (e.key === 'Enter') {
 			submitForm();
 		}
@@ -203,7 +203,7 @@ if (isset($_SESSION['user_id'])) {
 			url: '../controllers/register_process.php',
 			data: data,
 			dataType: 'json',
-			success: function (response) {
+			success: function(response) {
 				console.log(response);
 				document.getElementById('loaderContainer').style.display = 'none'; // Hide the loader when request completes
 				if (response.success) {
@@ -212,7 +212,7 @@ if (isset($_SESSION['user_id'])) {
 					showToast(response.message);
 				}
 			},
-			error: function (xhr, status, error) {
+			error: function(xhr, status, error) {
 				document.getElementById('loaderContainer').style.display = 'none'; // Hide the loader when request completes
 				showToast('Error occurred while processing the request.');
 			}

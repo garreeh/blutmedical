@@ -34,7 +34,7 @@
             <div>
               <label><input type="radio" name="paymentCategory" value="Paypal"> Paypal</label>
               <label><input type="radio" name="paymentCategory" value="GCash"> Gcash</label>
-              <label><input type="radio" name="paymentCategory" value="Cash on Delivery"> Cash on Delivery (COD)</label>
+              <!-- <label><input type="radio" name="paymentCategory" value="Cash on Delivery"> Cash on Delivery (COD)</label> -->
             </div>
           </div>
 

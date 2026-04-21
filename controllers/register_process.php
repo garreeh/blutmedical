@@ -52,32 +52,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Hash the password
     $hashed_password = password_hash($user_password, PASSWORD_DEFAULT);
 
-    // Insert user into the database
-    $sql = "INSERT INTO users (user_fullname, username, user_email, user_contact, user_address, user_password, user_confirm_password, is_admin, account_status) 
-            VALUES ('$user_fullname', '$username', '$user_email', '$user_contact', '$user_address', '$hashed_password', '$user_confirm_password', '0', 'Inactive')";
+    $mail = new PHPMailer(true);
+    try {
+        //Server settings
+        $mail->isSMTP();                                            // Send using SMTP
+        $mail->Host = 'smtp.gmail.com';                       // Set the SMTP server to send through
+        $mail->SMTPAuth = true;                                   // Enable SMTP authentication
+        $mail->Username = 'admin@blutmedical.com';          // SMTP username
+        $mail->Password = 'cmoagffhceslpzsz';
+        // SMTP password
+        $mail->SMTPSecure = 'ssl';                                  // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+        $mail->Port = '465';                                  // TCP port to connect to
 
-    if (mysqli_query($conn, $sql)) {
-        // Send verification email
-        $mail = new PHPMailer(true);
-        try {
-            //Server settings
-            $mail->isSMTP();                                            // Send using SMTP
-            $mail->Host = 'smtp.gmail.com';                       // Set the SMTP server to send through
-            $mail->SMTPAuth = true;                                   // Enable SMTP authentication
-            $mail->Username = 'gajultos.garry123@gmail.com';          // SMTP username
-            $mail->Password = 'dkjukjhiygnwipjc';
-            // SMTP password
-            $mail->SMTPSecure = 'ssl';                                  // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
-            $mail->Port = '465';                                  // TCP port to connect to
+        //Recipients
+        $mail->setFrom('donotreply@blutmedical.com', 'DO NOT REPLY - Blut Medical');
+        $mail->addAddress($user_email, $user_fullname);             // Add a recipient
 
-            //Recipients
-            $mail->setFrom('gajultos.garry123@gmail.com', 'Garry Gajultos');
-            $mail->addAddress($user_email, $user_fullname);             // Add a recipient
-
-            // Content
-            $mail->isHTML(true);                                        // Set email format to HTML
-            $mail->Subject = 'Email Verification';
-            $mail->Body = "
+        // Content
+        $mail->isHTML(true);                                        // Set email format to HTML
+        $mail->Subject = 'Email Verification';
+        $mail->Body = "
                             <html>
                             <head>
                                 <style>
@@ -135,13 +129,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             </body>
                             </html>";
 
-            $mail->send();
-        } catch (Exception $e) {
-            $response = array('success' => false, 'message' => "Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
-            echo json_encode($response);
-            exit();
-        }
+        $mail->send();
+    } catch (Exception $e) {
+        $response = array('success' => false, 'message' => "Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
+        echo json_encode($response);
+        exit();
+    }
 
+    // Insert user into the database
+    $sql = "INSERT INTO users (user_fullname, username, user_email, user_contact, user_address, user_password, user_confirm_password, is_admin, account_status) 
+            VALUES ('$user_fullname', '$username', '$user_email', '$user_contact', '$user_address', '$hashed_password', '$user_confirm_password', '0', 'Inactive')";
+
+    if (mysqli_query($conn, $sql)) {
+        // Send verification email
         session_start();
         $_SESSION['email_verified'] = true;
 
@@ -155,3 +155,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 }
+
+// NOVEMBER 28, 2025
+
+// $mail = new PHPMailer;
+// $mail->IsSMTP();
+// // Godaddy Live settings (commented out)
+// $mail->Host = 'relay-hosting.secureserver.net';
+// $mail->SMTPAuth = false;
+// $mail->Username = 'admin@vetaidonline.info';
+// $mail->Password = 'Mybossrocks081677!';
+// $mail->SMTPSecure = false;
+// $mail->Port = 25;
+
+// // Local testing settings
+// // $mail->Host = 'smtpout.secureserver.net';
+// // $mail->SMTPAuth = true;
+// // $mail->Username = 'sales@hyresvard.com';
+// // $mail->Password = 'Mybossrocks081677!';
+// // $mail->SMTPSecure = 'ssl';
+// // $mail->Port = 465;
+
+// $mail->setFrom('admin@vetaidonline.info', 'VetAID Online');
+// $mail->addAddress($toEmail);
+// $mail->isHTML(true);
+// $mail->Subject = $subject;
+
+
+
+// $mail = new PHPMailer;
+// $mail->IsSMTP(); // Enable SMTP
+// // $mail->SMTPDebug = 1; // Debugging: 1 = errors and messages, 2 = messages only : FOR LIVE
+
+// $mail->Host = 'relay-hosting.secureserver.net';
+// $mail->SMTPAuth = false;                                      // Enable SMTP authentication
+// $mail->Username = 'admin@vetaidonline.info';             // SMTP username
+// $mail->Password = 'Mybossrocks081677!';                        // SMTP password
+// $mail->SMTPSecure = false;
+// $mail->Port = 25;
+
+// // Set the sender's email address (from the form)
+// $mail->setFrom('admin@vetaidonline.info', 'admin vetaidonline.info');

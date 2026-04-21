@@ -65,6 +65,7 @@ a.more {
   -o-transition: 0.3s all ease;
   transition: 0.3s all ease;
   position: relative;
+  font-size: large;
 }
 @media (min-width: 768px) {
   .custom-navbar .custom-navbar-nav li a:before {
@@ -117,13 +118,13 @@ a.more {
 /* background: #3f52a4 !important; */
 
 .custom-navbar {
-  background: linear-gradient(135deg, #4e54c8, #8f94fb) !important;
+  background: linear-gradient(135deg, #c8cbff, #8f94fb) !important;
   padding-top: 20px;
   padding-bottom: 20px;
 }
 
 .hero {
-  background: linear-gradient(75deg, #4e54c8, #8f94fb);
+  background: linear-gradient(75deg, #c8cbff, #8f94fb);
   padding: calc(4rem - 30px) 0 0rem 0;
 }
 

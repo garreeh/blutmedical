@@ -26,7 +26,7 @@ $resultSubCategory = mysqli_query($conn, $sql);
 
   <div class="container">
     <a class="navbar-brand" href="index.php">
-      <img src="assets/logo/blut_logo.png" alt="Blut Logo" style="height: 8rem; width: auto;">
+      <img src="assets/logo/blut_logo.png" alt="Blut Logo" style="height: 10rem; width: auto;">
     </a>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni"
@@ -37,15 +37,15 @@ $resultSubCategory = mysqli_query($conn, $sql);
     <div class="collapse navbar-collapse" id="navbarsFurni">
       <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
         <li>
-          <a class="nav-link" href="index.php">Home</a>
+          <a class="nav-link" href="index.php" style="color:black !important; opacity: 100%;">Home</a>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown"
-            aria-expanded="false">
+            aria-expanded="false" style="color:black !important; opacity: 100%;">
             Shop
           </a>
           <ul class="dropdown-menu" aria-labelledby="userDropdown">
-            <li><a style="color: black !important;" class="dropdown-item" href="products.php">All</a></li>
+            <li><a style="color: black !important;" class="dropdown-item" style="color:black !important; opacity: 100%;" href="products.php">All</a></li>
 
             <?php while ($row = mysqli_fetch_assoc($resultSubCategory)): ?>
               <li>
@@ -58,37 +58,37 @@ $resultSubCategory = mysqli_query($conn, $sql);
           </ul>
         </li>
         <!-- <li><a class="nav-link" href="products.php">Shop</a></li> -->
-        <li><a class="nav-link" href="about.php">About us</a></li>
-        <li><a class="nav-link" href="contact.php">Contact us</a></li>
+        <li><a class="nav-link" href="about.php" style="color:black !important; opacity: 100%;">About us</a></li>
+        <li><a class="nav-link" href="contact.php" style="color:black !important; opacity: 100%;">Contact us</a></li>
       </ul>
 
       <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
         <!-- User Dropdown -->
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown"
-            aria-expanded="false">
+            aria-expanded="false" style="color:black !important; opacity: 100%;  font-size: large;">
             <i class="fa-solid fa-user"></i>
           </a>
           <?php if (isset($_SESSION['user_id'])): ?>
             <ul class="dropdown-menu" aria-labelledby="userDropdown">
               <li></li>
-              <li><a class="dropdown-item" href="/blutmedical/client_orders_module.php">My Orders</a></li>
-
-              <li><a class="dropdown-item" href="/blutmedical/completed_orders_module.php">Completed Orders</a></li>
-              <li><a class="dropdown-item" href="/blutmedical/controllers/logout_process.php">Sign-out</a></li>
+              <li><a class="dropdown-item" href="/blutmedical/client_orders_module.php" style="color:black !important; opacity: 100%;">My Orders</a></li>
+              <li><a class="dropdown-item" href="/blutmedical/account_settings.php" style="color:black !important; opacity: 100%;">My Account</a></li>
+              <li><a class="dropdown-item" href="/blutmedical/completed_orders_module.php" style="color:black !important; opacity: 100%;">Completed Orders</a></li>
+              <li><a class="dropdown-item" href="/blutmedical/controllers/logout_process.php" style="color:black !important; opacity: 100%;">Sign-out</a></li>
             </ul>
           <?php else: ?>
             <ul class="dropdown-menu" aria-labelledby="userDropdown">
               <li></li>
-              <li><a class="dropdown-item" href="/blutmedical/views/login.php">Log In</a></li>
-              <li><a class="dropdown-item" href="/blutmedical/views/register.php">Register</a></li>
+              <li><a class="dropdown-item" href="/blutmedical/views/login.php" style="color:black !important; opacity: 100%;">Log In</a></li>
+              <li><a class="dropdown-item" href="/blutmedical/views/register.php" style="color:black !important; opacity: 100%;">Register</a></li>
             </ul>
           <?php endif; ?>
         </li>
 
         <!-- Cart Icon -->
         <li>
-          <a class="nav-link position-relative" href="/blutmedical/cart.php">
+          <a class="nav-link position-relative" href="/blutmedical/cart.php" style="color:black !important; opacity: 100%; font-size: large;">
             <i class="fa-solid fa-cart-shopping"></i>
             <span id="cart-badge"
               class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
