@@ -3,27 +3,72 @@ include '../../connections/connections.php';
 
 if (isset($_POST['tag_as_shipped'])) {
 
+  // sanitize inputs
   $cart_id = $conn->real_escape_string($_POST['cart_id']);
 
-  $sql = "UPDATE `cart` 
-          SET 
-              cart_status = 'Shipped'
-          WHERE cart_id = '$cart_id'";
+  /*
+  |--------------------------------------------------------------------------
+  | STEP 1: GET ORDER IDENTIFIER (REFERENCE OR PAYPAL)
+  |--------------------------------------------------------------------------
+  */
+  $getOrder = mysqli_query($conn, "
+        SELECT reference_no, paypal_order_id, payment_method
+        FROM cart
+        WHERE cart_id = '$cart_id'
+        LIMIT 1
+    ");
 
-  // Execute SQL query
+  if (!$getOrder || mysqli_num_rows($getOrder) == 0) {
+    echo json_encode([
+      'success' => false,
+      'message' => 'Order not found!'
+    ]);
+    exit();
+  }
+
+  $row = mysqli_fetch_assoc($getOrder);
+
+  /*
+  |--------------------------------------------------------------------------
+  | STEP 2: DETERMINE GROUP KEY
+  |--------------------------------------------------------------------------
+  */
+  if ($row['payment_method'] === 'Paypal') {
+    $where = "paypal_order_id = '" . $conn->real_escape_string($row['paypal_order_id']) . "'";
+    $group_id = $row['paypal_order_id'];
+  } else {
+    $where = "reference_no = '" . $conn->real_escape_string($row['reference_no']) . "'";
+    $group_id = $row['reference_no'];
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | STEP 3: UPDATE ALL ITEMS IN SAME ORDER GROUP
+  |--------------------------------------------------------------------------
+  */
+  $sql = "
+        UPDATE cart
+        SET cart_status = 'Shipped'
+        WHERE $where
+    ";
+
   if (mysqli_query($conn, $sql)) {
-    // User updated successfully
-    $response = array(
+
+    echo json_encode([
       'success' => true,
       'message' => 'Shipped successfully!',
-      'cart_id' => $cart_id // Include cart_id
-    );
-    echo json_encode($response);
+      'group_id' => $group_id
+    ]);
+
     exit();
+
   } else {
-    // Error updating user
-    $response = array('success' => false, 'message' => 'Error Delivering: ' . mysqli_error($conn));
-    echo json_encode($response);
+
+    echo json_encode([
+      'success' => false,
+      'message' => 'Error updating: ' . mysqli_error($conn)
+    ]);
+
     exit();
   }
 }

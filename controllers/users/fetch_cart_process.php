@@ -16,10 +16,11 @@ try {
         // User is logged in, fetch data from the database
         $user_id = $conn->real_escape_string($_SESSION['user_id']);
 
-        $query = "SELECT product.*, cart.*, variations.`value`, variations.variation_id, variations.price
+        $query = "SELECT product.*, cart.*, variations.`value`, variations.variation_id, variations.price, variations_colors.color
                   FROM cart
                   LEFT JOIN product ON cart.product_id = product.product_id
                   LEFT JOIN variations ON cart.variation_id = variations.variation_id
+                  LEFT JOIN variations_colors ON cart.variation_color_id = variations_colors.variation_color_id
                   WHERE cart.user_id = '$user_id' AND cart.cart_status = 'Cart'";
 
         $result = $conn->query($query);

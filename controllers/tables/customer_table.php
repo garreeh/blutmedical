@@ -41,50 +41,67 @@ $columns = array(
     ),
 
     array(
-        'db' => 'user_confirm_password',
+        'db' => 'user_contact',
         'dt' => 4,
-        'field' => 'user_confirm_password',
-        'formatter' => function ($lab4, $row) {
-            // $password = $row['user_confirm_password'];
-            // $color = '#FFCCCB'; // Light Red
-            // $width = '70px'; // Adjust the value as needed
-            // $height = '30px'; // Adjust the value as needed
-            // $border_radius = '10px'; // Adjust the value as needed
-            // return '<span style="display: inline-block; background-color: ' . $color . '; width: ' . $width . '; height: ' . $height . '; border-radius: ' . $border_radius . '; text-align: center; line-height: ' . $height . ';">' . $password . '</span>';
+        'field' => 'user_contact',
+        'formatter' => function ($lab6, $row) {
+            // Format date to 'Y-m-d' (e.g., 2024-09-03)
+            return $row['user_contact'];
 
-            return '<a class="fetchDataPassword" href="#"> Click to View</a> ';
         }
     ),
+
     array(
         'db' => 'account_status',
         'dt' => 5,
         'field' => 'account_status',
         'formatter' => function ($lab5, $row) {
-            $account_status = $row['account_status'];
-            $color = '#90EE90'; // Light Red
-            $width = '70px'; // Adjust the value as needed
-            $height = '30px'; // Adjust the value as needed
-            $border_radius = '10px'; // Adjust the value as needed
-            return '<span style="display: inline-block; background-color: ' . $color . '; width: ' . $width . '; height: ' . $height . '; border-radius: ' . $border_radius . '; text-align: center; line-height: ' . $height . ';">' . $account_status . '</span>';
-        }
-    ),
-    array(
-        'db' => 'created_at',
-        'dt' => 6,
-        'field' => 'created_at',
-        'formatter' => function ($lab6, $row) {
-            // Format date to 'Y-m-d' (e.g., 2024-09-03)
-            return date('Y-m-d', strtotime($row['created_at']));
+
+            $account_status = strtolower($row['account_status']);
+
+            if ($account_status == 'active') {
+                $color = '#d4edda';   // light green
+                $textColor = '#155724';
+            } else {
+                $color = '#f8d7da';   // light red
+                $textColor = '#721c24';
+            }
+
+            $width = '80px';
+            $height = '30px';
+            $border_radius = '10px';
+
+            return '<span style="
+            display:inline-block;
+            background-color:' . $color . ';
+            color:' . $textColor . ';
+            width:' . $width . ';
+            height:' . $height . ';
+            border-radius:' . $border_radius . ';
+            text-align:center;
+            line-height:' . $height . ';
+            font-size:12px;
+            font-weight:500;
+        ">' . ucfirst($account_status) . '</span>';
         }
     ),
 
     array(
-        'db' => 'updated_at',
-        'dt' => 7,
-        'field' => 'updated_at',
-        'formatter' => function ($lab7, $row) {
-            // Format date to 'Y-m-d' (e.g., 2024-09-03)
-            return date('Y-m-d', strtotime($row['updated_at']));
+        'db' => 'user_id',
+        'dt' => 6,
+        'field' => 'user_id',
+        'formatter' => function ($lab6, $row) {
+            return '
+                <div class="dropdown">
+                    <button class="btn btn-info" type="button" id="dropdownMenuButton' . $row['user_id'] . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        &#x22EE;
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $row['user_id'] . '">
+                        <a class="dropdown-item fetchDataUserSetAdmin" href="#">Set Admin / Unset Admin</a>
+                        <a class="dropdown-item fetchDataUserDelete" href="#">Delete</a>
+
+                    </div>
+                </div>';
         }
     ),
 
@@ -98,7 +115,7 @@ include '../../connections/ssp_connection.php';
 require('../../assets/datatables/ssp.class_with_where.php');
 
 // Define where clause if needed
-$where = "is_admin = '0'";
+$where = "is_admin = '0' AND (is_deleted = 0 OR is_deleted IS NULL)";
 
 // Fetch and encode data
 echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $where));

@@ -3,26 +3,50 @@ include '../../connections/connections.php';
 
 if (isset($_POST['tag_as_complete'])) {
 
-  // Get cart_id and user_id
   $cart_id = $conn->real_escape_string($_POST['cart_id']);
 
-  // Construct SQL query for UPDATE
-  $sql = "UPDATE `cart` 
+  // GET ORDER IDENTIFIERS
+  $get = mysqli_query($conn, "
+    SELECT reference_no, paypal_order_id 
+    FROM cart 
+    WHERE cart_id = '$cart_id'
+    LIMIT 1
+  ");
+
+  $row = mysqli_fetch_assoc($get);
+
+  $reference_no = $row['reference_no'];
+  $paypal_order_id = $row['paypal_order_id'];
+
+  // SMART WHERE CONDITION
+  if (!empty($paypal_order_id)) {
+    $where = "paypal_order_id = '$paypal_order_id'";
+  } else {
+    $where = "reference_no = '$reference_no'";
+  }
+
+  $sql = "UPDATE cart 
           SET 
               cart_status = 'Delivered',
               payment_status = 'Paid'
-          WHERE cart_id = '$cart_id'";
+          WHERE $where";
 
-  // Execute SQL query
   if (mysqli_query($conn, $sql)) {
-    // User updated successfully
-    $response = array('success' => true, 'message' => 'Delivered successfully!');
-    echo json_encode($response);
+
+    echo json_encode([
+      'success' => true,
+      'message' => 'Delivered successfully!',
+      'reference_no' => $reference_no,
+      'paypal_order_id' => $paypal_order_id
+    ]);
     exit();
+
   } else {
-    // Error updating user
-    $response = array('success' => false, 'message' => 'Error Delivering: ' . mysqli_error($conn));
-    echo json_encode($response);
+
+    echo json_encode([
+      'success' => false,
+      'message' => mysqli_error($conn)
+    ]);
     exit();
   }
 }

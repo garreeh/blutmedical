@@ -82,12 +82,12 @@ function sendUserEmail($toEmail, $subject, $cartItems)
     // $mail->Port = 25;
 
     // Local testing settings
-    $mail->Host = 'smtpout.secureserver.net';
-    $mail->SMTPAuth = true;
-    $mail->Username = 'sales@hyresvard.com';
-    $mail->Password = 'Mybossrocks081677!';
-    $mail->SMTPSecure = 'ssl';
-    $mail->Port = 465;
+    $mail->Host = 'smtp.office365.com';
+    $mail->SMTPAuth = true;                                      // Enable SMTP authentication
+    $mail->Username = 'admin@vetaidonline.info';             // SMTP username
+    $mail->Password = 'Mybossrocks081677!';                        // SMTP password
+    $mail->SMTPSecure = 'tls';
+    $mail->Port = 587;
 
     $mail->setFrom('admin@vetaidonline.info', 'VetAID Online');
     $mail->addAddress($toEmail);
@@ -198,7 +198,7 @@ function sendUserEmail($toEmail, $subject, $cartItems)
                     $productDetails
                 </table>
 
-                <a href='https://blutmedical.com/' class='email-button'>Return to Your Cart</a>
+                <a href='https://blutmedical.com/v2/' class='email-button'>Return to Your Cart</a>
 
             </div>
             <div class='email-footer'>

@@ -1,157 +1,212 @@
 <?php
 
-// Define table and primary key
-$table = 'cart';
-$primaryKey = 'cart_id';
-// Define columns for DataTables
-$columns = array(
-	array(
-		'db' => 'cart_id',
-		'dt' => 0,
-		'field' => 'cart_id',
-		'formatter' => function ($lab1, $row) {
-			return $row['cart_id'];
-		}
-	),
+include '../../connections/connections.php';
 
-	array(
-		'db' => 'paypal_order_id',
-		'dt' => 1,
-		'field' => 'paypal_order_id',
-		'formatter' => function ($lab1, $row) {
-			return ($row['payment_method'] === 'Paypal')
-				? ($row['paypal_order_id'] ?: '-')
-				: ($row['reference_no'] ?: '-');
-		}
-	),
+header('Content-Type: application/json');
 
-	array(
-		'db' => 'users.user_fullname',
-		'dt' => 2,
-		'field' => 'user_fullname',
-		'formatter' => function ($lab2, $row) {
-			return empty($row['user_fullname']) ? $row['delivery_guest_fullname'] : $row['user_fullname'];
-		}
-	),
+$draw = $_GET['draw'] ?? 1;
+$start = $_GET['start'] ?? 0;
+$length = $_GET['length'] ?? 10;
+$search = mysqli_real_escape_string($conn, $_GET['search']['value'] ?? '');
 
-	array(
-		'db' => 'cart_status',
-		'dt' => 3,
-		'field' => 'cart_status',
-		'formatter' => function ($lab3, $row) {
+/*
+|--------------------------------------------------------------------------
+| SORTING (ADDED ONLY)
+|--------------------------------------------------------------------------
+*/
+$orderColumnIndex = $_GET['order'][0]['column'] ?? 0;
+$orderDir = $_GET['order'][0]['dir'] ?? 'desc';
 
-			$cart_status = $row['cart_status'];
+$orderMap = [
+	0 => 'cart.cart_id',
+	1 => 'cart.paypal_order_id',
+	2 => 'cart.reference_no',
+	3 => 'cart.payment_method',
+	4 => 'cart.cart_status',
+	5 => 'cart.total_price',
+	6 => 'cart.created_at',
+	7 => 'cart.updated_at',
+	8 => 'cart.delivery_guest_fullname'
+];
 
-			// Define styles for different statuses
-			$style = '';
-			if ($cart_status === 'Processing') {
-				$style = 'background-color: lightyellow; border-radius: 5px; padding: 5px;';
-			} elseif ($cart_status === 'Shipped') {
-				$style = 'background-color: lightyellow; border-radius: 5px; padding: 5px;';
-			} elseif ($cart_status === 'Delivered') {
-				$style = 'background-color: lightgreen; border-radius: 5px; padding: 5px;';
-			}
+$orderColumn = $orderMap[$orderColumnIndex] ?? 'cart.created_at';
 
-			return "<span style=\"$style\">{$cart_status}</span>";
-		}
-	),
+/*
+|--------------------------------------------------------------------------
+| BASE QUERY
+|--------------------------------------------------------------------------
+*/
+$sql = "
+SELECT 
+    cart.cart_id,
+    cart.paypal_order_id,
+    cart.reference_no,
+    cart.payment_method,
+    cart.cart_status,
+    cart.total_price,
+    cart.updated_at,
+    cart.created_at,
+    cart.delivery_guest_fullname,
+    cart.proof_of_payment,
 
-	array(
-		'db' => 'payment_method',
-		'dt' => 4,
-		'field' => 'payment_method',
-		'formatter' => function ($lab4, $row) {
-			return $row['payment_method'];
-		}
-	),
+    users.user_fullname,
 
-	array(
-		'db' => 'proof_of_payment',
-		'dt' => 5,
-		'field' => 'proof_of_payment',
-		'formatter' => function ($lab4, $row) {
-			return '<a class="fetchCustomerDetails" href="#"> Click to View</a> ';
-		}
-	),
+    product.product_name,
+    variations.value,
+    variations_colors.color
 
-	array(
-		'db' => 'cart_id',
-		'dt' => 6,
-		'field' => 'cart_id',
-		'formatter' => function ($lab4, $row) {
-			return '<a class="fetchOrderDetails" href="#"> Click to View</a> ';
-		}
-	),
+FROM cart
+LEFT JOIN users ON cart.user_id = users.user_id
+LEFT JOIN product ON cart.product_id = product.product_id
+LEFT JOIN variations ON cart.variation_id = variations.variation_id
+LEFT JOIN variations_colors ON cart.variation_color_id = variations_colors.variation_color_id
 
-	array(
-		'db' => 'total_price',
-		'dt' => 7,
-		'field' => 'total_price',
-		'formatter' => function ($lab4, $row) {
-			// Check if the payment method is GCash, use Peso sign, otherwise Dollar sign
-			if ($row['payment_method'] == 'GCash') {
-				return '₱ ' . number_format($row['total_price'], 2);
-			} else {
-				return '$ ' . number_format($row['total_price'], 2);
-			}
-		}
-	),
+WHERE cart.cart_status = 'Shipped'
+";
 
-	array(
-		'db' => 'cart_id',
-		'dt' => 8,
-		'field' => 'cart_id',
-		'formatter' => function ($lab5, $row) {
-			return '
-      <div class="dropdown">
-          <button class="btn btn-info" type="button" id="dropdownMenuButton' . $row['cart_id'] . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              &#x22EE;
-          </button>
-          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $row['cart_id'] . '">
-              <a class="dropdown-item fetchDataFinish" href="#">Complete Order</a>
+/*
+|--------------------------------------------------------------------------
+| SEARCH
+|--------------------------------------------------------------------------
+*/
+if (!empty($search)) {
+	$sql .= " AND (
+        cart.cart_id LIKE '%$search%' OR
+        cart.paypal_order_id LIKE '%$search%' OR
+        cart.reference_no LIKE '%$search%' OR
+        cart.payment_method LIKE '%$search%' OR
+        cart.total_price LIKE '%$search%' OR
+        cart.updated_at LIKE '%$search%' OR
+        cart.delivery_guest_fullname LIKE '%$search%' OR
+        users.user_fullname LIKE '%$search%' OR
+        product.product_name LIKE '%$search%' OR
+        variations.value LIKE '%$search%' OR
+        variations_colors.color LIKE '%$search%'
+    )";
+}
 
-          </div>
-      </div>';
-		}
-	),
+/*
+|--------------------------------------------------------------------------
+| APPLY SORTING TO SQL (IMPORTANT ADDITION)
+|--------------------------------------------------------------------------
+*/
+$sql .= " ORDER BY $orderColumn $orderDir";
 
-	array(
-		'db' => 'delivery_guest_fullname',
-		'dt' => 9,
-		'field' => 'delivery_guest_fullname',
-		'formatter' => function ($lab5, $row) {
-			return $row['delivery_guest_fullname'];
-		}
-	),
+$result = mysqli_query($conn, $sql);
 
-	array(
-		'db' => 'reference_no',
-		'dt' => 10,
-		'field' => 'reference_no',
-		'formatter' => function ($lab5, $row) {
-			return $row['reference_no'];
-		}
-	),
-);
+$grouped = [];
 
-// Database connection details
-include '../../connections/ssp_connection.php';
+/*
+|--------------------------------------------------------------------------
+| GROUP BY (UNCHANGED)
+|--------------------------------------------------------------------------
+*/
+while ($row = mysqli_fetch_assoc($result)) {
 
+	$groupKey = ($row['payment_method'] === 'Paypal')
+		? $row['paypal_order_id']
+		: $row['reference_no'];
 
-// Include the SSP class
-require('../../assets/datatables/ssp.class.php');
+	if (empty($groupKey)) {
+		$groupKey = 'NO_REF_' . $row['cart_id'];
+	}
 
-// THIS IS A SAMPLE ONLY
-$where = "cart_status = 'Shipped'";
+	if (!isset($grouped[$groupKey])) {
 
-// Fetch and encode ONLY WHERE
-// echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $where));
+		$grouped[$groupKey] = [
+			'cart_id' => $row['cart_id'],
+			'paypal_order_id' => $row['paypal_order_id'],
+			'reference_no' => $row['reference_no'],
+			'payment_method' => $row['payment_method'],
+			'cart_status' => $row['cart_status'],
+			'total_price' => 0,
+			'updated_at' => $row['updated_at'],
+			'created_at' => $row['created_at'],
+			'delivery_guest_fullname' => $row['delivery_guest_fullname'],
+			'user_fullname' => $row['user_fullname']
+		];
+	}
 
-$joinQuery = "FROM $table LEFT JOIN users ON $table.user_id = users.user_id
-				LEFT JOIN product ON $table.product_id = product.product_id
-				LEFT JOIN variations ON $table.variation_id = variations.variation_id
-				LEFT JOIN variations_colors ON $table.variation_color_id = variations_colors.variation_color_id";
+	$grouped[$groupKey]['total_price'] += (float) $row['total_price'];
+}
 
+/*
+|--------------------------------------------------------------------------
+| FINAL DATA BUILD
+|--------------------------------------------------------------------------
+*/
+$data = [];
 
-// Fetch and encode JOIN AND WHERE
-echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $joinQuery, $where));
+foreach ($grouped as $row) {
+
+	$order_ref = ($row['payment_method'] === 'Paypal')
+		? ($row['paypal_order_id'] ?: '-')
+		: ($row['reference_no'] ?: '-');
+
+	$customer_name = empty($row['user_fullname'])
+		? $row['delivery_guest_fullname']
+		: $row['user_fullname'];
+
+	$formatted_price = ($row['payment_method'] == 'GCash')
+		? '₱ ' . number_format($row['total_price'], 2)
+		: '$ ' . number_format($row['total_price'], 2);
+
+	$status = "<span style='background:#cce5ff;color:#004085;padding:4px 8px;border-radius:6px;font-weight:600;'>
+                Shipped
+              </span>";
+
+	$proofBtn = '
+        <a class="fetchCustomerDetails"
+            data-cart_id="' . $row['cart_id'] . '"
+            href="#">
+            Click to View
+        </a>';
+
+	$orderBtn = '
+        <a class="fetchOrderDetails"
+            data-cart_id="' . $row['cart_id'] . '"
+            data-order_ref="' . $order_ref . '"
+            href="#">
+            Click to View
+        </a>';
+
+	$dropdown = '
+        <div class="dropdown">
+            <button class="btn btn-info" type="button" data-toggle="dropdown">
+                &#x22EE;
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item fetchDataFinish"
+                    data-id="' . $row['cart_id'] . '"
+                    href="#">
+                    Complete Order
+                </a>
+            </div>
+        </div>';
+
+	$data[] = array_values([
+		$row['cart_id'],
+		$order_ref,
+		$customer_name,
+		$status,
+		$row['payment_method'],
+		$proofBtn,
+		$orderBtn,
+		$formatted_price,
+		$dropdown,
+		$row['delivery_guest_fullname'],
+		$row['reference_no']
+	]);
+}
+
+/*
+|--------------------------------------------------------------------------
+| OUTPUT
+|--------------------------------------------------------------------------
+*/
+echo json_encode([
+	"draw" => intval($draw),
+	"recordsTotal" => count($data),
+	"recordsFiltered" => count($data),
+	"data" => array_slice($data, $start, $length)
+]);

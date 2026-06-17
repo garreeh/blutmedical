@@ -74,7 +74,8 @@ $columns = array(
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $row['user_id'] . '">
                         <a class="dropdown-item fetchDataUser" href="#">Edit</a>
-                        <a class="dropdown-item delete-user" href="#" data-user-id="' . $row['user_id'] . '">Delete</a>
+                        <a class="dropdown-item fetchDataUserDelete" href="#">Delete</a>
+
                     </div>
                 </div>';
         }
@@ -85,12 +86,11 @@ $columns = array(
 // Database connection details
 include '../../connections/ssp_connection.php';
 
-
 // Include the SSP class
 require('../../assets/datatables/ssp.class_with_where.php');
 
 // Define where clause if needed
-$where = "is_admin = '1'";
+$where = "is_admin = 1 AND (is_deleted = 0 OR is_deleted IS NULL)";
 
 // Fetch and encode data
 echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $where));

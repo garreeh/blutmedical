@@ -153,7 +153,7 @@
         url: '/blutmedical/controllers/users/fetch_cart_process.php',
         method: 'GET',
         dataType: 'json',
-        success: function(response) {
+        success: function (response) {
           console.log('Cart Data:', response);
 
           var cartContent = '';
@@ -162,7 +162,7 @@
           if (response.success) {
             cartItems = response.items;
             if (response.items.length > 0) {
-              $.each(response.items, function(index, item) {
+              $.each(response.items, function (index, item) {
                 var productPrice = parseFloat(item.product_sellingprice) || 0;
                 var cartQuantity = parseInt(item.cart_quantity, 10) || 0;
                 var variationId = item.variation_id;
@@ -174,12 +174,24 @@
                 var variationPrice = item.variation_id ? parseFloat(item.price) : productPrice; // Check if variation_id exists
                 var variationValue = item.value !== null ? item.value : '-';
 
+                var variationColor = item.color !== null ? item.color : '-';
+
                 // Dynamically render each row
                 cartContent += '<tr>';
                 cartContent += '<td class="product-thumbnail"><img src="' + baseURL + item.product_image.replace(/^\.\.\//, baseURL + '') + '" alt="' + item.name + '" class="img-fluid"></td>';
-                cartContent += '<td>' + item.product_name + '</td>';
+                cartContent += '<td>'
+                  + '<a href="http://localhost/blutmedical/product_details.php?product_id='
+                  + item.product_id
+                  + '" target="_blank" style="color:#007bff; text-decoration:underline; font-weight:600; cursor:pointer;">'
+                  + item.product_name
+                  + '</a>'
+                  + '</td>';
+
                 cartContent += '<td>$ ' + variationPrice.toFixed(2) + '</td>'; // Display variation price if available, otherwise product price
-                cartContent += '<td>' + variationValue + '</td>';
+                cartContent += '<td style="text-align: justify;">'
+                  + '<strong>Size:</strong> ' + (variationValue ?? '-') + '<br>'
+                  + '<strong>Color:</strong> ' + (variationColor ?? '-')
+                  + '</td>';
 
                 cartContent += '<td>';
                 cartContent += '<div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">';
@@ -220,7 +232,7 @@
 
           }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.error('AJAX Error:', error);
         }
       });
@@ -232,7 +244,7 @@
         var cartContent = '';
         var totalPrice = 0;
 
-        $.each(guestCart, function(index, item) {
+        $.each(guestCart, function (index, item) {
 
           var productId = item.product_id;
           var variationId = item.variation_id;
@@ -243,14 +255,26 @@
           var variationPrice = item.price !== '-' ? parseFloat(item.price) : parseFloat(item.product_sellingprice); // Check if price is not '-', otherwise use product_sellingprice
           var variationValue = item.value !== null ? item.value : '-';
 
+          var variationColor = item.color !== null ? item.color : '-';
+
           var baseURL = "/blutmedical/";
 
           var cartContentRow = '<tr>';
 
           cartContentRow += '<td class="product-thumbnail"><img src="' + baseURL + item.product_image.replace(/^\.\.\//, baseURL + '') + '" alt="' + item.product_image + '" class="img-fluid"></td>';
-          cartContentRow += '<td>' + item.product_name + '</td>';
+          cartContentRow += '<td>'
+            + '<a href="http://localhost/blutmedical/product_details.php?product_id='
+            + item.product_id
+            + '" target="_blank" style="color:#007bff; text-decoration:underline; font-weight:600; cursor:pointer;">'
+            + item.product_name
+            + '</a>'
+            + '</td>';
           cartContentRow += '<td>$ ' + variationPrice.toFixed(2) + '</td>';
-          cartContentRow += '<td>' + (item.value !== null ? item.value : '-') + '</td>';
+          cartContentRow += '<td style="text-align: justify;">'
+            + '<strong>Size:</strong> ' + (variationValue ?? '-') + '<br>'
+            + '<strong>Color:</strong> ' + (variationColor ?? '-')
+            + '</td>';
+
           cartContentRow += '<td>';
           cartContentRow += '<div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">';
           cartContentRow += '<div class="input-group-prepend">';
@@ -309,7 +333,7 @@
 
         },
         dataType: 'json',
-        success: function(response) {
+        success: function (response) {
           if (response.success) {
             Toastify({
               text: "Item removed from cart.",
@@ -328,12 +352,12 @@
             }).showToast();
           }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.error('AJAX Error:', error);
         }
       });
     } else {
-      $(document).on('click', '.remove-item', function(event) {
+      $(document).on('click', '.remove-item', function (event) {
         event.preventDefault(); // Prevent default link behavior
         var productId = $(this).data('product-id');
         var variationId = $(this).data('variation-id'); // Include variation ID
@@ -368,7 +392,7 @@
 
   if (isLoggedIn) {
     // Event listener for the remove button
-    $(document).on('click', '.remove-item', function(event) {
+    $(document).on('click', '.remove-item', function (event) {
       event.preventDefault(); // Prevent default link behavior
       var productId = $(this).data('product-id');
       var variationId = $(this).data('variation-id'); // Include variation ID
@@ -382,7 +406,7 @@
     });
 
   } else {
-    $(document).on('click', '.remove-item', function(event) {
+    $(document).on('click', '.remove-item', function (event) {
       event.preventDefault(); // Prevent default link behavior
       var productId = $(this).data('product-id');
       var variationId = $(this).data('variation-id'); // Include variation ID
@@ -426,7 +450,7 @@
           action: action
         },
         dataType: 'json',
-        success: function(response) {
+        success: function (response) {
           if (response.success) {
             Toastify({
               text: "Cart quantity updated.",
@@ -444,7 +468,7 @@
             }).showToast();
           }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.error('AJAX Error:', error);
         }
       });
@@ -453,7 +477,7 @@
       var cart = JSON.parse(localStorage.getItem('guestCart')) || [];
       console.log(cart);
 
-      $.each(cart, function(index, item) {
+      $.each(cart, function (index, item) {
         if (item.product_id == productId && item.variation_id == variationId && item.variation_color_id == variationColorId) {
 
           if (action === 'increase') {
@@ -477,7 +501,7 @@
   }
 
   // Event listeners for increase and decrease buttons
-  $(document).on('click', '.increase', function(event) {
+  $(document).on('click', '.increase', function (event) {
     var productId = $(this).closest('tr').find('.remove-item').data('product-id');
     var variationId = $(this).closest('tr').find('.remove-item').data('variation-id');
     var variationColorId = $(this).closest('tr').find('.remove-item').data('variation-color-id');
@@ -485,7 +509,7 @@
     updateCartQuantity(productId, variationId, variationColorId, 'increase');
   });
 
-  $(document).on('click', '.decrease', function(event) {
+  $(document).on('click', '.decrease', function (event) {
     var productId = $(this).closest('tr').find('.remove-item').data('product-id');
     var variationId = $(this).closest('tr').find('.remove-item').data('variation-id');
     var variationColorId = $(this).closest('tr').find('.remove-item').data('variation-color-id');
@@ -494,11 +518,11 @@
   });
 
   // Call the updateCart function to render the cart on page load
-  $(document).ready(function() {
+  $(document).ready(function () {
     updateCart();
   });
 
-  $('#checkoutModal').on('show.bs.modal', function() {
+  $('#checkoutModal').on('show.bs.modal', function () {
     var isLoggedIn = <?php echo json_encode(isset($_SESSION['user_id'])); ?>;
 
     if (isLoggedIn) {
@@ -507,13 +531,13 @@
         type: 'POST',
         url: '/blutmedical/controllers/users/fetch_cart_last_process.php',
         dataType: 'json',
-        success: function(response) {
+        success: function (response) {
           if (response.success) {
             var cartItemsHtml = '';
             var totalPrice = 0;
 
             // Loop through cart items and create table rows
-            response.cartItems.forEach(function(item) {
+            response.cartItems.forEach(function (item) {
               var productPrice = parseFloat(item.product_sellingprice) || 0;
               var cartQuantity = parseInt(item.cart_quantity, 10) || 0;
               var variationId = item.variation_id;
@@ -542,7 +566,7 @@
             alert('Error fetching cart items');
           }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.error('Error fetching cart:', error);
           alert('An error occurred while fetching the cart.');
         }
@@ -554,7 +578,7 @@
       var totalPrice = 0;
 
       // Loop through localStorage cart items and create table rows
-      cart.forEach(function(item) {
+      cart.forEach(function (item) {
         var productPrice = parseFloat(item.product_sellingprice) || 0;
         var cartQuantity = parseInt(item.cart_quantity, 10) || 0;
         var variationId = item.variation_id;

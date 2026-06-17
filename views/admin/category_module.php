@@ -5,6 +5,9 @@ if (session_status() == PHP_SESSION_NONE) {
   session_start();
 }
 
+$category_query = $conn->query("SELECT * FROM category");
+$category_count = $category_query->num_rows;
+
 ?>
 
 <!DOCTYPE html>
@@ -26,7 +29,9 @@ if (session_status() == PHP_SESSION_NONE) {
 
 
   <link href="./../../assets/admin/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+    rel="stylesheet">
   <link href="./../../assets/admin/css/sb-admin-2.min.css" rel="stylesheet">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
@@ -60,9 +65,23 @@ if (session_status() == PHP_SESSION_NONE) {
             <h1 class="h3 mb-0 text-gray-800">Category Module</h1>
           </div>
 
-          <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mb-4" data-toggle="modal" data-target="#addCategoryModal"> <i class="fas fa-plus"></i> Add Category</a>
-          <!-- <a href="./../../excels/supplier_export.php" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mb-4"><i class="fas fa-file-excel"></i> Export Excel</a> -->
 
+          <!-- TOP ACTION BAR -->
+          <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <!-- LEFT: Action Button -->
+            <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mb-4" data-toggle="modal"
+              data-target="#addCategoryModal"> <i class="fas fa-plus"></i> Add Category</a>
+
+            <!-- RIGHT: KPI -->
+            <div class="text-right">
+              <span class="text-muted small d-block">Total Item Category</span>
+              <span class="h1 font-weight-bold text-success">
+                <?php echo $category_count; ?>
+              </span>
+            </div>
+
+          </div>
           <div class="row">
             <div class="col-xl-12 col-lg-12">
               <div class="tab-pane fade show active" id="aa" role="tabpanel" aria-labelledby="aa-tab">
@@ -118,13 +137,13 @@ if (session_status() == PHP_SESSION_NONE) {
 </html>
 
 <script>
-  $('#sidebarToggle').click(function() {
+  $('#sidebarToggle').click(function () {
     $('#category_table').css('width', '100%');
     // console.log(table) //This is for testing only
   });
 
   //Table for Supplier
-  $(document).ready(function() {
+  $(document).ready(function () {
     var category_table = $('#category_table').DataTable({
       "pagingType": "numbers",
       "processing": true,
@@ -132,16 +151,16 @@ if (session_status() == PHP_SESSION_NONE) {
       "ajax": "./../../controllers/tables/category_table.php",
     });
 
-    window.reloadDataTable = function() {
+    window.reloadDataTable = function () {
       category_table.ajax.reload();
     };
 
   });
 
   //Column 5
-  $(document).ready(function() {
+  $(document).ready(function () {
     // Function to handle click event on datatable rows
-    $('#category_table').on('click', 'tr td:nth-child(5) .fetchDataCategory', function() {
+    $('#category_table').on('click', 'tr td:nth-child(5) .fetchDataCategory', function () {
       var category_id = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
 
       $.ajax({
@@ -150,12 +169,12 @@ if (session_status() == PHP_SESSION_NONE) {
         data: {
           category_id: category_id
         },
-        success: function(response) {
+        success: function (response) {
           $('#modalContainerCategory').html(response);
           $('#editCategoryModal').modal('show');
           console.log("#editCategoryModal" + category_id);
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.error(xhr.responseText);
         }
       });

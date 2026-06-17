@@ -26,7 +26,9 @@ if (session_status() == PHP_SESSION_NONE) {
 
 
   <link href="./../../assets/admin/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+    rel="stylesheet">
   <link href="./../../assets/admin/css/sb-admin-2.min.css" rel="stylesheet">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
@@ -60,7 +62,8 @@ if (session_status() == PHP_SESSION_NONE) {
             <h1 class="h3 mb-0 text-gray-800">User Module</h1>
           </div>
 
-          <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mb-4" data-toggle="modal" data-target="#addUserModal"> <i class="fas fa-plus"></i> Add User</a>
+          <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mb-4" data-toggle="modal"
+            data-target="#addUserModal"> <i class="fas fa-plus"></i> Add User</a>
           <!-- <a href="./../../excels/supplier_export.php" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mb-4"><i class="fas fa-file-excel"></i> Export Excel</a> -->
 
           <div class="row">
@@ -68,7 +71,7 @@ if (session_status() == PHP_SESSION_NONE) {
               <div class="tab-pane fade show active" id="aa" role="tabpanel" aria-labelledby="aa-tab">
 
                 <div class="table-responsive">
-                  <div id="modalContainerSupplier"></div>
+                  <div id="modalContainerUserList"></div>
 
                   <table class="table custom-table table-hover" name="users_table" id="users_table">
                     <thead>
@@ -114,11 +117,14 @@ if (session_status() == PHP_SESSION_NONE) {
   <script type="text/javascript" src="./../../assets/datatables/datatables.min.js"></script>
 
   <!-- COPY THESE WHOLE CODE WHEN IMPORT SELECT -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js" integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js"
+    integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css"
+    integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
 
   <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
       $('select').selectize({
         sortField: 'text'
       });
@@ -131,13 +137,13 @@ if (session_status() == PHP_SESSION_NONE) {
 </html>
 
 <script>
-  $('#sidebarToggle').click(function() {
+  $('#sidebarToggle').click(function () {
     $('#users_table').css('width', '100%');
     // console.log(table) //This is for testing only
   });
 
   //Table for Supplier
-  $(document).ready(function() {
+  $(document).ready(function () {
     var users_table = $('#users_table').DataTable({
       "pagingType": "numbers",
       "processing": true,
@@ -145,16 +151,17 @@ if (session_status() == PHP_SESSION_NONE) {
       "ajax": "./../../controllers/tables/users_table.php",
     });
 
-    window.reloadDataTable = function() {
+    window.reloadDataTable = function () {
       users_table.ajax.reload();
     };
 
   });
 
   //Bridge for Modal Backend to Frontend
-  $(document).ready(function() {
+  $(document).ready(function () {
     // Function to handle click event on datatable rows
-    $('#users_table').on('click', 'tr td:nth-child(7) .fetchDataUser', function() {
+    $('#users_table').on('click', 'tr td:nth-child(7) .fetchDataUser', function () {
+      event.preventDefault();
       var user_id = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
       console.log('Button clicked, User ID: ' + user_id);
 
@@ -164,12 +171,39 @@ if (session_status() == PHP_SESSION_NONE) {
         data: {
           user_id: user_id
         },
-        success: function(response) {
-          $('#modalContainerSupplier').html(response);
+        success: function (response) {
+          $('#modalContainerUserList').html(response);
           $('#fetchDataUserModal').modal('show');
           console.log("Modal content loaded for User ID: " + user_id);
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
+          console.error("Error: " + xhr.responseText);
+        }
+      });
+    });
+  });
+
+
+  //Bridge for Modal Backend to Frontend
+  $(document).ready(function () {
+    // Function to handle click event on datatable rows
+    $('#users_table').on('click', 'tr td:nth-child(7) .fetchDataUserDelete', function () {
+      event.preventDefault();
+      var user_id = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
+      console.log('Button clicked, User ID: ' + user_id);
+
+      $.ajax({
+        url: './../../modals/users/modal_delete_user.php', // Path to PHP script to fetch modal content
+        method: 'POST',
+        data: {
+          user_id: user_id
+        },
+        success: function (response) {
+          $('#modalContainerUserList').html(response);
+          $('#fetchDataUserModalDelete').modal('show');
+          console.log("Modal content loaded for User ID: " + user_id);
+        },
+        error: function (xhr, status, error) {
           console.error("Error: " + xhr.responseText);
         }
       });

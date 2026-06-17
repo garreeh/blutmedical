@@ -1,82 +1,149 @@
 <style>
-  /* Custom CSS for label color */
   .modal-body label {
     color: #333;
-    /* Darker label color */
     font-weight: bolder;
   }
 
-  .modal-body img {
-    max-width: 100%;
-    /* Ensure the image fits within the modal */
-    height: auto;
-    max-height: 300px;
-    /* Limit the image height */
-    object-fit: contain;
-    /* Maintain aspect ratio */
+  .order-box {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+    background: #fafafa;
+  }
+
+  .ref-badge {
+    background: #17a2b8;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
   }
 </style>
 
 <?php
 include './../../connections/connections.php';
 
-if (isset($_POST['cart_id'])) {
-  $cart_id = $_POST['cart_id'];
-  $sql = "SELECT * FROM cart
-          LEFT JOIN users ON users.user_id = cart.user_id
-          LEFT JOIN product ON cart.product_id = product.product_id
-          LEFT JOIN variations ON cart.variation_id = variations.variation_id
-				  LEFT JOIN variations_colors ON cart.variation_color_id = variations_colors.variation_color_id
-           WHERE cart_id = '$cart_id'";
+if (isset($_POST['reference_no'])) {
+
+  /*
+  |--------------------------------------------------------------------------
+  | SINGLE INPUT ONLY (FIXED LOGIC)
+  |--------------------------------------------------------------------------
+  */
+  $reference_no = trim(mysqli_real_escape_string($conn, $_POST['reference_no']));
+  $paypal_order_id = $reference_no; // ✅ SAME VALUE (YOUR REQUEST)
+
+  /*
+  |--------------------------------------------------------------------------
+  | QUERY (MATCH BOTH FIELDS USING SAME VALUE)
+  |--------------------------------------------------------------------------
+  */
+  $sql = "
+    SELECT 
+      cart.total_price,
+      cart.reference_no,
+      cart.paypal_order_id,
+      product.product_name,
+      variations.value,
+      variations_colors.color
+    FROM cart
+    LEFT JOIN product ON cart.product_id = product.product_id
+    LEFT JOIN variations ON cart.variation_id = variations.variation_id
+    LEFT JOIN variations_colors ON cart.variation_color_id = variations_colors.variation_color_id
+    WHERE TRIM(cart.reference_no) = '$reference_no'
+       OR TRIM(cart.paypal_order_id) = '$paypal_order_id'
+    ORDER BY cart.cart_id ASC
+  ";
+
   $result = mysqli_query($conn, $sql);
 
-  if ($result) {
-    while ($row = mysqli_fetch_assoc($result)) {
-?>
-      <div class="modal fade" id="showPhoto" tabindex="-1" role="dialog" aria-labelledby="showPhotoLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Customer Details</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
+  if (!$result) {
+    die("Query Error: " . mysqli_error($conn));
+  }
 
-            <div class="modal-body">
-              <div class="form-row">
-                <div class="form-group col-md-12">
-                  <label for="customer_fullname">Product Code:</label>
-                  <input type="text" class="form-control" id="customer_fullname" name="customer_fullname"
-                    value="<?php echo !empty($row['product_code']) ? htmlspecialchars($row['product_code']) : '-'; ?>"
-                    readonly>
-
-                </div>
-                <div class="form-group col-md-12">
-                  <label for="customer_address">Product Name:</label>
-                  <input type="text" class="form-control" id="customer_fullname" name="customer_fullname"
-                    value="<?php echo !empty($row['product_name']) ? htmlspecialchars($row['product_name']) : '-'; ?>"
-                    readonly>
-
-                </div>
-                <div class="form-group col-md-12">
-                  <label for="customer_contact_no">Variation:</label>
-                  <input type="text" class="form-control" id="customer_fullname" name="customer_fullname"
-                    value="<?php echo !empty($row['value']) ? htmlspecialchars($row['value']) : 'No Variation'; ?>" readonly>
-                </div>
-                <div class="form-group col-md-12">
-                  <label for="customer_email">Color:</label>
-                  <input type="text" class="form-control" id="customer_fullname" name="customer_fullname"
-                    value="<?php echo !empty($row['color']) ? htmlspecialchars($row['color']) : 'No Color'; ?>" readonly>
-                </div>
-              </div>
+  if (mysqli_num_rows($result) == 0) {
+    echo '
+    <div class="modal fade" id="showPhoto">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="alert alert-warning">
+              No order found for:
+              <strong>' . $reference_no . '</strong>
             </div>
           </div>
         </div>
       </div>
-
-<?php
-    }
+    </div>';
+    exit;
   }
-}
-?>
+
+  $total = 0;
+  ?>
+
+  <div class="modal fade" id="showPhoto" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title">
+            Order Details
+            <span class="ref-badge">
+              REF: <?php echo htmlspecialchars($reference_no); ?>
+            </span>
+          </h5>
+
+          <button type="button" class="close" data-dismiss="modal">
+            <span>&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+
+          <?php while ($row = mysqli_fetch_assoc($result)) {
+
+            $total += (float) $row['total_price'];
+            ?>
+
+            <div class="order-box">
+
+              <div class="form-group">
+                <label>Product Name</label>
+                <input type="text" class="form-control" value="<?php echo $row['product_name'] ?: '-'; ?>" readonly>
+              </div>
+
+              <div class="form-group">
+                <label>Variation</label>
+                <input type="text" class="form-control" value="<?php echo $row['value'] ?: 'No Variation'; ?>" readonly>
+              </div>
+
+              <div class="form-group">
+                <label>Color</label>
+                <input type="text" class="form-control" value="<?php echo $row['color'] ?: 'No Color'; ?>" readonly>
+              </div>
+
+              <div class="form-group">
+                <label>Price</label>
+                <input type="text" class="form-control" value="₱ <?php echo number_format($row['total_price'], 2); ?>"
+                  readonly>
+              </div>
+
+            </div>
+
+          <?php } ?>
+
+          <div class="order-box" style="background:#e9f7ef;">
+            <strong>Total:</strong>
+            <span style="float:right;font-weight:bold;">
+              ₱ <?php echo number_format($total, 2); ?>
+            </span>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+<?php } ?>

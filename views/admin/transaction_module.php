@@ -78,6 +78,8 @@ if (session_status() == PHP_SESSION_NONE) {
                         <th>Status</th>
                         <th>Payment Method</th>
                         <th>Customer Details</th>
+                        <th>Order Details</th>
+
                         <th>Total Payment</th>
                         <th>Transaction Date</th>
                       </tr>
@@ -151,6 +153,35 @@ if (session_status() == PHP_SESSION_NONE) {
         method: 'POST',
         data: {
           cart_id: cart_id
+        },
+        success: function (response) {
+          $('#modalContainerProvider').html(response);
+          $('#showPhoto').modal('show');
+          $('#cart_id').val(cart_id); // Set the cart_id here
+          console.log("#showPhoto: " + cart_id);
+        },
+        error: function (xhr, status, error) {
+          console.error(xhr.responseText);
+        }
+      });
+    });
+  });
+
+  $(document).ready(function () {
+    // Function to handle click event on datatable rows
+    $('#transaction_table').on('click', 'tr td:nth-child(7) .fetchOrderDetails', function () {
+      event.preventDefault();
+
+      var row = $(this).closest('tr');
+      var cart_id = $(this).closest('tr').find('td').first().text(); // Get the cart_id from the clicked row
+      var reference_no = row.find('td').eq(1).text(); // ✅ second column (index starts at 0)
+
+      $.ajax({
+        url: './../../modals/order/order_details_modal.php', // Path to PHP script to fetch modal content
+        method: 'POST',
+        data: {
+          cart_id: cart_id,
+          reference_no: reference_no
         },
         success: function (response) {
           $('#modalContainerProvider').html(response);

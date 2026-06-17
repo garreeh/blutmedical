@@ -19,115 +19,235 @@
 
   <!-- Bootstrap CSS -->
   <?php include 'assets.php'; ?>
-  <title>Blüt Medical</title>
+  <title>Blut Medical</title>
 </head>
+
 
 <body>
 
   <?php
+  include './includes/navigation.php';
   include './connections/connections.php';
 
-  include './includes/navigation.php';
+  function fixUploadPath($path)
+  {
+    return './uploads/' . basename($path);
+  }
 
+  $sql_carousel = "SELECT * FROM carousel ORDER BY carousel_id ASC LIMIT 3";
+  $result_carousel = mysqli_query($conn, $sql_carousel);
+
+  $category_id = isset($_GET['category_id']) ? intval($_GET['category_id']) : 0;
+
+  /* =========================
+     GET CATEGORY NAME (FIXED)
+  ========================= */
+  $category_name = "All Categories";
+
+  if ($category_id > 0) {
+    $nameQuery = "SELECT category_name FROM category WHERE category_id = $category_id LIMIT 1";
+    $nameResult = mysqli_query($conn, $nameQuery);
+
+    if ($nameResult && mysqli_num_rows($nameResult) > 0) {
+      $nameRow = mysqli_fetch_assoc($nameResult);
+      $category_name = $nameRow['category_name'];
+    }
+  }
+
+  if ($category_id > 0) {
+    $sql = "SELECT * FROM category WHERE category_id = $category_id";
+  } else {
+    $sql = "SELECT * FROM category";
+  }
+
+  $result = $conn->query($sql);
   ?>
 
-  <!-- Start Hero Section -->
-  <div class="hero">
-    <div class="container">
-      <div class="row justify-content-between">
-        <div class="col-lg-7">
-          <div class="intro-excerpt">
-            <h1 style="color:black !important; opacity: 100%;">Welcome to BLüT Medical
-            </h1>
-            <p class="mb-4" style="color:black !important; opacity: 100%;">We are a provider of innovative premium quality products that will elevate any medical
-              practice be it for veterinarians or human doctors.</p>
-            <p><a href="products.php" class="btn btn-secondary me-2">Shop Now</a></p>
+  <?php
+
+  ?>
+  <?php if (mysqli_num_rows($result_carousel) > 0): ?>
+
+    <!-- HERO BACKGROUND CAROUSEL -->
+    <div id="heroCarousel" class="carousel slide hero-bg-carousel" data-bs-ride="carousel">
+
+      <!-- SLIDES -->
+      <div class="carousel-inner">
+
+        <?php
+        $i = 0;
+        while ($row_carousel = mysqli_fetch_assoc($result_carousel)) {
+
+          $active = ($i == 0) ? 'active' : '';
+          $file = fixUploadPath($row_carousel['scene']);
+          $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+          ?>
+
+          <div class="carousel-item <?php echo $active; ?> hero-slide">
+
+            <?php if ($ext == 'mp4') { ?>
+
+              <video autoplay muted loop playsinline>
+                <source src="<?php echo $file; ?>" type="video/mp4">
+              </video>
+
+            <?php } else { ?>
+
+              <img src="<?php echo $file; ?>" class="d-block w-100">
+
+            <?php } ?>
+
+            <!-- DARK OVERLAY -->
+            <div class="hero-overlay"></div>
+
+            <!-- TEXT CONTENT -->
+            <div class="hero-content">
+              <div class="container">
+                <h1>Welcome to BLüT Medical</h1>
+
+                <p>
+                  We are a provider of innovative premium quality products that will elevate any medical practice.
+                </p>
+
+                <a href="products.php" class="btn btn-secondary">Shop Now</a>
+              </div>
+            </div>
+
           </div>
-        </div>
-        <div class="col-lg-5 d-none d-md-block">
-          <div class="hero-img-wrap">
-            <img src="assets/logo/blutfront.png" class="img-fluid" style="max-width: 75%;">
-          </div>
-        </div>
+
+          <?php
+          $i++;
+        }
+        ?>
 
       </div>
-    </div>
-  </div>
-  <!-- End Hero Section -->
 
+      <!-- CONTROLS -->
+      <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+
+      <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </button>
+
+    </div>
+
+  <?php else: ?>
+
+    <!-- START HERO SECTION (FALLBACK) -->
+    <div class="hero">
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col-lg-7">
+            <div class="intro-excerpt">
+              <h1 style="color:black !important; opacity: 100%;">
+                Welcome to BLüT Medical
+              </h1>
+
+              <p class="mb-4" style="color:black !important; opacity: 100%;">
+                We are a provider of innovative premium quality products that will elevate any medical practice be it for
+                veterinarians or human doctors.
+              </p>
+
+              <p>
+                <a href="products.php" class="btn btn-secondary me-2">Shop Now</a>
+              </p>
+            </div>
+          </div>
+
+          <div class="col-lg-5 d-none d-md-block">
+            <div class="hero-img-wrap">
+              <img src="assets/logo/blutfront.png" class="img-fluid" style="max-width: 75%;">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END HERO SECTION -->
+
+  <?php endif; ?>
+
+  <br>
+
+
+  <!-- Start Product Section -->
   <div class="product-section">
     <div class="container">
+
       <nav class="d-flex justify-content-between align-items-center" aria-label="breadcrumb">
-        <!-- Breadcrumb on the left -->
         <ol class="breadcrumb mb-0">
           <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+          <li class="breadcrumb-item active" aria-current="page">
+            <?php echo htmlspecialchars($category_name); ?>
+          </li>
         </ol>
-
-        <!-- <div class="search-bar">
-          <input type="text" id="searchInput" class="form-control d-none d-md-block" placeholder="Search products..."
-            autocomplete="off" style="width: 35rem;">
-          <div id="searchResults" class="dropdown-menu" style="width: 35rem;"></div>
-
-        </div> -->
-
-        <div class="dropdown-category">
-          <select id="categoryDropdown" class="form-control" aria-label="Select Category" style="width: 13rem;">
-            <option value="" selected>All Categories</option>
-            <!-- Categories will be dynamically populated -->
-          </select>
-        </div>
-
       </nav>
 
       <br>
 
+      <!-- Product List -->
       <div class="row" id="productList">
-        <?php
-        $sql = "SELECT * FROM product";
-        $result = $conn->query($sql);
 
-        // Check if there are any products
-        if ($result->num_rows > 0) {
-          while ($row = $result->fetch_assoc()) {
-            $product_image = basename($row['product_image']);
-            $image_url = './uploads/' . $product_image;
-            $product_id = $row['product_id']; // Assuming the product_id is in the 'product_id' column
-        ?>
+        <?php if ($result && $result->num_rows > 0): ?>
+
+          <?php while ($row = $result->fetch_assoc()): ?>
+
+            <?php
+            $cat_id = $row['category_id'];
+            $cat_name = htmlspecialchars($row['category_name']);
+            $cat_image = !empty($row['category_image'])
+              ? 'uploads/category/' . htmlspecialchars($row['category_image'])
+              : null;
+            ?>
+
             <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-5">
-              <a href="product_details.php?product_id=<?php echo $product_id; ?>" target="_blank">
-                <div class="product-item">
-                  <!-- Wrap the product item in a link to redirect -->
 
-                  <img src="<?php echo $image_url; ?>" class="img-fluid product-thumbnail"
-                    style="height: 200px; width: 100%; object-fit: cover; border-radius: 10px;">
-                  <h3 class="product-title" style="font-size: 1rem; text-align: center; margin-top: 10px;">
-                    <?php echo htmlspecialchars($row['product_name']); ?>
-                  </h3>
-                  <strong class="product-price" style="font-size: 1.2rem; margin-top: auto;">
-                    <?php echo ($row['product_sellingprice'] == 0) ? 'Ask for Price' : '$ ' . number_format($row['product_sellingprice'], 2); ?>
-                  </strong>
+              <a href="category_based.php?category_id=<?php echo $cat_id; ?>"
+                style="text-decoration: none; color: inherit;">
+
+                <div class="product-item" style="text-align: center; padding: 20px; border: 1px solid #ddd; border-radius: 15px;
+                          box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+                          transition: all 0.3s ease-in-out; background: #fff;">
+
+                  <?php if ($cat_image && file_exists($cat_image)) { ?>
+                    <div style="width: 100%; height: 180px; overflow: hidden; border-radius: 10px; margin-bottom: 15px;">
+                      <img src="<?php echo $cat_image; ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                  <?php } else { ?>
+                    <div style="width: 100%; height: 180px; background: linear-gradient(45deg, rgb(86, 13, 210), #feb47b);
+                              display: flex; align-items: center; justify-content: center;
+                              border-radius: 10px; margin-bottom: 15px;">
+                      <i class="fas fa-tags" style="font-size: 4rem; color: #fff;"></i>
+                    </div>
+                  <?php } ?>
+
+                  <p style="font-size: 1.2rem; font-weight: bold; color: #333;">
+                    <?php echo $cat_name; ?>
+                  </p>
 
                 </div>
+
               </a>
             </div>
-        <?php
-          }
-        }
-        ?>
+
+          <?php endwhile; ?>
+
+        <?php else: ?>
+
+          <div class="col-12 text-center mt-5">
+            <p style="font-size: 1.5rem; font-weight: bold; color: #555;">
+              There’s no category here.
+            </p>
+          </div>
+
+        <?php endif; ?>
+
       </div>
     </div>
   </div>
 
-  <!-- End Product Section -->
-
-
-
-
-  <?php
-
-  include './includes/footer.php';
-
-  ?>
+  <?php include './includes/footer.php'; ?>
 
 </body>
 
@@ -137,7 +257,7 @@
 
 <script>
   // AJAX for Search Bar using jQuery
-  $('#searchInput').on('input', function() {
+  $('#searchInput').on('input', function () {
     const query = $(this).val().trim();
     if (query.length > 0) {
       $.ajax({
@@ -146,7 +266,7 @@
         data: {
           query: query
         },
-        success: function(response) {
+        success: function (response) {
           $('#searchResults').html(response).addClass('show');
         }
       });
@@ -156,43 +276,98 @@
   });
 
   // Hide search results when clicking outside
-  $(document).on('click', function(e) {
+  $(document).on('click', function (e) {
     if (!$(e.target).closest('#searchInput, #searchResults').length) {
       $('#searchResults').removeClass('show');
     }
   });
 
-  $(document).ready(function() {
+  $(document).ready(function () {
     // Populate categories in the dropdown
     $.ajax({
       type: 'GET',
       url: '/blutmedical/controllers/users/fetch_categories.php',
-      success: function(response) {
+      success: function (response) {
         $('#categoryDropdown').append(response);
       },
-      error: function() {
+      error: function () {
         $('#categoryDropdown').append('<option disabled>Error loading categories</option>');
       }
     });
 
     // Handle category change
-    $('#categoryDropdown').on('change', function() {
+    $('#categoryDropdown').on('change', function () {
       const categoryId = $(this).val();
+      const urlParams = new URLSearchParams(window.location.search);
+      const subcategoryId = urlParams.get('category_id') || 0;
 
       // Fetch products by selected category
       $.ajax({
         type: 'GET',
-        url: '/blutmedical/controllers/users/fetch_products_by_category.php',
+        url: '/blutmedical/controllers/users/fetch_products_by_category_subs.php',
         data: {
-          category_id: categoryId
+          category_id: categoryId,
+          category_id: subcategoryId
         },
-        success: function(response) {
+        success: function (response) {
           $('#productList').html(response);
         },
-        error: function() {
+        error: function () {
           $('#productList').html('<p>Error loading products. Please try again.</p>');
         }
       });
     });
   });
 </script>
+
+
+<style>
+  .hero-bg-carousel,
+  .hero-bg-carousel .carousel-inner,
+  .hero-bg-carousel .carousel-item {
+    height: 80vh;
+    min-height: 500px;
+  }
+
+  .hero-slide {
+    position: relative;
+  }
+
+  .hero-slide img,
+  .hero-slide video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* DARK OVERLAY */
+  .hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.45);
+  }
+
+  /* TEXT ON TOP */
+  .hero-content {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    transform: translateY(-50%);
+    color: white;
+    text-align: left;
+  }
+
+  .hero-content h1 {
+    color: white !important;
+    font-size: 48px;
+  }
+
+  .hero-content p {
+    font-size: 18px;
+    max-width: 600px;
+  }
+</style>

@@ -5,6 +5,9 @@ if (session_status() == PHP_SESSION_NONE) {
   session_start();
 }
 
+$supplier_query = $conn->query("SELECT * FROM supplier");
+$supplier_count = $supplier_query->num_rows;
+
 ?>
 
 <!DOCTYPE html>
@@ -26,7 +29,9 @@ if (session_status() == PHP_SESSION_NONE) {
 
 
   <link href="./../../assets/admin/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+    rel="stylesheet">
   <link href="./../../assets/admin/css/sb-admin-2.min.css" rel="stylesheet">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
@@ -60,31 +65,46 @@ if (session_status() == PHP_SESSION_NONE) {
             <h1 class="h3 mb-0 text-gray-800">Supplier Module</h1>
           </div>
 
-          <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mb-4" data-toggle="modal" data-target="#addSupplierModal"> <i class="fas fa-plus"></i> Add Supplier</a>
-          <!-- <a href="./../../excels/supplier_export.php" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mb-4"><i class="fas fa-file-excel"></i> Export Excel</a> -->
+          <!-- TOP ACTION BAR -->
+          <div class="d-flex justify-content-between align-items-center mb-4">
 
+            <!-- LEFT: Action Button -->
+            <a href="#" class="btn btn-sm btn-success shadow-sm" data-toggle="modal" data-target="#addSupplierModal">
+              <i class="fas fa-plus"></i> Add Supplier
+            </a>
+
+            <!-- RIGHT: KPI -->
+            <div class="text-right">
+              <span class="text-muted small d-block">Total Suppliers</span>
+              <span class="h1 font-weight-bold text-success">
+                <?php echo $supplier_count; ?>
+              </span>
+            </div>
+
+          </div>
+
+
+          <!-- TABLE SECTION -->
           <div class="row">
             <div class="col-xl-12 col-lg-12">
-              <div class="tab-pane fade show active" id="aa" role="tabpanel" aria-labelledby="aa-tab">
 
-                <div class="table-responsive">
-                  <div id="modalContainerSupplier"></div>
-                  <div id="modalContainerSupplierDelete"></div>
+              <div class="table-responsive">
+                <div id="modalContainerSupplier"></div>
+                <div id="modalContainerSupplierDelete"></div>
 
+                <table class="table custom-table table-hover" id="supplier_table">
+                  <thead>
+                    <tr>
+                      <th>Supplier ID</th>
+                      <th>Supplier Name</th>
+                      <th>Details</th>
+                      <th>Date Created</th>
+                      <th>Date Updated</th>
+                      <th>Manage</th>
+                    </tr>
+                  </thead>
+                </table>
 
-                  <table class="table custom-table table-hover" name="supplier_table" id="supplier_table">
-                    <thead>
-                      <tr>
-                        <th>Supplier ID</th>
-                        <th>Supplier Name</th>
-                        <th>Details</th>
-                        <th>Date Created</th>
-                        <th>Date Updated</th>
-                        <th>Manage</th>
-                      </tr>
-                    </thead>
-                  </table>
-                </div>
               </div>
             </div>
           </div>
@@ -121,13 +141,13 @@ if (session_status() == PHP_SESSION_NONE) {
 </html>
 
 <script>
-  $('#sidebarToggle').click(function() {
+  $('#sidebarToggle').click(function () {
     $('#supplier_table').css('width', '100%');
     // console.log(table) //This is for testing only
   });
 
   //Table for Supplier
-  $(document).ready(function() {
+  $(document).ready(function () {
     var supplier_table = $('#supplier_table').DataTable({
       "pagingType": "numbers",
       "processing": true,
@@ -135,16 +155,16 @@ if (session_status() == PHP_SESSION_NONE) {
       "ajax": "./../../controllers/tables/supplier_table.php",
     });
 
-    window.reloadDataTable = function() {
+    window.reloadDataTable = function () {
       supplier_table.ajax.reload();
     };
 
   });
 
   // //Column 3
-  $(document).ready(function() {
+  $(document).ready(function () {
     // Function to handle click event on datatable rows
-    $('#supplier_table').on('click', 'tr td:nth-child(3) .fetchDataSupplierDetails', function() {
+    $('#supplier_table').on('click', 'tr td:nth-child(3) .fetchDataSupplierDetails', function () {
       var supplier_id = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
 
       $.ajax({
@@ -153,12 +173,12 @@ if (session_status() == PHP_SESSION_NONE) {
         data: {
           supplier_id: supplier_id
         },
-        success: function(response) {
+        success: function (response) {
           $('#modalContainerSupplier').html(response);
           $('#fetchDataSupplierDetailsModal').modal('show');
           console.log("#fetchDataSupplierDetailsModal " + supplier_id);
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.error(xhr.responseText);
         }
       });
@@ -166,9 +186,9 @@ if (session_status() == PHP_SESSION_NONE) {
   });
 
   //Column 5
-  $(document).ready(function() {
+  $(document).ready(function () {
     // Function to handle click event on datatable rows
-    $('#supplier_table').on('click', 'tr td:nth-child(6) .fetchDataSupplier', function() {
+    $('#supplier_table').on('click', 'tr td:nth-child(6) .fetchDataSupplier', function () {
       var supplier_id = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
 
       $.ajax({
@@ -177,21 +197,21 @@ if (session_status() == PHP_SESSION_NONE) {
         data: {
           supplier_id: supplier_id
         },
-        success: function(response) {
+        success: function (response) {
           $('#modalContainerSupplier').html(response);
           $('#fetchDataSupplierModal').modal('show');
           console.log("#fetchDataSupplierModal" + supplier_id);
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.error(xhr.responseText);
         }
       });
     });
   });
 
-  $(document).ready(function() {
+  $(document).ready(function () {
     // Function to handle click event on datatable rows
-    $('#supplier_table').on('click', 'tr td:nth-child(6) .fetchDataSupplierDelete', function() {
+    $('#supplier_table').on('click', 'tr td:nth-child(6) .fetchDataSupplierDelete', function () {
       var supplier_id = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
 
       $.ajax({
@@ -200,12 +220,12 @@ if (session_status() == PHP_SESSION_NONE) {
         data: {
           supplier_id: supplier_id
         },
-        success: function(response) {
+        success: function (response) {
           $('#modalContainerSupplierDelete').html(response);
           $('#fetchDataSupplierModalDelete').modal('show');
           console.log("#fetchDataSupplierModalDelete" + supplier_id);
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.error(xhr.responseText);
         }
       });

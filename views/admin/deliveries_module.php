@@ -190,13 +190,17 @@ if (session_status() == PHP_SESSION_NONE) {
     // Function to handle click event on datatable rows
     $('#delivery_table').on('click', 'tr td:nth-child(7) .fetchOrderDetails', function () {
       event.preventDefault();
+
+      var row = $(this).closest('tr');
       var cart_id = $(this).closest('tr').find('td').first().text(); // Get the cart_id from the clicked row
+      var reference_no = row.find('td').eq(1).text(); // ✅ second column (index starts at 0)
 
       $.ajax({
         url: './../../modals/order/order_details_modal.php', // Path to PHP script to fetch modal content
         method: 'POST',
         data: {
-          cart_id: cart_id
+          cart_id: cart_id,
+          reference_no: reference_no
         },
         success: function (response) {
           $('#modalContainerProvider').html(response);

@@ -1,5 +1,13 @@
 <?php
+
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+
 session_start();
+
+// file_put_contents("debug_session.txt", print_r($_SESSION, true));
+// file_put_contents("debug_post.txt", print_r($_POST, true));
+
 include '../../connections/connections.php';
 
 // Retrieve product_id, cart_quantity, variation_id, and variation_color_id from the POST request
@@ -85,8 +93,8 @@ if (isset($_POST['product_id']) && isset($_POST['cart_quantity'])) {
             $total_price = $cart_quantity * $product_price;
 
             $insert_query = "
-                INSERT INTO cart (user_id, product_id, cart_quantity, total_price, cart_status, variation_id, variation_color_id) 
-                VALUES ('$user_id', '$product_id', '$cart_quantity', '$total_price', 'Cart', '$variation_id', '$variation_color_id')
+                INSERT INTO cart (user_id, product_id, cart_quantity, total_price, cart_status, variation_id, variation_color_id, payment_status, delivery_guest_fullname, paypal_contact_number) 
+                VALUES ('$user_id', '$product_id', '$cart_quantity', '$total_price', 'Cart', '$variation_id', '$variation_color_id', 'Unpaid', '', '')
             ";
             if ($conn->query($insert_query)) {
                 $response = array('success' => true, 'message' => 'Product added to cart successfully!');

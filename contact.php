@@ -38,7 +38,8 @@
         <div class="col-lg-5">
           <div class="intro-excerpt">
             <h1 style="color:black !important; opacity: 100%;">Contact</h1>
-            <p class="mb-4" style="color:black !important; opacity: 100%;">We are a provider of innovative premium quality products that will elevate any medical
+            <p class="mb-4" style="color:black !important; opacity: 100%;">We are a provider of innovative premium
+              quality products that will elevate any medical
               practice be it for veterinarians or human doctors.</p>
             <p><a href="products.php" class="btn btn-secondary me-2">Shop Now</a></p>
           </div>
@@ -66,52 +67,82 @@
 
 
             <div class="row mb-5">
+
+              <!-- ADDRESS -->
               <div class="col-lg-4">
-                <div class="service no-shadow align-items-center link horizontal d-flex active" data-aos="fade-left"
-                  data-aos-delay="0">
-                  <div class="service-icon color-1 mb-4">
+                <div class="service no-shadow align-items-start link horizontal d-flex active" data-aos="fade-left">
+
+                  <div class="service-icon color-1 mb-4 me-3">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                       class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
                       <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z" />
                     </svg>
-                  </div> <!-- /.icon -->
+                  </div>
+
                   <div class="service-contents">
-                    <p>107A Kalayaan avenue, Diliman, Quezon City, 1101 Metro Manila</p>
-                  </div> <!-- /.service-contents-->
-                </div> <!-- /.service -->
+                    <p class="mb-0">
+                      107A Kalayaan Avenue,<br>
+                      Diliman, Quezon City<br>
+                      1101 Metro Manila
+                    </p>
+                  </div>
+
+                </div>
               </div>
 
+              <!-- EMAIL -->
               <div class="col-lg-4">
-                <div class="service no-shadow align-items-center link horizontal d-flex active" data-aos="fade-left"
-                  data-aos-delay="0">
-                  <div class="service-icon color-1 mb-4">
+                <div class="service no-shadow align-items-start link horizontal d-flex active" data-aos="fade-left">
+
+                  <div class="service-icon color-1 mb-4 me-3">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                       class="bi bi-envelope-fill" viewBox="0 0 16 16">
                       <path
                         d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555zM0 4.697v7.104l5.803-3.558L0 4.697zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757zm3.436-.586L16 11.801V4.697l-5.803 3.546z" />
                     </svg>
-                  </div> <!-- /.icon -->
+                  </div>
+
                   <div class="service-contents">
-                    <p>admin@blutmedical.com</p>
-                  </div> <!-- /.service-contents-->
-                </div> <!-- /.service -->
+                    <p class="mb-1"><strong>Product inquiries</strong></p>
+                    <p class="mb-2">
+                      <a href="mailto:admin@vetaidonline.com">admin@vetaidonline.com</a>
+                    </p>
+
+                    <p class="mb-1"><strong>Partnership inquiries</strong></p>
+                    <p class="mb-0">
+                      <a href="mailto:marketing1@gmail.com">marketing1@gmail.com</a>
+                    </p>
+                  </div>
+
+                </div>
               </div>
 
+              <!-- PHONE -->
               <div class="col-lg-4">
-                <div class="service no-shadow align-items-center link horizontal d-flex active" data-aos="fade-left"
-                  data-aos-delay="0">
-                  <div class="service-icon color-1 mb-4">
+                <div class="service no-shadow align-items-start link horizontal d-flex active" data-aos="fade-left">
+
+                  <div class="service-icon color-1 mb-4 me-3">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                       class="bi bi-telephone-fill" viewBox="0 0 16 16">
                       <path fill-rule="evenodd"
                         d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z" />
                     </svg>
-                  </div> <!-- /.icon -->
+                  </div>
+
                   <div class="service-contents">
-                    <p>+639264753651</p>
-                  </div> <!-- /.service-contents-->
-                </div> <!-- /.service -->
+                    <p class="mb-1"><strong>North Area</strong></p>
+                    <p class="mb-2">
+                      <a href="tel:+639933105274">+63 993 310 5274</a>
+                    </p>
+
+                    <p class="mb-1"><strong>South Area</strong></p>
+                    <p class="mb-0">
+                      <a href="tel:+639458064740">+63 945 806 4740</a>
+                    </p>
+                  </div>
+                </div>
               </div>
+
             </div>
 
             <form id="contactForm">
@@ -179,13 +210,13 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
 <script>
-  document.getElementById('contact').addEventListener('input', function(e) {
+  document.getElementById('contact').addEventListener('input', function (e) {
     this.value = this.value.replace(/[^0-9.]/g, ''); // Allow only numbers and dots
   });
 
 
-  $(document).ready(function() {
-    $('#contactForm').submit(function(event) {
+  $(document).ready(function () {
+    $('#contactForm').submit(function (event) {
       event.preventDefault(); // Prevent default form submission (important!)
 
       // Serialize form data
@@ -201,7 +232,7 @@
         type: 'POST',
         url: '/blutmedical/controllers/send_email_process.php',
         data: formData,
-        success: function(response) {
+        success: function (response) {
           // Parse JSON response
           try {
             response = JSON.parse(response);
@@ -230,7 +261,7 @@
             }).showToast();
           }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.error("AJAX error:", xhr.responseText);
           Toastify({
             text: "An error occurred while processing your request. Please try again later.",
@@ -238,7 +269,7 @@
             backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
           }).showToast();
         },
-        complete: function() {
+        complete: function () {
           // Reset button text and re-enable it
           $sendButton.text('Send Message');
           $sendButton.prop('disabled', false);

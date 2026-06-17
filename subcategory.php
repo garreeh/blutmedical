@@ -45,6 +45,8 @@
 
   ?>
 
+  <br>
+
   <!-- Start Product Section -->
   <div class="product-section">
     <div class="container">
@@ -59,14 +61,7 @@
           <input type="text" id="searchInput" class="form-control d-none d-md-block" placeholder="Search products..."
             autocomplete="off" style="width: 35rem;">
           <div id="searchResults" class="dropdown-menu" style="width: 35rem;"></div>
-
         </div> -->
-
-        <div class="dropdown-category">
-          <!-- <select id="categoryDropdown" class="form-control" aria-label="Select Category" style="width: 13rem;">
-            <option value="" selected>All Categories</option>
-          </select> -->
-        </div>
 
       </nav>
 

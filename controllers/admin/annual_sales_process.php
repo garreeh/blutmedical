@@ -1,16 +1,18 @@
 <?php
-// Assuming you already have a connection to your database
-// Get the current year
-$currentYear = date('Y');
 
-// Query to sum total_price for the current year's sales
-$query = "SELECT SUM(total_price) as annual_sales FROM cart 
-          WHERE YEAR(updated_at) = '$currentYear' 
-          AND cart_status = 'Delivered'"; // Modify cart_status based on your use case
+$annual_sales = 0;
 
-$result = mysqli_query($conn, $query);
-$row = mysqli_fetch_assoc($result);
+$sql = "
+SELECT SUM(product.product_sellingprice * cart.cart_quantity) AS total_sales
+FROM cart
+LEFT JOIN product ON product.product_id = cart.product_id
+WHERE cart.cart_status = 'Delivered'
+AND YEAR(cart.updated_at) = YEAR(CURDATE())
+";
 
-// If there are no sales, set annual_sales to 0
-$annual_sales = $row['annual_sales'] ?? 0;
+$result = mysqli_query($conn, $sql);
+
+if ($row = mysqli_fetch_assoc($result)) {
+  $annual_sales = $row['total_sales'] ?? 0;
+}
 ?>

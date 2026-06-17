@@ -1,23 +1,44 @@
 <?php
 include '../../connections/connections.php';
 
-if (isset($_POST['query']) && isset($_POST['category_id'])) {
-  $query = $conn->real_escape_string($_POST['query']);
-  $category_id = intval($_POST['category_id']); // Ensure it's an integer to prevent SQL injection
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-  $sql = "SELECT product_id, product_name FROM product 
-          WHERE category_id = $category_id 
-          AND product_name LIKE '%$query%' 
-          LIMIT 5";
+$query = isset($_POST['query']) ? trim($conn->real_escape_string($_POST['query'])) : '';
+$category_id = isset($_POST['category_id']) ? intval($_POST['category_id']) : 0;
 
-  $result = $conn->query($sql);
+if ($query === '') {
+  exit;
+}
 
-  if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-      echo '<a href="product_details.php?product_id=' . $row['product_id'] . '" class="dropdown-item" target="_blank">' . htmlspecialchars($row['product_name']) . '</a>';
-    }
-  } else {
-    echo '<p class="dropdown-item text-muted">No products found</p>';
+$likeQuery = "%$query%";
+
+// Base query
+$sql = "SELECT product_id, product_name 
+        FROM product 
+        WHERE product_name LIKE '$likeQuery'";
+
+// Apply category filter only if not "All Categories"
+if ($category_id > 0) {
+  $sql .= " AND category_id = $category_id";
+}
+
+$sql .= " LIMIT 10";
+
+$result = $conn->query($sql);
+
+if (!$result) {
+  echo "SQL Error: " . $conn->error;
+  exit;
+}
+
+if ($result->num_rows > 0) {
+  while ($row = $result->fetch_assoc()) {
+    echo '<a href="product_details.php?product_id=' . $row['product_id'] . '" class="dropdown-item" target="_blank">'
+      . htmlspecialchars($row['product_name']) .
+      '</a>';
   }
+} else {
+  echo '<p class="dropdown-item text-muted">No products found</p>';
 }
 ?>

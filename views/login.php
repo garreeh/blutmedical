@@ -92,8 +92,10 @@ if (session_status() == PHP_SESSION_NONE) {
 											<input type="hidden" id="remember_me" name="remember_me" value="0">
 										</div>
 
-										<button type="button" class="btn btn-primary btn-user btn-block"
-											onclick="submitForm()">Login</button>
+										<button type="button" id="loginBtn" class="btn btn-primary btn-user btn-block"
+											onclick="submitForm()">
+											<span id="loginBtnText">Login</span>
+										</button>
 										<hr>
 									</form>
 
@@ -102,8 +104,8 @@ if (session_status() == PHP_SESSION_NONE) {
 										<a class="small" href="./register.php">No Account? Register here</a>
 										</br>
 										<a class="small" href="./forgot_password.php">Forgot Password?</a>
-										<!-- </br> -->
-										<a class="small" href="./../index.php">Home Page</a>
+										</br>
+										<a class="small" href="./../index.php">Go to Home Page</a>
 
 									</div>
 								</div>
@@ -132,8 +134,8 @@ if (session_status() == PHP_SESSION_NONE) {
 
 </html>
 <script>
-	document.addEventListener('DOMContentLoaded', function() {
-		document.getElementById('togglePassword').addEventListener('click', function() {
+	document.addEventListener('DOMContentLoaded', function () {
+		document.getElementById('togglePassword').addEventListener('click', function () {
 			var passwordInput = document.getElementById('user_password');
 			var type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
 			passwordInput.setAttribute('type', type);
@@ -142,7 +144,7 @@ if (session_status() == PHP_SESSION_NONE) {
 		});
 	});
 
-	document.getElementById('loginForm').addEventListener('keydown', function(e) {
+	document.getElementById('loginForm').addEventListener('keydown', function (e) {
 		if (e.key === 'Enter') {
 			submitForm();
 		}
@@ -184,12 +186,22 @@ if (session_status() == PHP_SESSION_NONE) {
 			remember_me: rememberMe
 		};
 
+		// 🔥 button loading state
+		var loginBtn = document.getElementById('loginBtn');
+		var loginBtnText = document.getElementById('loginBtnText');
+
+		loginBtn.disabled = true;
+		loginBtnText.innerHTML = `
+				<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>
+				Logging in...
+		`;
+
 		$.ajax({
 			type: 'POST',
 			url: '../controllers/login_process.php',
 			data: data,
 			dataType: 'json',
-			success: function(response) {
+			success: function (response) {
 				console.log(response);
 				if (response.success) {
 					// Check if the user is an admin
@@ -202,8 +214,13 @@ if (session_status() == PHP_SESSION_NONE) {
 					showToast(response.message);
 				}
 			},
-			error: function(xhr, status, error) {
+			error: function (xhr, status, error) {
 				showToast('Error occurred while processing the request.');
+			},
+			complete: function () {
+				// 🔥 reset button state
+				loginBtn.disabled = false;
+				loginBtnText.innerHTML = "Login";
 			}
 		});
 	}

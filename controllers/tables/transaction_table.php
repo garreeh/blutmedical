@@ -1,137 +1,186 @@
 <?php
 
-// Define table and primary key
-$table = 'cart';
-$primaryKey = 'cart_id';
-// Define columns for DataTables
-$columns = array(
-	array(
-		'db' => 'cart_id',
-		'dt' => 0,
-		'field' => 'cart_id',
-		'formatter' => function ($lab1, $row) {
-			return $row['cart_id'];
-		}
-	),
-
-	array(
-		'db' => 'paypal_order_id',
-		'dt' => 1,
-		'field' => 'paypal_order_id',
-		'formatter' => function ($lab1, $row) {
-			return ($row['payment_method'] === 'Paypal')
-				? ($row['paypal_order_id'] ?: '-')
-				: ($row['reference_no'] ?: '-');
-		}
-	),
-
-	array(
-		'db' => 'users.user_fullname',
-		'dt' => 2,
-		'field' => 'user_fullname',
-		'formatter' => function ($lab2, $row) {
-			return empty($row['user_fullname']) ? $row['delivery_guest_fullname'] : $row['user_fullname'];
-		}
-	),
-
-	array(
-		'db' => 'cart_status',
-		'dt' => 3,
-		'field' => 'cart_status',
-		'formatter' => function ($lab3, $row) {
-
-			$cart_status = $row['cart_status'];
-
-			// Define styles for different statuses
-			$style = '';
-			if ($cart_status === 'Processing') {
-				$style = 'background-color: lightyellow; border-radius: 5px; padding: 5px;';
-			} elseif ($cart_status === 'Shipped') {
-				$style = 'background-color: lightyellow; border-radius: 5px; padding: 5px;';
-			} elseif ($cart_status === 'Delivered') {
-				$style = 'background-color: lightgreen; border-radius: 5px; padding: 5px;';
-			}
-
-			return "<span style=\"$style\">{$cart_status}</span>";
-		}
-	),
-
-
-
-	array(
-		'db' => 'payment_method',
-		'dt' => 4,
-		'field' => 'payment_method',
-		'formatter' => function ($lab4, $row) {
-			return $row['payment_method'];
-		}
-	),
-
-	array(
-		'db' => 'cart_id',
-		'dt' => 5,
-		'field' => 'cart_id',
-		'formatter' => function ($lab4, $row) {
-			return '<a class="fetchCustomerDetails" href="#"> Click to View</a> ';
-		}
-	),
-
-	array(
-		'db' => 'total_price',
-		'dt' => 7,
-		'field' => 'total_price',
-		'formatter' => function ($lab4, $row) {
-			// Check if the payment method is GCash, use Peso sign, otherwise Dollar sign
-			if ($row['payment_method'] == 'GCash') {
-				return '₱ ' . number_format($row['total_price'], 2);
-			} else {
-				return '$ ' . number_format($row['total_price'], 2);
-			}
-		}
-	),
-
-	array(
-		'db' => 'cart.updated_at',
-		'dt' => 7,
-		'field' => 'updated_at',
-		'formatter' => function ($lab5, $row) {
-			return $row['updated_at'];
-		}
-	),
-
-	array(
-		'db' => 'delivery_guest_fullname',
-		'dt' => 8,
-		'field' => 'delivery_guest_fullname',
-		'formatter' => function ($lab5, $row) {
-			return $row['delivery_guest_fullname'];
-		}
-	),
-
-	array(
-		'db' => 'reference_no',
-		'dt' => 9,
-		'field' => 'reference_no',
-		'formatter' => function ($lab5, $row) {
-			return $row['reference_no'];
-		}
-	),
-);
-
-// Database connection details
+include '../../connections/connections.php';
 include '../../connections/ssp_connection.php';
 
+header('Content-Type: application/json');
 
-// Include the SSP class
-require('../../assets/datatables/ssp.class.php');
+$draw = $_GET['draw'] ?? 1;
+$start = $_GET['start'] ?? 0;
+$length = $_GET['length'] ?? 10;
+$search = mysqli_real_escape_string($conn, $_GET['search']['value'] ?? '');
 
-// Build the where condition
-$where = "cart_status = 'Delivered'";
+/*
+|--------------------------------------------------------------------------
+| SORTING (ADDED ONLY)
+|--------------------------------------------------------------------------
+*/
+$orderColumnIndex = $_GET['order'][0]['column'] ?? 0;
+$orderDir = $_GET['order'][0]['dir'] ?? 'desc';
 
-// Fetch and encode ONLY WHERE
-// echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $where));
+$orderMap = [
+	0 => 'cart.cart_id',
+	1 => 'cart.paypal_order_id',
+	2 => 'cart.reference_no',
+	3 => 'cart.payment_method',
+	4 => 'cart.cart_status',
+	5 => 'cart.total_price',
+	6 => 'cart.updated_at',
+	7 => 'cart.delivery_guest_fullname',
+	8 => 'users.user_fullname'
+];
 
-$joinQuery = "FROM $table LEFT JOIN users ON $table.user_id = users.user_id";
+$orderColumn = $orderMap[$orderColumnIndex] ?? 'cart.updated_at';
 
-// Fetch and encode JOIN AND WHERE
-echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $joinQuery, $where));
+/*
+|--------------------------------------------------------------------------
+| BASE QUERY
+|--------------------------------------------------------------------------
+*/
+$sql = "
+SELECT 
+    cart.cart_id,
+    cart.paypal_order_id,
+    cart.reference_no,
+    cart.payment_method,
+    cart.cart_status,
+    cart.total_price,
+    cart.updated_at,
+    cart.created_at,
+    cart.delivery_guest_fullname,
+    users.user_fullname
+FROM cart
+LEFT JOIN users ON cart.user_id = users.user_id
+WHERE cart.cart_status = 'Delivered'
+";
+
+/*
+|--------------------------------------------------------------------------
+| SEARCH
+|--------------------------------------------------------------------------
+*/
+if (!empty($search)) {
+	$sql .= " AND (
+        cart.cart_id LIKE '%$search%' OR
+        cart.paypal_order_id LIKE '%$search%' OR
+        cart.reference_no LIKE '%$search%' OR
+        cart.payment_method LIKE '%$search%' OR
+        cart.total_price LIKE '%$search%' OR
+        cart.updated_at LIKE '%$search%' OR
+        cart.delivery_guest_fullname LIKE '%$search%' OR
+        users.user_fullname LIKE '%$search%'
+    )";
+}
+
+/*
+|--------------------------------------------------------------------------
+| APPLY SORTING
+|--------------------------------------------------------------------------
+*/
+$sql .= " ORDER BY $orderColumn $orderDir";
+
+$result = mysqli_query($conn, $sql);
+
+$grouped = [];
+
+/*
+|--------------------------------------------------------------------------
+| GROUPING (UNCHANGED)
+|--------------------------------------------------------------------------
+*/
+while ($row = mysqli_fetch_assoc($result)) {
+
+	$groupKey = ($row['payment_method'] === 'Paypal')
+		? $row['paypal_order_id']
+		: $row['reference_no'];
+
+	if (empty($groupKey)) {
+		$groupKey = 'NO_REF_' . $row['cart_id'];
+	}
+
+	if (!isset($grouped[$groupKey])) {
+
+		$grouped[$groupKey] = [
+			'cart_id' => $row['cart_id'],
+			'paypal_order_id' => $row['paypal_order_id'],
+			'reference_no' => $row['reference_no'],
+			'payment_method' => $row['payment_method'],
+			'cart_status' => $row['cart_status'],
+			'total_price' => 0,
+			'updated_at' => $row['updated_at'],
+			'delivery_guest_fullname' => $row['delivery_guest_fullname'],
+			'user_fullname' => $row['user_fullname']
+		];
+	}
+
+	$grouped[$groupKey]['total_price'] += (float) $row['total_price'];
+}
+
+/*
+|--------------------------------------------------------------------------
+| FINAL DATA BUILD
+|--------------------------------------------------------------------------
+*/
+$data = [];
+
+foreach ($grouped as $row) {
+
+	$order_ref = ($row['payment_method'] === 'Paypal')
+		? ($row['paypal_order_id'] ?: '-')
+		: ($row['reference_no'] ?: '-');
+
+	$customer_name = empty($row['user_fullname'])
+		? $row['delivery_guest_fullname']
+		: $row['user_fullname'];
+
+	$formatted_price = ($row['payment_method'] == 'GCash')
+		? '₱ ' . number_format($row['total_price'], 2)
+		: '$ ' . number_format($row['total_price'], 2);
+
+	$status = "<span style='background:#d4edda;color:#155724;padding:4px 8px;border-radius:6px;font-weight:600;'>
+                Delivered
+              </span>";
+
+	$action = '
+        <a class="fetchCustomerDetails"
+            data-cart_id="' . $row['cart_id'] . '"
+            href="#">
+            Customer Details
+        </a>';
+
+	$actionGetOrder = '
+        <a class="fetchOrderDetails"
+            data-cart_id="' . $row['cart_id'] . '"
+            data-reference_no="' . $row['reference_no'] . '"
+            data-paypal_order_id="' . $row['paypal_order_id'] . '"
+            data-payment_method="' . $row['payment_method'] . '"
+            href="#">
+            Order Details
+        </a>';
+
+	$data[] = array_values([
+		$row['cart_id'],
+		$order_ref,
+		$customer_name,
+		$status,
+		$row['payment_method'],
+		$action,
+		$actionGetOrder,
+		$formatted_price,
+		$row['updated_at'],
+		$row['delivery_guest_fullname'],
+		$row['reference_no']
+	]);
+}
+
+/*
+|--------------------------------------------------------------------------
+| OUTPUT
+|--------------------------------------------------------------------------
+*/
+echo json_encode([
+	"draw" => intval($draw),
+	"recordsTotal" => count($data),
+	"recordsFiltered" => count($data),
+	"data" => array_slice($data, $start, $length)
+]);

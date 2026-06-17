@@ -76,14 +76,13 @@ if (session_status() == PHP_SESSION_NONE) {
                       <tr>
                         <th>ID</th>
                         <th>Ref No.</th>
-                        <th>Customer Name</th>
                         <th>Status</th>
                         <th>Payment Method</th>
+
                         <th>Customer Details</th>
                         <th>Order Details</th>
-
                         <th>Total Payment</th>
-
+                        <th>Date of Order</th>
                         <th>Manage</th>
 
                       </tr>
@@ -162,7 +161,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
   $(document).ready(function () {
     // Function to handle click event on datatable rows
-    $('#order_table').on('click', 'tr td:nth-child(6) .fetchCustomerDetails', function () {
+    $('#order_table').on('click', 'tr td:nth-child(5) .fetchCustomerDetails', function () {
       event.preventDefault();
       var cart_id = $(this).closest('tr').find('td').first().text(); // Get the cart_id from the clicked row
 
@@ -187,21 +186,27 @@ if (session_status() == PHP_SESSION_NONE) {
 
   $(document).ready(function () {
     // Function to handle click event on datatable rows
-    $('#order_table').on('click', 'tr td:nth-child(7) .fetchOrderDetails', function () {
+    $('#order_table').on('click', 'tr td:nth-child(6) .fetchOrderDetails', function () {
       event.preventDefault();
+
+      var row = $(this).closest('tr');
       var cart_id = $(this).closest('tr').find('td').first().text(); // Get the cart_id from the clicked row
+      var reference_no = row.find('td').eq(1).text(); // ✅ second column (index starts at 0)
+
 
       $.ajax({
         url: './../../modals/order/order_details_modal.php', // Path to PHP script to fetch modal content
         method: 'POST',
         data: {
-          cart_id: cart_id
+          cart_id: cart_id,
+          reference_no: reference_no
         },
         success: function (response) {
           $('#modalContainerProvider').html(response);
           $('#showPhoto').modal('show');
           $('#cart_id').val(cart_id); // Set the cart_id here
           console.log("#showPhoto: " + cart_id);
+          console.log("reference_no: " + reference_no);
         },
         error: function (xhr, status, error) {
           console.error(xhr.responseText);
@@ -214,13 +219,18 @@ if (session_status() == PHP_SESSION_NONE) {
     // Function to handle click event on datatable rows
     $('#order_table').on('click', 'tr td:nth-child(9) .fetchDataFinish', function () {
       event.preventDefault();
+
+      var row = $(this).closest('tr');
       var cart_id = $(this).closest('tr').find('td').first().text(); // Get the cart_id from the clicked row
+      var reference_no = row.find('td').eq(1).text(); // ✅ second column (index starts at 0)
+
 
       $.ajax({
         url: './../../modals/delivery/modal_add_delivered.php', // Path to PHP script to fetch modal content
         method: 'POST',
         data: {
-          cart_id: cart_id
+          cart_id: cart_id,
+          reference_no: reference_no
         },
         success: function (response) {
           $('#modalContainerProvider').html(response);

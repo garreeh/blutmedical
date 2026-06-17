@@ -31,86 +31,104 @@
 
   ?>
 
-  <!-- Start Hero Section -->
-  <!-- <div class="hero">
-    <div class="container">
-      <div class="row justify-content-between">
-        <div class="col-lg-5">
-          <div class="intro-excerpt">
-            <h1 style="color:black !important; opacity: 100%;">Contact</h1>
-            <p class="mb-4" style="color:black !important; opacity: 100%;">We are a provider of innovative premium quality products that will elevate any medical
-              practice be it for veterinarians or human doctors.</p>
-            <p><a href="products.php" class="btn btn-secondary me-2">Shop Now</a></p>
-          </div>
-        </div>
-        <div class="col-lg-5 d-none d-md-block">
-          <div class="hero-img-wrap">
-            <img src="assets/logo/blutfront.png" class="img-fluid" style="max-width: 75%;">
-          </div>
-        </div>
-      </div>
-    </div>
-  </div> -->
-  <!-- jQuery first -->
-  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <?php
 
-  <!-- Then Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+  }
+
+  $user_id = $_SESSION['user_id'];
+
+  $sql = "SELECT * FROM users WHERE user_id = '$user_id'";
+  $result = mysqli_query($conn, $sql);
+
+  if ($result) {
+    while ($edit_user = mysqli_fetch_assoc($result)) {
+      ?>
+      <!-- Start Contact Form -->
+      <div class="untree_co-section">
+        <div class="container">
+
+          <div class="block">
+            <div class="row justify-content-center">
 
 
-  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+              <div class="col-md-8 col-lg-8 pb-4">
+                <form id="contactForm">
 
-
-  <!-- Start Contact Form -->
-  <div class="untree_co-section">
-    <div class="container">
-
-      <div class="block">
-        <div class="row justify-content-center">
-
-
-          <div class="col-md-8 col-lg-8 pb-4">
-
-
-            <div class="row">
-              <div class="col-xl-12 col-lg-12">
-                <div class="tab-pane fade show active" id="aa" role="tabpanel" aria-labelledby="aa-tab">
-
-                  <div class="table-responsive">
-                    <div id="modalContainerChangePassword"></div>
-
-                    <table class="table custom-table table-hover" name="my_account_table" id="my_account_table">
-                      <thead>
-                        <tr>
-                          <th>ID</th>
-                          <th>Fullname</th>
-                          <th>Username</th>
-                          <th>Email</th>
-                          <th>Manage</th>
-
-                        </tr>
-                      </thead>
-                    </table>
+                  <div class="row">
+                    <div class="col-12">
+                      <div class="form-group">
+                        <label class="text-black" for="user_fullname">Full Name</label>
+                        <input type="text" class="form-control" id="user_fullname_<?php echo $user_id; ?>"
+                          name="user_fullname" value="<?php echo $edit_user['user_fullname'] ?>" readonly>
+                      </div>
+                    </div>
                   </div>
-                </div>
+
+                  <div class="form-group">
+                    <label class="text-black" for="user_address">Address</label>
+                    <input type="text" class="form-control" id="user_address_<?php echo $user_id; ?>" name="user_address"
+                      value="<?php echo $edit_user['user_address'] ?>" readonly>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="text-black" for="user_email">Email Address</label>
+                    <input type="email" class="form-control" id="user_email_<?php echo $user_id; ?>" name="user_email"
+                      value="<?php echo $edit_user['user_email'] ?>" readonly>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="text-black" for="user_contact">Contact #</label>
+                    <input type="text" class="form-control" id="user_contact_<?php echo $user_id; ?>" name="user_contact"
+                      value="<?php echo $edit_user['user_contact'] ?>" readonly>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="text-black" for="user_confirm_password">Password</label>
+                    <input type="password" class="form-control" id="user_confirm_password_<?php echo $user_id; ?>"
+                      name="user_confirm_password" value="<?php echo $edit_user['user_confirm_password'] ?>" readonly>
+                  </div>
+
+                  <br>
+
+                  <!-- <button type="submit" class="btn btn-primary-hover-outline" id="sendEmailMessage">Edit Details</button> -->
+
+                  <?php
+                  include './modal_change_password.php';
+                  ?>
+
+
+                  <!-- Update button -->
+                  <div class="row">
+                    <div class="col-md-12 text-center">
+                      <a href="#" class="btn btn-sm btn-success shadow-sm mb-4" data-toggle="modal"
+                        data-target="#fetchDataClientDetailsModal" data-client-id="<?php echo $edit_user['user_id']; ?>">
+                        Click to Update
+                      </a>
+
+                    </div>
+                  </div>
+                </form>
+
+
               </div>
+
             </div>
 
-
           </div>
 
         </div>
 
+
+      </div>
       </div>
 
-    </div>
-
-
-  </div>
-  </div>
-
-  <!-- End Contact Form -->
-
+      <!-- End Contact Form -->
+      <?php
+    }
+  }
+  ?>
 
 
   <?php
@@ -122,60 +140,9 @@
 </body>
 
 </html>
-<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-
-<!-- Data tables -->
-<link rel="stylesheet" type="text/css" href="assets/datatables/datatables.min.css" />
-<script type="text/javascript" src="assets/datatables/datatables.min.js"></script>
-
-<script>
-  $('#sidebarToggle').click(function() {
-    $('#my_account_table').css('width', '100%');
-    // console.log(table) //This is for testing only
-  });
-
-  $(document).ready(function() {
-    var my_account_table = $('#my_account_table').DataTable({
-      "pagingType": "numbers",
-      "processing": true,
-      "serverSide": true,
-      "ajax": "controllers/tables/my_account_table.php",
-      "lengthChange": false, // removes "Show X entries" dropdown
-      "searching": false, // removes search box
-      "ordering": false // removes sort/filter arrows
-    });
-
-    window.reloadDataTable = function() {
-      my_account_table.ajax.reload();
-    };
-  });
-
-
-
-  //Bridge for Modal Backend to Frontend
-  $(document).ready(function() {
-    // Function to handle click event on datatable rows
-    $('#my_account_table').on('click', 'tr td:nth-child(5) .fetchDataPassword', function() {
-      var user_id = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
-      console.log('Button clicked, User ID: ' + user_id);
-
-      $.ajax({
-        url: 'modal_change_password.php', // Path to PHP script to fetch modal content
-        method: 'POST',
-        data: {
-          user_id: user_id
-        },
-        success: function(response) {
-          $('#modalContainerChangePassword').html(response);
-          $('#fetchDataUserModal').modal('show');
-          console.log("Modal content loaded for User ID: " + user_id);
-        },
-        error: function(xhr, status, error) {
-          console.error("Error: " + xhr.responseText);
-        }
-      });
-    });
-  });
-</script>

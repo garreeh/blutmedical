@@ -44,8 +44,27 @@ $resultSubCategory = mysqli_query($conn, $sql);
             aria-expanded="false" style="color:black !important; opacity: 100%;">
             Shop
           </a>
+
           <ul class="dropdown-menu" aria-labelledby="userDropdown">
-            <li><a style="color: black !important;" class="dropdown-item" style="color:black !important; opacity: 100%;" href="products.php">All</a></li>
+
+            <!-- PRODUCTS SECTION -->
+            <!-- <li class="dropdown-header"><strong>Products</strong></li> -->
+
+            <li>
+              <a style="color: black !important;" class="dropdown-item" href="products.php">
+                All Products
+              </a>
+            </li>
+
+            <!-- CATEGORIES SECTION -->
+            <!-- <li class="dropdown-header"><strong>Categories</strong></li> -->
+
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <!-- SUBCATEGORIES SECTION -->
+            <li class="dropdown-header"><strong>Shop by Category</strong></li>
 
             <?php while ($row = mysqli_fetch_assoc($resultSubCategory)): ?>
               <li>
@@ -55,8 +74,35 @@ $resultSubCategory = mysqli_query($conn, $sql);
                 </a>
               </li>
             <?php endwhile; ?>
+
           </ul>
         </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false" style="color:black !important; opacity: 100%;">
+            Services
+          </a>
+
+          <ul class="dropdown-menu" aria-labelledby="userDropdown">
+
+
+            <li>
+              <a style="color: black !important;" class="dropdown-item" href="#">
+                Be a Distributor
+              </a>
+            </li>
+
+            <li>
+              <a style="color: black !important;" class="dropdown-item" href="#">
+                Lease a Machine
+              </a>
+            </li>
+
+          </ul>
+        </li>
+
+
         <!-- <li><a class="nav-link" href="products.php">Shop</a></li> -->
         <li><a class="nav-link" href="about.php" style="color:black !important; opacity: 100%;">About us</a></li>
         <li><a class="nav-link" href="contact.php" style="color:black !important; opacity: 100%;">Contact us</a></li>
@@ -72,23 +118,30 @@ $resultSubCategory = mysqli_query($conn, $sql);
           <?php if (isset($_SESSION['user_id'])): ?>
             <ul class="dropdown-menu" aria-labelledby="userDropdown">
               <li></li>
-              <li><a class="dropdown-item" href="/blutmedical/client_orders_module.php" style="color:black !important; opacity: 100%;">My Orders</a></li>
-              <li><a class="dropdown-item" href="/blutmedical/account_settings.php" style="color:black !important; opacity: 100%;">My Account</a></li>
-              <li><a class="dropdown-item" href="/blutmedical/completed_orders_module.php" style="color:black !important; opacity: 100%;">Completed Orders</a></li>
-              <li><a class="dropdown-item" href="/blutmedical/controllers/logout_process.php" style="color:black !important; opacity: 100%;">Sign-out</a></li>
+              <li><a class="dropdown-item" href="/blutmedical/client_orders_module.php"
+                  style="color:black !important; opacity: 100%;">My Orders</a></li>
+              <li><a class="dropdown-item" href="/blutmedical/account_settings.php"
+                  style="color:black !important; opacity: 100%;">My Account</a></li>
+              <li><a class="dropdown-item" href="/blutmedical/completed_orders_module.php"
+                  style="color:black !important; opacity: 100%;">Completed Orders</a></li>
+              <li><a class="dropdown-item" href="/blutmedical/controllers/logout_process.php"
+                  style="color:black !important; opacity: 100%;">Sign-out</a></li>
             </ul>
           <?php else: ?>
             <ul class="dropdown-menu" aria-labelledby="userDropdown">
               <li></li>
-              <li><a class="dropdown-item" href="/blutmedical/views/login.php" style="color:black !important; opacity: 100%;">Log In</a></li>
-              <li><a class="dropdown-item" href="/blutmedical/views/register.php" style="color:black !important; opacity: 100%;">Register</a></li>
+              <li><a class="dropdown-item" href="/blutmedical/views/login.php"
+                  style="color:black !important; opacity: 100%;">Log In</a></li>
+              <li><a class="dropdown-item" href="/blutmedical/views/register.php"
+                  style="color:black !important; opacity: 100%;">Register</a></li>
             </ul>
           <?php endif; ?>
         </li>
 
         <!-- Cart Icon -->
         <li>
-          <a class="nav-link position-relative" href="/blutmedical/cart.php" style="color:black !important; opacity: 100%; font-size: large;">
+          <a class="nav-link position-relative" href="/blutmedical/cart.php"
+            style="color:black !important; opacity: 100%; font-size: large;">
             <i class="fa-solid fa-cart-shopping"></i>
             <span id="cart-badge"
               class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -107,32 +160,78 @@ $resultSubCategory = mysqli_query($conn, $sql);
 </nav>
 <!-- End Header/Navigation -->
 
+<style>
+  .custom-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1030;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .custom-navbar.nav-hidden {
+    transform: translateY(-100%);
+  }
+
+  body {
+    padding-top: 170px;
+    /* Adjust if your navbar height differs */
+  }
+</style>
+
 <script>
   // Function to fetch cart count and update the badge
   function updateCartBadge() {
-    // Check if the user is logged in
     var isLoggedIn = <?php echo json_encode(isset($_SESSION['user_id'])); ?>;
 
     if (isLoggedIn) {
-      // User is logged in, fetch cart count from the server
       fetch('/blutmedical/controllers/users/get_cart_count.php')
         .then((response) => response.json())
         .then((data) => {
-          // Update the cart badge with the fetched cart count
           document.getElementById('cart-badge').textContent = data.cart_count;
         })
         .catch((error) => {
           console.error('Error fetching cart count:', error);
         });
     } else {
-      // User is not logged in, fetch cart count from localStorage
       var guestCart = JSON.parse(localStorage.getItem('guestCart')) || [];
-      var cartCount = guestCart.length; // Get the number of items in the guest cart
-      // Update the cart badge with the guest cart count
+      var cartCount = guestCart.length;
       document.getElementById('cart-badge').textContent = cartCount;
     }
   }
 
-  // Call the function to update the cart badge when the page loads
   updateCartBadge();
+
+  // ==========================
+  // Smart Hide/Show Navbar
+  // ==========================
+  let lastScrollTop = 0;
+  const navbar = document.querySelector('.custom-navbar');
+  const scrollThreshold = 50; // Hide only after scrolling down 50px
+
+  window.addEventListener('scroll', function () {
+    let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+
+    // Always show navbar near the top
+    if (currentScroll <= 10) {
+      navbar.classList.remove('nav-hidden');
+      lastScrollTop = currentScroll;
+      return;
+    }
+
+    // Scrolling down
+    if (
+      currentScroll > lastScrollTop &&
+      currentScroll > scrollThreshold
+    ) {
+      navbar.classList.add('nav-hidden');
+    }
+    // Scrolling up
+    else {
+      navbar.classList.remove('nav-hidden');
+    }
+
+    lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+  });
 </script>
