@@ -77,7 +77,7 @@ if (session_status() == PHP_SESSION_NONE) {
               <div class="tab-pane fade show active" id="aa" role="tabpanel" aria-labelledby="aa-tab">
 
                 <div class="table-responsive">
-                  <div id="modalContainerCustomer"></div>
+                  <div id="modalContainerCarousel"></div>
 
                   <table class="table custom-table table-hover" name="carousel_table" id="carousel_table">
                     <thead>
@@ -85,6 +85,8 @@ if (session_status() == PHP_SESSION_NONE) {
                         <th>ID</th>
                         <th>Scene</th>
                         <th>Date Created</th>
+                        <th>Manage</th>
+
                       </tr>
                     </thead>
                   </table>
@@ -141,5 +143,56 @@ if (session_status() == PHP_SESSION_NONE) {
       carousel_table.ajax.reload();
     };
 
+  });
+
+  //Column 3
+  $(document).ready(function () {
+    // Function to handle click event on datatable rows
+    $('#carousel_table').on('click', 'tr td:nth-child(4) .fetchDataCarousel', function () {
+      event.preventDefault();
+      var carousel_id = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
+
+      $.ajax({
+        url: './../../modals/carousel/modal_edit_carousel.php', // Path to PHP script to fetch modal content
+        method: 'POST',
+        data: {
+          carousel_id: carousel_id
+        },
+        success: function (response) {
+          $('#modalContainerCarousel').html(response);
+          $('#fetchDataCarouselModal').modal('show');
+          console.log("#fetchDataCarouselModal" + carousel_id);
+        },
+        error: function (xhr, status, error) {
+          console.error(xhr.responseText);
+        }
+      });
+    });
+  });
+
+  //Column 3
+  $(document).ready(function () {
+
+    // Function to handle click event on datatable rows
+    $('#carousel_table').on('click', 'tr td:nth-child(4) .fetchDataCarouselDelete', function () {
+      event.preventDefault();
+      var carousel_id = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
+
+      $.ajax({
+        url: './../../modals/carousel/modal_delete_carousel.php', // Path to PHP script to fetch modal content
+        method: 'POST',
+        data: {
+          carousel_id: carousel_id
+        },
+        success: function (response) {
+          $('#modalContainerCarousel').html(response);
+          $('#fetchDataCarouselDeleteModal').modal('show');
+          console.log("#fetchDataCarouselDeleteModal: " + carousel_id);
+        },
+        error: function (xhr, status, error) {
+          console.error(xhr.responseText);
+        }
+      });
+    });
   });
 </script>

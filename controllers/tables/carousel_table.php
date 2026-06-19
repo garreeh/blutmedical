@@ -32,6 +32,28 @@ $columns = array(
     }
   ),
 
+  array(
+    'db' => 'carousel_id',
+    'dt' => 3,
+    'field' => 'carousel_id',
+    'formatter' => function ($lab6, $row) {
+
+      return '
+      <div class="dropdown">
+          <button class="btn btn-info" type="button" id="dropdownMenuButton' . $row['carousel_id'] . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              &#x22EE;
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $row['carousel_id'] . '">
+              <a class="dropdown-item fetchDataCarousel" href="#">Edit</a>
+              <a class="dropdown-item fetchDataCarouselDelete" href="#">Delete</a>
+
+          </div>
+      </div>';
+    }
+  ),
+
+
+
 );
 
 // Database connection details

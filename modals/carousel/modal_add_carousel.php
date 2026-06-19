@@ -26,8 +26,14 @@ include './../../connections/connections.php';
         <form method="post" enctype="multipart/form-data">
 
           <div class="form-group col-md-12">
-            <label for="product_image">Carousel Image / Video:</label>
-            <input type="file" class="form-control" id="product_image" name="fileToUpload">
+            <label for="fileToUpload">Carousel Image / Video:</label>
+
+            <input type="file" class="form-control" id="fileToUpload" name="fileToUpload"
+              accept="image/jpeg,image/png,image/gif,image/webp,video/mp4" required>
+
+            <small class="text-muted">
+              Allowed: JPG, PNG, GIF, WEBP, MP4
+            </small>
           </div>
 
 
@@ -73,10 +79,13 @@ include './../../connections/connections.php';
         data: formData,
         contentType: false,
         processData: false,
+        dataType: 'json', // add this
         success: function (response) {
           // Handle success response
-          console.log(response); // Log the response for debugging
-          response = JSON.parse(response);
+          console.log(response);
+
+          // REMOVE THIS:
+          // response = JSON.parse(response);
           if (response.success) {
             Toastify({
               text: response.message,
@@ -100,9 +109,12 @@ include './../../connections/connections.php';
         },
         error: function (xhr, status, error) {
           // Handle error response
+          console.log("STATUS:", status);
+          console.log("ERROR:", error);
+          console.log("RESPONSE:", xhr.responseText);
           console.error(xhr.responseText);
           Toastify({
-            text: "Error occurred while adding product. Please try again later.",
+            text: "Error occurred while adding carousel. Please try again later.",
             duration: 2000,
             backgroundColor: "linear-gradient(to right, #ff6a00, #ee0979)"
           }).showToast();

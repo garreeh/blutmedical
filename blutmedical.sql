@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : PersonalProjectDB
+ Source Server         : PersonalProjects
  Source Server Type    : MySQL
- Source Server Version : 100432 (10.4.32-MariaDB)
+ Source Server Version : 100432
  Source Host           : localhost:3306
  Source Schema         : blutmedical
 
  Target Server Type    : MySQL
- Target Server Version : 100432 (10.4.32-MariaDB)
+ Target Server Version : 100432
  File Encoding         : 65001
 
- Date: 13/03/2025 18:11:37
+ Date: 19/06/2026 10:39:28
 */
 
 SET NAMES utf8mb4;
@@ -41,6 +41,22 @@ CREATE TABLE `billing`  (
 INSERT INTO `billing` VALUES (20, NULL, 0, 0, 0, 'Unpaid', '', 1, '2024-05-13 18:15:13', '2024-05-13 18:15:13');
 INSERT INTO `billing` VALUES (21, NULL, 0, 0, 0, 'Unpaid', '', 2, '2024-05-13 18:18:35', '2024-05-13 18:18:35');
 INSERT INTO `billing` VALUES (22, NULL, 0, 0, 0, 'Unpaid', '', 1, '2024-05-14 10:28:00', '2024-05-14 10:28:00');
+
+-- ----------------------------
+-- Table structure for carousel
+-- ----------------------------
+DROP TABLE IF EXISTS `carousel`;
+CREATE TABLE `carousel`  (
+  `carousel_id` int NOT NULL AUTO_INCREMENT,
+  `scene` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp,
+  `updated_at` timestamp NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`carousel_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of carousel
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for cart
@@ -74,25 +90,26 @@ CREATE TABLE `cart`  (
   `paypal_transaction_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `variation_color_id` int NULL DEFAULT NULL,
   PRIMARY KEY (`cart_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 320 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 329 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of cart
 -- ----------------------------
-INSERT INTO `cart` VALUES (302, NULL, 28, 5, 1, 'Processing', NULL, 3.00, 'Paypal', 'Unpad', NULL, '2025-02-11 12:20:50', '2025-02-11 12:20:50', NULL, 'Garry', 'qwe', 'qwe', 'q@gmail.com', '5EJ59692FR1890104', 'CCSRW7G4Z8NBS', 'Garry Sandbox', 'sb-hjaz836856231@personal.example.com', '', 'undefined, undefined, US', '5EJ59692FR1890104', NULL);
-INSERT INTO `cart` VALUES (303, NULL, 28, 5, 1, 'Processing', NULL, 3.00, 'Paypal', 'Unpad', NULL, '2025-02-11 12:20:50', '2025-02-11 12:20:50', NULL, 'Garry', 'qwe', 'qwe', 'q@gmail.com', '5EJ59692FR1890104', 'CCSRW7G4Z8NBS', 'Garry Sandbox', 'sb-hjaz836856231@personal.example.com', '', 'undefined, undefined, US', '5EJ59692FR1890104', NULL);
+INSERT INTO `cart` VALUES (302, NULL, 28, 5, 1, 'Delivered', NULL, 3.00, 'Paypal', 'Paid', '', '2025-02-11 12:20:50', '2026-06-15 19:54:00', NULL, 'Garry', 'qwe', 'qwe', 'q@gmail.com', '5EJ59692FR1890104', 'CCSRW7G4Z8NBS', 'Garry Sandbox', 'sb-hjaz836856231@personal.example.com', '', 'undefined, undefined, US', '5EJ59692FR1890104', NULL);
+INSERT INTO `cart` VALUES (303, NULL, 28, 5, 1, 'Delivered', NULL, 3.00, 'Paypal', 'Paid', '', '2025-02-11 12:20:50', '2026-06-15 19:54:00', NULL, 'Garry', 'qwe', 'qwe', 'q@gmail.com', '5EJ59692FR1890104', 'CCSRW7G4Z8NBS', 'Garry Sandbox', 'sb-hjaz836856231@personal.example.com', '', 'undefined, undefined, US', '5EJ59692FR1890104', NULL);
 INSERT INTO `cart` VALUES (308, NULL, 24, 0, 1, 'Processing', NULL, 257.00, 'Cash on Delivery', 'Unpaid', NULL, '2025-03-06 14:16:32', '2025-03-06 14:16:32', NULL, 'q', 'q', 'q', 'q', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
-INSERT INTO `cart` VALUES (309, 1, 28, 5, 1, 'Processing', NULL, 0.00, 'Cash on Delivery', 'Unpaid', '711438B67C', '2025-03-06 14:19:05', '2025-03-13 13:35:00', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 11);
-INSERT INTO `cart` VALUES (310, 1, 22, 9, 1, 'Processing', NULL, 2222.00, 'Cash on Delivery', 'Unpaid', '711438B67C', '2025-03-13 13:19:18', '2025-03-13 13:35:00', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 0);
-INSERT INTO `cart` VALUES (311, NULL, 23, 7, 1, 'Processing', NULL, 1.00, 'Cash on Delivery', 'Unpaid', 'ORD-4E7E987B', '2025-03-13 13:38:34', '2025-03-13 13:38:34', NULL, 'qwe', 'Garry', 'qwe', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
-INSERT INTO `cart` VALUES (312, NULL, 25, 0, 1, 'Processing', NULL, 13333.30, 'Cash on Delivery', 'Unpaid', 'ORD-4E7E987B', '2025-03-13 13:38:34', '2025-03-13 13:38:34', NULL, 'qwe', 'Garry', 'qwe', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
-INSERT INTO `cart` VALUES (313, NULL, 23, 7, 2, 'Processing', NULL, 2.00, 'Cash on Delivery', 'Unpaid', 'ORD-ABCF1839', '2025-03-13 13:39:38', '2025-03-13 13:39:38', NULL, 'qq', 'qwe', '2323', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
-INSERT INTO `cart` VALUES (314, NULL, 25, 0, 1, 'Processing', NULL, 13333.30, 'Cash on Delivery', 'Unpaid', 'ORD-ABCF1839', '2025-03-13 13:39:38', '2025-03-13 13:39:38', NULL, 'qq', 'qwe', '2323', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
-INSERT INTO `cart` VALUES (315, NULL, 25, 0, 6, 'Processing', NULL, 79999.79, 'Cash on Delivery', 'Unpaid', 'ORD-2881520B', '2025-03-13 13:40:57', '2025-03-13 13:40:57', NULL, '2qwe', 'Garry', '34', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
-INSERT INTO `cart` VALUES (316, NULL, 22, 8, 1, 'Processing', NULL, 111.00, 'Cash on Delivery', 'Unpaid', 'ORD-2881520B', '2025-03-13 13:40:57', '2025-03-13 13:40:57', NULL, '2qwe', 'Garry', '34', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
-INSERT INTO `cart` VALUES (317, NULL, 22, 8, 1, 'Cart', NULL, 6327.00, 'GCash', 'Unpaid', 'order-id-67d273ca207a7', '2025-03-13 13:57:30', '2025-03-13 13:57:30', NULL, 'qwe', 'qwe', 'qwe', 'gajultos.garry123@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
-INSERT INTO `cart` VALUES (318, 1, 22, 8, 2, 'Cart', NULL, 222.00, NULL, '', NULL, '2025-03-13 16:01:24', '2025-03-13 16:04:46', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 0);
-INSERT INTO `cart` VALUES (319, 1, 24, 0, 4, 'Cart', NULL, 1028.00, NULL, '', NULL, '2025-03-13 16:08:14', '2025-03-13 16:08:34', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 0);
+INSERT INTO `cart` VALUES (309, 1, 28, 5, 1, 'Delivered', NULL, 0.00, 'Cash on Delivery', 'Paid', '711438B67C', '2025-03-06 14:19:05', '2026-06-17 14:44:01', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 11);
+INSERT INTO `cart` VALUES (310, 1, 22, 9, 1, 'Delivered', NULL, 2222.00, 'Cash on Delivery', 'Paid', '711438B67C', '2025-03-13 13:19:18', '2026-06-17 14:44:01', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 0);
+INSERT INTO `cart` VALUES (311, NULL, 23, 7, 1, 'Shipped', NULL, 1.00, 'Cash on Delivery', 'Unpaid', 'ORD-4E7E987B', '2025-03-13 13:38:34', '2026-06-16 20:18:33', NULL, 'qwe', 'Garry', 'qwe', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
+INSERT INTO `cart` VALUES (312, NULL, 25, 0, 1, 'Shipped', NULL, 13333.30, 'Cash on Delivery', 'Unpaid', 'ORD-4E7E987B', '2025-03-13 13:38:34', '2026-06-16 20:18:33', NULL, 'qwe', 'Garry', 'qwe', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
+INSERT INTO `cart` VALUES (313, NULL, 23, 7, 2, 'Shipped', NULL, 2.00, 'Cash on Delivery', 'Unpaid', 'ORD-ABCF1839', '2025-03-13 13:39:38', '2026-06-15 19:44:48', NULL, 'qq', 'qwe', '2323', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
+INSERT INTO `cart` VALUES (314, NULL, 25, 0, 1, 'Shipped', NULL, 13333.30, 'Cash on Delivery', 'Unpaid', 'ORD-ABCF1839', '2025-03-13 13:39:38', '2026-06-15 18:57:44', NULL, 'qq', 'qwe', '2323', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
+INSERT INTO `cart` VALUES (315, NULL, 25, 0, 6, 'Delivered', NULL, 79999.79, 'Cash on Delivery', 'Paid', 'ORD-2881520B', '2025-03-13 13:40:57', '2026-05-16 20:18:13', NULL, '2qwe', 'Garry', '34', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
+INSERT INTO `cart` VALUES (316, NULL, 22, 8, 1, 'Delivered', NULL, 111.00, 'Cash on Delivery', 'Paid', 'ORD-2881520B', '2025-03-13 13:40:57', '2026-05-16 20:18:13', NULL, '2qwe', 'Garry', '34', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
+INSERT INTO `cart` VALUES (317, 1, 22, 8, 1, 'Cart', NULL, 6327.00, 'GCash', 'Unpaid', 'order-id-67d273ca207a7', '2025-03-13 13:57:30', '2026-06-17 08:13:30', NULL, 'qwe', 'qwe', 'qwe', 'gajultos.garry123@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
+INSERT INTO `cart` VALUES (326, 1, 28, 5, 1, 'Cart', NULL, 3.00, NULL, '', NULL, '2026-06-15 17:32:02', '2026-06-15 17:32:02', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 11);
+INSERT INTO `cart` VALUES (327, 1, 28, 5, 1, 'Cart', NULL, 3.00, NULL, '', NULL, '2026-06-15 17:32:09', '2026-06-15 17:32:09', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 12);
+INSERT INTO `cart` VALUES (328, 1, 24, 0, 1, 'Cart', NULL, 257.00, NULL, '', NULL, '2026-06-15 17:37:40', '2026-06-17 07:48:40', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 0);
 
 -- ----------------------------
 -- Table structure for category
@@ -344,18 +361,19 @@ CREATE TABLE `users`  (
   `is_admin` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `account_status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `user_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `is_deleted` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`user_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 45 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES (1, 'Garry Gajultos', 'garry', 'tanginathis213012@gmail.com', '123123123', '$2y$10$RTgvXGAH1Z10iRnE5bHnW.U1VwX2xCp/2vsobgHyqUg9ugM1stSUi', '123123', '', '2024-04-07 16:08:00', '2025-03-13 13:34:42', 1, '1', 'Active', '1');
-INSERT INTO `users` VALUES (2, 'Test Account', 'Ron', '123123@gmail.comm', NULL, '$2y$10$Wtj4pYEWKXHYe4DUwLPTveZdPJUNrXwfkfeZRWXO4bnmbNd9NOA9y', 'test1005', NULL, '2024-05-13 18:18:17', '2024-11-08 22:57:38', 1, '1', 'Active', 'qweqwe');
-INSERT INTO `users` VALUES (39, '1', 'test', 'gajultos.garry@gmail.com', '1', '$2y$10$XX19Ar6P.ig1stK9lZ0N2eP89FY5FughUlK0xhgDfLj1P60tMMPva', '1', NULL, '2024-09-13 23:58:14', '2025-02-26 17:24:07', 4, '1', 'Active', '123123123');
-INSERT INTO `users` VALUES (40, 'LCC WQE', 'testacc', 'Test@gmail.com', '123123', '$2y$10$9KeTSQ5PmtdiiqdqmsiUSuQs7OujRChozbhCai948a1DGo8Xq.mSe', 'test1005', NULL, '2024-09-13 23:58:14', '2024-11-08 22:55:25', 0, '0', 'Active', '123123123');
-INSERT INTO `users` VALUES (43, 'Ronnel Cruz', 'gar', 'gajultos.garryde@gmail.com', '09611560419', '$2y$10$hv1pitl12GqTbs.f2iRd1.m559WPYnIl7/M88ZhYAXIUjFxaoqc9u', '123123', NULL, '2025-02-26 17:24:40', '2025-02-26 17:31:13', NULL, '0', 'Inactive', 'Test Address');
-INSERT INTO `users` VALUES (44, 'Ronnel Cruz', 'EMP-6601', 'gajultos.garrydev@gmail.com', '1', '$2y$10$SGqi92A1btRijwHYbLzhbuSPFa16lsMeakx5u/TeKvlx1x7KINQeC', '11', NULL, '2025-02-26 17:31:36', '2025-02-26 17:31:36', NULL, '0', 'Inactive', '1');
+INSERT INTO `users` VALUES (1, 'Garry Gajultos', 'garry', 'gajultos.garry123@gmail.com', '123123123', '$2y$10$FNdzly2eiBOw0Uv4co7.pu/reN3XY60hHjqRViBreSP7PMTVk5eLK', '123123', '', '2024-04-07 16:08:00', '2026-06-17 12:10:08', 1, '1', 'Active', '1', NULL);
+INSERT INTO `users` VALUES (2, 'Test Account', 'Ron', '123123@gmail.comm', NULL, '$2y$10$Wtj4pYEWKXHYe4DUwLPTveZdPJUNrXwfkfeZRWXO4bnmbNd9NOA9y', 'test1005', NULL, '2024-05-13 18:18:17', '2024-11-08 22:57:38', 1, '1', 'Active', 'qweqwe', NULL);
+INSERT INTO `users` VALUES (39, '1', 'test', 'gajultos.garry@gmail.com', '1', '$2y$10$XX19Ar6P.ig1stK9lZ0N2eP89FY5FughUlK0xhgDfLj1P60tMMPva', '1', NULL, '2024-09-13 23:58:14', '2026-06-08 13:06:50', 4, '1', 'Active', '123123123', '0');
+INSERT INTO `users` VALUES (40, 'LCC WQE', 'testacc', 'Test@gmail.com', '123123', '$2y$10$9KeTSQ5PmtdiiqdqmsiUSuQs7OujRChozbhCai948a1DGo8Xq.mSe', 'test1005', NULL, '2024-09-13 23:58:14', '2026-06-14 18:36:21', 1, '1', 'Active', '123123123', NULL);
+INSERT INTO `users` VALUES (43, 'Ronnel Cruz', 'gar', 'gajultos.garryde@gmail.com', '09611560419', '$2y$10$hv1pitl12GqTbs.f2iRd1.m559WPYnIl7/M88ZhYAXIUjFxaoqc9u', '123123', NULL, '2025-02-26 17:24:40', '2025-02-26 17:31:13', NULL, '0', 'Inactive', 'Test Address', NULL);
+INSERT INTO `users` VALUES (44, 'Ronnel Cruz', 'EMP-6601', 'gajultos.garrydev@gmail.com', '1', '$2y$10$SGqi92A1btRijwHYbLzhbuSPFa16lsMeakx5u/TeKvlx1x7KINQeC', '11', NULL, '2025-02-26 17:31:36', '2026-06-08 14:08:43', NULL, '0', 'Active', '1', '0');
 
 -- ----------------------------
 -- Table structure for usertype
@@ -408,7 +426,7 @@ CREATE TABLE `variations`  (
 INSERT INTO `variations` VALUES (1, 17, 'Size', 'Value13', '2025-01-06 15:08:02', '2025-01-08 15:30:46', '2', NULL);
 INSERT INTO `variations` VALUES (2, 17, 'Color', 'Value233', '2025-01-06 15:21:07', '2025-01-08 16:17:33', '23', NULL);
 INSERT INTO `variations` VALUES (3, 27, NULL, '1', '2025-02-10 15:24:18', '2025-02-10 15:24:18', '3', '2');
-INSERT INTO `variations` VALUES (5, 28, NULL, '1', '2025-02-10 15:25:49', '2025-02-10 15:25:49', '3', '2');
+INSERT INTO `variations` VALUES (5, 28, NULL, 'Test', '2025-02-10 15:25:49', '2026-06-15 17:23:31', '3', '2');
 INSERT INTO `variations` VALUES (7, 23, NULL, 'q', '2025-02-10 15:53:55', '2025-02-10 15:53:55', '1', NULL);
 INSERT INTO `variations` VALUES (8, 22, NULL, '1', '2025-02-10 15:54:09', '2025-02-10 15:54:21', '111', '111');
 INSERT INTO `variations` VALUES (9, 22, NULL, '22', '2025-02-10 15:54:35', '2025-02-17 15:40:55', '2222', '1');

@@ -63,9 +63,6 @@
   $result = $conn->query($sql);
   ?>
 
-  <?php
-
-  ?>
   <?php if (mysqli_num_rows($result_carousel) > 0): ?>
 
     <!-- HERO BACKGROUND CAROUSEL -->
@@ -83,42 +80,36 @@
           $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
           ?>
 
-          <div class="carousel-item <?php echo $active; ?> hero-slide">
+          <div class="carousel-item <?php echo $active; ?> hero-slide position-relative">
 
             <?php if ($ext == 'mp4') { ?>
 
-              <video autoplay muted loop playsinline>
+              <video class="w-100 h-100 hero-video" style="object-fit:cover;" autoplay loop playsinline>
                 <source src="<?php echo $file; ?>" type="video/mp4">
               </video>
 
             <?php } else { ?>
 
-              <img src="<?php echo $file; ?>" class="d-block w-100">
+              <img src="<?php echo $file; ?>" class="d-block w-100 h-100" style="object-fit:cover;">
 
             <?php } ?>
 
             <!-- DARK OVERLAY -->
-            <div class="hero-overlay"></div>
+            <!-- <div class="position-absolute top-0 start-0 w-100 h-100" style="background:rgba(0,0,0,0.4); z-index:1;"></div> -->
 
-            <!-- TEXT CONTENT -->
-            <div class="hero-content">
-              <div class="container">
-                <h1>Welcome to BLüT Medical</h1>
+            <!-- TEXT CONTENT (CENTER BUT LOWER) -->
+            <div class="position-absolute start-50 translate-middle-x text-center w-100" style="top:85%; z-index:2;">
 
-                <p>
-                  We are a provider of innovative premium quality products that will elevate any medical practice.
-                </p>
+              <a href="products.php" class="btn btn-secondary">
+                Shop Now
+              </a>
 
-                <a href="products.php" class="btn btn-secondary">Shop Now</a>
-              </div>
             </div>
 
           </div>
 
-          <?php
-          $i++;
-        }
-        ?>
+          <?php $i++;
+        } ?>
 
       </div>
 
@@ -130,6 +121,12 @@
       <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
         <span class="carousel-control-next-icon"></span>
       </button>
+
+      <div class="position-absolute bottom-0 end-0 p-3" style="z-index:999;">
+        <button id="muteBtn" class="btn btn-dark btn-sm">🔈 Unmute</button>
+        <button id="volDownBtn" class="btn btn-dark btn-sm">➖</button>
+        <button id="volUpBtn" class="btn btn-dark btn-sm">➕</button>
+      </div>
 
     </div>
 
@@ -317,6 +314,149 @@
         }
       });
     });
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+
+    const carousel = document.getElementById('heroCarousel');
+
+    if (!carousel) return;
+
+    const videos = document.querySelectorAll('.hero-video');
+
+    // Default settings
+    videos.forEach(video => {
+      video.volume = 0.3; // 30%
+      video.muted = true; // browser allows autoplay
+    });
+
+    function pauseAllVideos() {
+      videos.forEach(video => {
+        video.pause();
+      });
+    }
+
+    function playActiveVideo() {
+
+      const activeVideo =
+        document.querySelector('.carousel-item.active .hero-video');
+
+      if (!activeVideo) return;
+
+      activeVideo.play().catch(() => {
+        console.log('Autoplay blocked until user interacts.');
+      });
+    }
+
+    pauseAllVideos();
+    playActiveVideo();
+
+    carousel.addEventListener('slide.bs.carousel', function () {
+      pauseAllVideos();
+    });
+
+    carousel.addEventListener('slid.bs.carousel', function () {
+      playActiveVideo();
+    });
+
+    // Enable sound after first user interaction
+    let soundEnabled = false;
+
+    document.addEventListener('click', function enableSound() {
+
+      if (soundEnabled) return;
+
+      soundEnabled = true;
+
+      videos.forEach(video => {
+        video.muted = false;
+      });
+
+      const muteBtn = document.getElementById('muteBtn');
+
+      if (muteBtn) {
+        muteBtn.innerHTML = '🔇 Mute';
+      }
+
+    }, { once: true });
+
+    // MUTE BUTTON
+    const muteBtn = document.getElementById('muteBtn');
+
+    if (muteBtn) {
+
+      muteBtn.addEventListener('click', function () {
+
+        const activeVideo =
+          document.querySelector('.carousel-item.active .hero-video');
+
+        if (!activeVideo) return;
+
+        activeVideo.muted = !activeVideo.muted;
+
+        if (activeVideo.muted) {
+          this.innerHTML = '🔈 Unmute';
+        } else {
+          this.innerHTML = '🔇 Mute';
+        }
+
+      });
+
+    }
+
+    // VOLUME UP
+    const volUpBtn = document.getElementById('volUpBtn');
+
+    if (volUpBtn) {
+
+      volUpBtn.addEventListener('click', function () {
+
+        const activeVideo =
+          document.querySelector('.carousel-item.active .hero-video');
+
+        if (!activeVideo) return;
+
+        activeVideo.muted = false;
+
+        activeVideo.volume = Math.min(
+          activeVideo.volume + 0.1,
+          1
+        );
+
+        console.log('Volume:', activeVideo.volume);
+
+      });
+
+    }
+
+    // VOLUME DOWN
+    const volDownBtn = document.getElementById('volDownBtn');
+
+    if (volDownBtn) {
+
+      volDownBtn.addEventListener('click', function () {
+
+        const activeVideo =
+          document.querySelector('.carousel-item.active .hero-video');
+
+        if (!activeVideo) return;
+
+        activeVideo.volume = Math.max(
+          activeVideo.volume - 0.1,
+          0
+        );
+
+        if (activeVideo.volume === 0) {
+          activeVideo.muted = true;
+        }
+
+        console.log('Volume:', activeVideo.volume);
+
+      });
+
+    }
+
   });
 </script>
 
