@@ -5,275 +5,294 @@ if (session_status() == PHP_SESSION_NONE) {
   session_start();
 }
 
-?>
+$user_type_id = $_SESSION['user_type_id']; // Assume this is set upon login
 
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
-  <link href="./../../assets/img/favicon.ico" rel="icon">
+$sql = "SELECT *
+        FROM usertype 
+        WHERE user_type_id = '$user_type_id'";
+$result = mysqli_query($conn, $sql);
 
 
-  <title>Admin | Customer Cart</title>
+if ($result) {
+  while ($row_permission = mysqli_fetch_assoc($result)) {
+    ?>
 
-  <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <!DOCTYPE html>
+    <html lang="en">
 
-  <link href="./../../assets/admin/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-  <link
-    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-    rel="stylesheet">
-  <link href="./../../assets/admin/css/sb-admin-2.min.css" rel="stylesheet">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css"
-    integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
-
-</head>
-
-<body id="page-top">
-
-  <!-- Page Wrapper -->
-  <div id="wrapper">
-    <!-- Sidebar -->
-    <?php include './../../includes/admin/admin_nav.php'; ?>
-    <!-- End of Sidebar -->
-
-    <!-- Content Wrapper -->
-    <div id="content-wrapper" class="d-flex flex-column">
-      <!-- Main Content -->
-      <div id="content">
-        <!-- Topbar -->
-        <?php include './../../includes/admin/admin_topbar.php'; ?>
-
-        <!-- End of Topbar -->
-
-        <!-- Begin Page Content -->
-        <div class="container-fluid">
-
-          <!-- Page Heading -->
-          <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Customer Cart</h1>
-          </div>
-
-          <!-- <a href="./../../excels/supplier_export.php" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mb-4"><i class="fas fa-file-excel"></i> Export Excel</a> -->
-
-          <div class="row">
-            <div class="col-xl-12 col-lg-12">
-              <div class="tab-pane fade show active" id="aa" role="tabpanel" aria-labelledby="aa-tab">
-
-                <div class="table-responsive">
-                  <div id="modalContainerCustomerCart"></div>
+    <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <meta name="description" content="">
+      <meta name="author" content="">
+      <link href="./../../assets/img/favicon.ico" rel="icon">
 
 
-                  <table class="table custom-table table-hover" name="customer_cart_table" id="customer_cart_table">
-                    <thead>
-                      <tr>
-                        <th>Cart ID</th>
-                        <th>User ID</th>
+      <title>Admin | Customer Cart</title>
 
-                        <th>Customer Name</th>
-                        <th>Status</th>
+      <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
+      <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
-                        <th>Customer Details</th>
-                        <th>Order Details</th>
+      <link href="./../../assets/admin/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+      <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+      <link href="./../../assets/admin/css/sb-admin-2.min.css" rel="stylesheet">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+      <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css"
+        integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
 
-                        <th>Total Payment</th>
+    </head>
 
-                        <th>Date Ordered</th>
+    <body id="page-top">
 
-                        <th>Manage</th>
+      <!-- Page Wrapper -->
+      <div id="wrapper">
+        <!-- Sidebar -->
+        <?php include './../../includes/admin/admin_nav.php'; ?>
+        <!-- End of Sidebar -->
 
-                      </tr>
-                    </thead>
-                  </table>
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+          <!-- Main Content -->
+          <div id="content">
+            <!-- Topbar -->
+            <?php include './../../includes/admin/admin_topbar.php'; ?>
+
+            <!-- End of Topbar -->
+
+            <!-- Begin Page Content -->
+            <div class="container-fluid">
+
+              <!-- Page Heading -->
+              <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800">Customer Cart</h1>
+              </div>
+
+              <!-- <a href="./../../excels/supplier_export.php" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mb-4"><i class="fas fa-file-excel"></i> Export Excel</a> -->
+
+              <div class="row">
+                <div class="col-xl-12 col-lg-12">
+                  <div class="tab-pane fade show active" id="aa" role="tabpanel" aria-labelledby="aa-tab">
+
+                    <div class="table-responsive">
+                      <div id="modalContainerCustomerCart"></div>
+
+                      <?php if ($row_permission['customer_cart_module'] == 1): ?>
+                        <table class="table custom-table table-hover" name="customer_cart_table" id="customer_cart_table">
+                          <thead>
+                            <tr>
+                              <th>Cart ID</th>
+                              <th>User ID</th>
+
+                              <th>Customer Name</th>
+                              <th>Status</th>
+
+                              <th>Customer Details</th>
+                              <th>Order Details</th>
+
+                              <th>Total Payment</th>
+
+                              <th>Date Ordered</th>
+
+                              <?php if ($row_permission['customer_cart_remind'] == 1): ?>
+                                <th>Manage</th>
+                              <?php endif; ?>
+
+                            </tr>
+                          </thead>
+                        </table>
+                      <?php endif; ?>
+
+                    </div>
+                  </div>
                 </div>
               </div>
+              <!-- /.container-fluid -->
             </div>
+
           </div>
-          <!-- /.container-fluid -->
+          <!-- End of Main Content -->
+
         </div>
+        <!-- End of Content Wrapper -->
 
       </div>
-      <!-- End of Main Content -->
+      <!-- End of Page Wrapper -->
 
-    </div>
-    <!-- End of Content Wrapper -->
+      <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+      </a>
 
-  </div>
-  <!-- End of Page Wrapper -->
+      <script src="./../../assets/admin/vendor/jquery/jquery.min.js"></script>
+      <script src="./../../assets/admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+      <script src="./../../assets/admin/vendor/jquery-easing/jquery.easing.min.js"></script>
+      <script src="./../../assets/admin/js/sb-admin-2.min.js"></script>
 
-  <a class="scroll-to-top rounded" href="#page-top">
-    <i class="fas fa-angle-up"></i>
-  </a>
+      <!-- Data tables -->
+      <link rel="stylesheet" type="text/css" href="./../../assets/datatables/datatables.min.css" />
+      <script type="text/javascript" src="./../../assets/datatables/datatables.min.js"></script>
 
-  <script src="./../../assets/admin/vendor/jquery/jquery.min.js"></script>
-  <script src="./../../assets/admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="./../../assets/admin/vendor/jquery-easing/jquery.easing.min.js"></script>
-  <script src="./../../assets/admin/js/sb-admin-2.min.js"></script>
+      <!-- COPY THESE WHOLE CODE WHEN IMPORT SELECT -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js"
+        integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
+      <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css"
+        integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
 
-  <!-- Data tables -->
-  <link rel="stylesheet" type="text/css" href="./../../assets/datatables/datatables.min.css" />
-  <script type="text/javascript" src="./../../assets/datatables/datatables.min.js"></script>
+      <script>
+        $(document).ready(function () {
+          $('select').selectize({
+            sortField: 'text'
+          });
+        });
+      </script>
+      <!-- END OF SELECT -->
 
-  <!-- COPY THESE WHOLE CODE WHEN IMPORT SELECT -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js"
-    integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css"
-    integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
 
-  <script>
-    $(document).ready(function () {
-      $('select').selectize({
-        sortField: 'text'
+    </body>
+
+    </html>
+
+    <script>
+      $('#sidebarToggle').click(function () {
+        $('#customer_cart_table').css('width', '100%');
+        // console.log(table) //This is for testing only
       });
-    });
-  </script>
-  <!-- END OF SELECT -->
 
+      //Table for Transactions
+      $(document).ready(function () {
+        var customer_cart_table = $('#customer_cart_table').DataTable({
+          "pagingType": "numbers",
+          "processing": true,
+          "serverSide": true,
+          "ajax": "./../../controllers/tables/customer_cart_table.php",
+        });
 
-</body>
+        window.reloadDataTable = function () {
+          customer_cart_table.ajax.reload();
+        };
 
-</html>
-
-<script>
-  $('#sidebarToggle').click(function () {
-    $('#customer_cart_table').css('width', '100%');
-    // console.log(table) //This is for testing only
-  });
-
-  //Table for Transactions
-  $(document).ready(function () {
-    var customer_cart_table = $('#customer_cart_table').DataTable({
-      "pagingType": "numbers",
-      "processing": true,
-      "serverSide": true,
-      "ajax": "./../../controllers/tables/customer_cart_table.php",
-    });
-
-    window.reloadDataTable = function () {
-      customer_cart_table.ajax.reload();
-    };
-
-  });
-
-  // Customer Details
-  $(document).ready(function () {
-    // Function to handle click event on datatable rows
-    $('#customer_cart_table').on('click', 'tr td:nth-child(5) .fetchCustomerDetails', function () {
-      event.preventDefault();
-      var cart_id = $(this).closest('tr').find('td').first().text(); // Get the cart_id from the clicked row
-
-      $.ajax({
-        url: './../../modals/order/customer_details_modal.php', // Path to PHP script to fetch modal content
-        method: 'POST',
-        data: {
-          cart_id: cart_id
-        },
-        success: function (response) {
-          $('#modalContainerCustomerCart').html(response);
-          $('#showPhoto').modal('show');
-          $('#cart_id').val(cart_id); // Set the cart_id here
-          console.log("#showPhoto: " + cart_id);
-        },
-        error: function (xhr, status, error) {
-          console.error(xhr.responseText);
-        }
       });
-    });
-  });
 
-  // Customer Order Details
-  $(document).ready(function () {
-    // Function to handle click event on datatable rows
-    $('#customer_cart_table').on('click', 'tr td:nth-child(6) .fetchOrderDetails', function () {
-      event.preventDefault();
+      // Customer Details
+      $(document).ready(function () {
+        // Function to handle click event on datatable rows
+        $('#customer_cart_table').on('click', 'tr td:nth-child(5) .fetchCustomerDetails', function () {
+          event.preventDefault();
+          var cart_id = $(this).closest('tr').find('td').first().text(); // Get the cart_id from the clicked row
 
-      var row = $(this).closest('tr');
-      var cart_id = $(this).closest('tr').find('td').first().text(); // Get the cart_id from the clicked row
-      var user_id = row.find('td').eq(1).text(); // ✅ second column (index starts at 0)
-
-
-      $.ajax({
-        url: './../../modals/order/customer_remind_details.php', // Path to PHP script to fetch modal content
-        method: 'POST',
-        data: {
-          cart_id: cart_id,
-          user_id: user_id
-        },
-        success: function (response) {
-          $('#modalContainerCustomerCart').html(response);
-          $('#showPhoto').modal('show');
-          $('#cart_id').val(cart_id); // Set the cart_id here
-          console.log("#showPhoto: " + cart_id);
-          console.log("user_id: " + user_id);
-        },
-        error: function (xhr, status, error) {
-          console.error(xhr.responseText);
-        }
+          $.ajax({
+            url: './../../modals/order/customer_details_modal.php', // Path to PHP script to fetch modal content
+            method: 'POST',
+            data: {
+              cart_id: cart_id
+            },
+            success: function (response) {
+              $('#modalContainerCustomerCart').html(response);
+              $('#showPhoto').modal('show');
+              $('#cart_id').val(cart_id); // Set the cart_id here
+              console.log("#showPhoto: " + cart_id);
+            },
+            error: function (xhr, status, error) {
+              console.error(xhr.responseText);
+            }
+          });
+        });
       });
-    });
-  });
 
-  // Customer Remind Order Email
-  $(document).ready(function () {
-    // Function to handle click event on datatable rows
-    $('#customer_cart_table').on('click', 'tr td:nth-child(9) .fetchDataRemind', function () {
-      event.preventDefault();
+      // Customer Order Details
+      $(document).ready(function () {
+        // Function to handle click event on datatable rows
+        $('#customer_cart_table').on('click', 'tr td:nth-child(6) .fetchOrderDetails', function () {
+          event.preventDefault();
 
-      var row = $(this).closest('tr');
-      var cart_id = $(this).closest('tr').find('td').first().text(); // Get the cart_id from the clicked row
-      var user_id = row.find('td').eq(1).text(); // ✅ second column (index starts at 0)
+          var row = $(this).closest('tr');
+          var cart_id = $(this).closest('tr').find('td').first().text(); // Get the cart_id from the clicked row
+          var user_id = row.find('td').eq(1).text(); // ✅ second column (index starts at 0)
 
 
-
-      $.ajax({
-        url: './../../modals/customers/modal_remind_customer.php', // Path to PHP script to fetch modal content
-        method: 'POST',
-        data: {
-          cart_id: cart_id,
-          user_id: user_id
-        },
-        success: function (response) {
-          $('#modalContainerCustomerCart').html(response);
-          $('#remindCustomerModal').modal('show');
-          $('#cart_id').val(cart_id); // Set the cart_id here
-          console.log("#remindCustomerModal: " + cart_id);
-        },
-        error: function (xhr, status, error) {
-          console.error(xhr.responseText);
-        }
+          $.ajax({
+            url: './../../modals/order/customer_remind_details.php', // Path to PHP script to fetch modal content
+            method: 'POST',
+            data: {
+              cart_id: cart_id,
+              user_id: user_id
+            },
+            success: function (response) {
+              $('#modalContainerCustomerCart').html(response);
+              $('#showPhoto').modal('show');
+              $('#cart_id').val(cart_id); // Set the cart_id here
+              console.log("#showPhoto: " + cart_id);
+              console.log("user_id: " + user_id);
+            },
+            error: function (xhr, status, error) {
+              console.error(xhr.responseText);
+            }
+          });
+        });
       });
-    });
-  });
 
-  // $(document).ready(function () {
-  //   // Function to handle click event on datatable rows
-  //   $('#customer_cart_table').on('click', 'tr td:nth-child(8) .fetchDataDelivery', function () {
-  //     var cart_id = $(this).closest('tr').find('td').first().text(); // Get the cart_id from the clicked row
+      // Customer Remind Order Email
+      $(document).ready(function () {
+        // Function to handle click event on datatable rows
+        $('#customer_cart_table').on('click', 'tr td:nth-child(9) .fetchDataRemind', function () {
+          event.preventDefault();
 
-  //     $.ajax({
-  //       url: './../../modals/delivery/modal_add_delivery.php', // Path to PHP script to fetch modal content
-  //       method: 'POST',
-  //       data: {
-  //         cart_id: cart_id
-  //       },
-  //       success: function (response) {
-  //         $('#modalContainerCustomerCart').html(response);
-  //         $('#addDeliveryModal').modal('show');
-  //         $('#cart_id').val(cart_id); // Set the cart_id here
-  //         console.log("#addDeliveryModal: " + cart_id);
-  //       },
-  //       error: function (xhr, status, error) {
-  //         console.error(xhr.responseText);
-  //       }
-  //     });
-  //   });
-  // });
-</script>
+          var row = $(this).closest('tr');
+          var cart_id = $(this).closest('tr').find('td').first().text(); // Get the cart_id from the clicked row
+          var user_id = row.find('td').eq(1).text(); // ✅ second column (index starts at 0)
+
+
+
+          $.ajax({
+            url: './../../modals/customers/modal_remind_customer.php', // Path to PHP script to fetch modal content
+            method: 'POST',
+            data: {
+              cart_id: cart_id,
+              user_id: user_id
+            },
+            success: function (response) {
+              $('#modalContainerCustomerCart').html(response);
+              $('#remindCustomerModal').modal('show');
+              $('#cart_id').val(cart_id); // Set the cart_id here
+              console.log("#remindCustomerModal: " + cart_id);
+            },
+            error: function (xhr, status, error) {
+              console.error(xhr.responseText);
+            }
+          });
+        });
+      });
+
+      // $(document).ready(function () {
+      //   // Function to handle click event on datatable rows
+      //   $('#customer_cart_table').on('click', 'tr td:nth-child(8) .fetchDataDelivery', function () {
+      //     var cart_id = $(this).closest('tr').find('td').first().text(); // Get the cart_id from the clicked row
+
+      //     $.ajax({
+      //       url: './../../modals/delivery/modal_add_delivery.php', // Path to PHP script to fetch modal content
+      //       method: 'POST',
+      //       data: {
+      //         cart_id: cart_id
+      //       },
+      //       success: function (response) {
+      //         $('#modalContainerCustomerCart').html(response);
+      //         $('#addDeliveryModal').modal('show');
+      //         $('#cart_id').val(cart_id); // Set the cart_id here
+      //         console.log("#addDeliveryModal: " + cart_id);
+      //       },
+      //       error: function (xhr, status, error) {
+      //         console.error(xhr.responseText);
+      //       }
+      //     });
+      //   });
+      // });
+    </script>
+
+    <?php
+  }
+}
+?>

@@ -19,7 +19,9 @@ $columns = array(
 		'dt' => 1,
 		'field' => 'paypal_order_id',
 		'formatter' => function ($lab1, $row) {
-			return empty($row['paypal_order_id']) ? '-' : $row['paypal_order_id'];
+			return !empty($row['paypal_order_id'])
+				? $row['paypal_order_id']
+				: $row['reference_no'];
 		}
 	),
 
@@ -53,35 +55,42 @@ $columns = array(
 			return "<span style=\"$style\">{$cart_status}</span>";
 		}
 	),
+
 	array(
-		'db' => 'total_price',
+		'db' => 'cart.total_price',
 		'dt' => 4,
 		'field' => 'total_price',
-		'formatter' => function ($lab4, $row) {
-			return '$ ' . $row['total_price'];
-		}
-	),
+		'formatter' => function ($value, $row) {
 
-	array(
-		'db' => 'payment_method',
-		'dt' => 5,
-		'field' => 'payment_method',
-		'formatter' => function ($lab4, $row) {
-			return $row['payment_method'];
-		}
-	),
+			$price = $row['total_price'];
+			$voucher = $row['voucher_percentage'] ?? 0;
 
-	array(
-		'db' => 'proof_of_payment',
-		'dt' => 6,
-		'field' => 'proof_of_payment',
-		'formatter' => function ($lab4, $row) {
-			// Check if the value is null or empty
-			if (empty($lab4)) {
-				return 'COD';
-			} else {
-				return '<a class="ProofData" href="#"> View Image</a>';
+			$discount = ($price * $voucher) / 100;
+			$final = $price - $discount;
+
+			if ($voucher > 0) {
+				return '$ ' . number_format($final, 2) . ' <small>(with voucher)</small>';
 			}
+
+			return '$ ' . number_format($final, 2);
+		}
+	),
+
+	array(
+		'db' => 'cart.cart_status',
+		'dt' => 5,
+		'field' => 'cart_status',
+		'formatter' => function ($lab4, $row) {
+			return $row['cart_status'];
+		}
+	),
+
+	array(
+		'db' => 'cart.created_at',
+		'dt' => 6,
+		'field' => 'created_at',
+		'formatter' => function ($lab5, $row) {
+			return $row['created_at'];
 		}
 	),
 
@@ -122,6 +131,18 @@ $columns = array(
 			return $row['delivery_guest_fullname'];
 		}
 	),
+
+	array(
+		'db' => 'voucher.voucher_percentage',
+		'dt' => 10, // hidden column
+		'field' => 'voucher_percentage'
+	),
+
+	array(
+		'db' => 'reference_no',
+		'dt' => 11, // hidden column
+		'field' => 'reference_no'
+	),
 );
 
 // Database connection details
@@ -142,7 +163,11 @@ $where = "cart_status = 'Delivered' AND cart.updated_at BETWEEN '$dateFrom' AND 
 // Fetch and encode ONLY WHERE
 // echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $where));
 
-$joinQuery = "FROM $table LEFT JOIN users ON $table.user_id = users.user_id";
+$joinQuery = "
+FROM $table
+LEFT JOIN users ON $table.user_id = users.user_id
+LEFT JOIN voucher ON voucher.voucher_id = cart.voucher_id
+";
 
 // Fetch and encode JOIN AND WHERE
 echo json_encode(SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $joinQuery, $where));

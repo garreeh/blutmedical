@@ -53,13 +53,15 @@ SELECT
 
     product.product_name,
     variations.value,
-    variations_colors.color
+    variations_colors.color,
+		voucher.voucher_percentage
 
 FROM cart
 LEFT JOIN users ON cart.user_id = users.user_id
 LEFT JOIN product ON cart.product_id = product.product_id
 LEFT JOIN variations ON cart.variation_id = variations.variation_id
 LEFT JOIN variations_colors ON cart.variation_color_id = variations_colors.variation_color_id
+LEFT JOIN voucher ON voucher.voucher_id = cart.voucher_id
 
 WHERE cart.cart_status = 'Processing'
 ";
@@ -117,6 +119,8 @@ while ($row = mysqli_fetch_assoc($result)) {
 			'created_at' => $row['created_at'],
 			'delivery_guest_fullname' => $row['delivery_guest_fullname'],
 			'user_fullname' => $row['user_fullname'],
+			'voucher_percentage' => $row['voucher_percentage']
+
 		];
 	}
 
@@ -140,9 +144,13 @@ foreach ($grouped as $row) {
 		? $row['delivery_guest_fullname']
 		: $row['user_fullname'];
 
+	$final_total =
+		$row['total_price']
+		- ($row['total_price'] * $row['voucher_percentage'] / 100);
+
 	$formatted_price = ($row['payment_method'] == 'GCash')
-		? '₱ ' . number_format($row['total_price'], 2)
-		: '$ ' . number_format($row['total_price'], 2);
+		? '₱ ' . number_format($final_total, 2)
+		: '$ ' . number_format($final_total, 2);
 
 	$status = $row['cart_status'];
 

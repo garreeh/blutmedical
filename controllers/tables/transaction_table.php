@@ -48,9 +48,12 @@ SELECT
     cart.updated_at,
     cart.created_at,
     cart.delivery_guest_fullname,
-    users.user_fullname
+    users.user_fullname,
+		voucher.voucher_percentage
 FROM cart
 LEFT JOIN users ON cart.user_id = users.user_id
+LEFT JOIN voucher ON voucher.voucher_id = cart.voucher_id
+
 WHERE cart.cart_status = 'Delivered'
 ";
 
@@ -109,7 +112,8 @@ while ($row = mysqli_fetch_assoc($result)) {
 			'total_price' => 0,
 			'updated_at' => $row['updated_at'],
 			'delivery_guest_fullname' => $row['delivery_guest_fullname'],
-			'user_fullname' => $row['user_fullname']
+			'user_fullname' => $row['user_fullname'],
+			'voucher_percentage' => $row['voucher_percentage']
 		];
 	}
 
@@ -133,9 +137,13 @@ foreach ($grouped as $row) {
 		? $row['delivery_guest_fullname']
 		: $row['user_fullname'];
 
+	$final_total =
+		$row['total_price']
+		- ($row['total_price'] * $row['voucher_percentage'] / 100);
+
 	$formatted_price = ($row['payment_method'] == 'GCash')
-		? '₱ ' . number_format($row['total_price'], 2)
-		: '$ ' . number_format($row['total_price'], 2);
+		? '₱ ' . number_format($final_total, 2)
+		: '$ ' . number_format($final_total, 2);
 
 	$status = "<span style='background:#d4edda;color:#155724;padding:4px 8px;border-radius:6px;font-weight:600;'>
                 Delivered

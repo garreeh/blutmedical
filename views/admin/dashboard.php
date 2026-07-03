@@ -11,14 +11,43 @@ $sales = [];
 
 $sql = "
 SELECT
-    MONTH(cart.updated_at) AS month_num,
-    SUM(product.product_sellingprice * cart.cart_quantity) AS total_sales
-FROM cart
-LEFT JOIN product ON product.product_id = cart.product_id
-WHERE cart.cart_status = 'Delivered'
-AND YEAR(cart.updated_at) = YEAR(CURDATE())
-GROUP BY MONTH(cart.updated_at)
-ORDER BY MONTH(cart.updated_at)
+    month_num,
+    SUM(final_total) AS total_sales
+FROM (
+
+    SELECT
+        COALESCE(cart.reference_no, cart.paypal_order_id) AS order_ref,
+
+        MONTH(cart.updated_at) AS month_num,
+
+        SUM(cart.total_price * cart.cart_quantity) AS subtotal,
+
+        MAX(IFNULL(voucher.voucher_percentage, 0)) AS voucher_percent,
+
+        (
+            SUM(cart.total_price * cart.cart_quantity)
+            -
+            (
+                SUM(cart.total_price * cart.cart_quantity)
+                * MAX(IFNULL(voucher.voucher_percentage, 0)) / 100
+            )
+        ) AS final_total
+
+    FROM cart
+    LEFT JOIN product
+        ON product.product_id = cart.product_id
+    LEFT JOIN voucher
+        ON voucher.voucher_id = cart.voucher_id
+
+    WHERE cart.cart_status = 'Delivered'
+      AND YEAR(cart.updated_at) = YEAR(CURDATE())
+
+    GROUP BY order_ref, MONTH(cart.updated_at)
+
+) t
+
+GROUP BY month_num
+ORDER BY month_num
 ";
 
 $result = mysqli_query($conn, $sql);
@@ -185,17 +214,48 @@ while ($row = mysqli_fetch_assoc($result)) {
 
                   <?php
                   $sql = "
-        SELECT
-            product.product_name,
-            SUM(cart.cart_quantity) AS total_sold,
-            SUM(product.product_sellingprice * cart.cart_quantity) AS total_sales
-        FROM cart
-        LEFT JOIN product ON product.product_id = cart.product_id
-        WHERE cart.cart_status = 'Delivered'
-        GROUP BY product.product_id
-        ORDER BY total_sold DESC
-        LIMIT 5
-        ";
+                      SELECT
+                          product_name,
+                          SUM(total_qty) AS total_sold,
+                          SUM(final_total) AS total_sales
+                      FROM (
+
+                          SELECT
+                              COALESCE(cart.reference_no, cart.paypal_order_id) AS order_ref,
+                              product.product_id,
+                              product.product_name,
+
+                              SUM(cart.cart_quantity) AS total_qty,
+
+                              SUM(cart.total_price * cart.cart_quantity) AS subtotal,
+
+                              MAX(IFNULL(voucher.voucher_percentage, 0)) AS voucher_percent,
+
+                              (
+                                  SUM(cart.total_price * cart.cart_quantity)
+                                  -
+                                  (
+                                      SUM(cart.total_price * cart.cart_quantity)
+                                      * MAX(IFNULL(voucher.voucher_percentage, 0)) / 100
+                                  )
+                              ) AS final_total
+
+                          FROM cart
+                          LEFT JOIN product
+                              ON product.product_id = cart.product_id
+                          LEFT JOIN voucher
+                              ON voucher.voucher_id = cart.voucher_id
+
+                          WHERE cart.cart_status = 'Delivered'
+
+                          GROUP BY order_ref, product.product_id
+
+                      ) t
+
+                      GROUP BY product_id
+                      ORDER BY total_sold DESC
+                      LIMIT 5
+                      ";
 
                   $result = mysqli_query($conn, $sql);
                   ?>

@@ -1,9 +1,20 @@
 <?php
+include './../../connections/connections.php';
 
 // Define table and primary key
 $table = 'carousel';
 $primaryKey = 'carousel_id';
 // Define columns for DataTables
+
+session_start();
+$user_type_id = $_SESSION['user_type_id']; // Assume this is set upon login
+
+$sql = "SELECT *
+        FROM usertype 
+        WHERE user_type_id = '$user_type_id'";
+$result = mysqli_query($conn, $sql);
+$row_permission = mysqli_fetch_assoc($result);
+
 $columns = array(
   array(
     'db' => 'carousel_id',
@@ -36,19 +47,44 @@ $columns = array(
     'db' => 'carousel_id',
     'dt' => 3,
     'field' => 'carousel_id',
-    'formatter' => function ($lab6, $row) {
+    'formatter' => function ($lab6, $row) use ($row_permission) {
+
+      $actions = '';
+
+      // EDIT carousel permission
+      if ($row_permission['carousel_edit'] == 1) {
+        $actions .= '
+                <a class="dropdown-item fetchDataCarousel" href="#">
+                    Edit
+                </a>
+            ';
+      }
+
+      // DELETE carousel permission
+      if ($row_permission['carousel_delete'] == 1) {
+        $actions .= '
+                <a class="dropdown-item fetchDataCarouselDelete" href="#">
+                    Delete
+                </a>
+            ';
+      }
+
+      // fallback if no permission
+      if ($actions == '') {
+        return '<span class="text-muted">No actions</span>';
+      }
 
       return '
-      <div class="dropdown">
-          <button class="btn btn-info" type="button" id="dropdownMenuButton' . $row['carousel_id'] . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              &#x22EE;
-          </button>
-          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $row['carousel_id'] . '">
-              <a class="dropdown-item fetchDataCarousel" href="#">Edit</a>
-              <a class="dropdown-item fetchDataCarouselDelete" href="#">Delete</a>
+            <div class="dropdown">
+                <button class="btn btn-info" type="button" data-toggle="dropdown">
+                    &#x22EE;
+                </button>
 
-          </div>
-      </div>';
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $row['carousel_id'] . '">
+                    ' . $actions . '
+                </div>
+            </div>
+        ';
     }
   ),
 

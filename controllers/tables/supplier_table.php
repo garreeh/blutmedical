@@ -1,9 +1,20 @@
 <?php
+include './../../connections/connections.php';
 
 // Define table and primary key
 $table = 'supplier';
 $primaryKey = 'supplier_id';
 // Define columns for DataTables
+
+session_start();
+$user_type_id = $_SESSION['user_type_id']; // Assume this is set upon login
+
+$sql = "SELECT *
+        FROM usertype 
+        WHERE user_type_id = '$user_type_id'";
+$result = mysqli_query($conn, $sql);
+$row_permission = mysqli_fetch_assoc($result);
+
 $columns = array(
 	array(
 		'db' => 'supplier_id',
@@ -55,18 +66,44 @@ $columns = array(
 		'db' => 'supplier_id',
 		'dt' => 5,
 		'field' => 'supplier_id',
-		'formatter' => function ($lab6, $row) {
+		'formatter' => function ($lab6, $row) use ($row_permission) {
+
+			$actions = '';
+
+			// EDIT permission
+			if ($row_permission['supplier_edit'] == 1) {
+				$actions .= '
+                <a class="dropdown-item fetchDataSupplier" href="#">
+                    Edit
+                </a>
+            ';
+			}
+
+			// DELETE permission
+			if ($row_permission['supplier_delete'] == 1) {
+				$actions .= '
+                <a class="dropdown-item fetchDataSupplierDelete" href="#">
+                    Delete
+                </a>
+            ';
+			}
+
+			// fallback if no permission
+			if ($actions == '') {
+				return '<span class="text-muted">No actions</span>';
+			}
 
 			return '
-      <div class="dropdown">
-          <button class="btn btn-info" type="button" id="dropdownMenuButton' . $row['supplier_id'] . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              &#x22EE;
-          </button>
-          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $row['supplier_id'] . '">
-              <a class="dropdown-item fetchDataSupplier" href="#">Edit</a>
-							<a class="dropdown-item fetchDataSupplierDelete" href="#">Delete</a>
-          </div>
-      </div>';
+            <div class="dropdown">
+                <button class="btn btn-info" type="button" data-toggle="dropdown">
+                    &#x22EE;
+                </button>
+
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $row['supplier_id'] . '">
+                    ' . $actions . '
+                </div>
+            </div>
+        ';
 		}
 	),
 

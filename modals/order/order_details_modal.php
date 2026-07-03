@@ -26,34 +26,29 @@ include './../../connections/connections.php';
 
 if (isset($_POST['reference_no'])) {
 
-  /*
-  |--------------------------------------------------------------------------
-  | SINGLE INPUT ONLY (FIXED LOGIC)
-  |--------------------------------------------------------------------------
-  */
   $reference_no = trim(mysqli_real_escape_string($conn, $_POST['reference_no']));
   $paypal_order_id = $reference_no; // ✅ SAME VALUE (YOUR REQUEST)
 
-  /*
-  |--------------------------------------------------------------------------
-  | QUERY (MATCH BOTH FIELDS USING SAME VALUE)
-  |--------------------------------------------------------------------------
-  */
   $sql = "
-    SELECT 
+    SELECT
+    
       cart.total_price,
       cart.reference_no,
       cart.paypal_order_id,
       product.product_name,
       variations.value,
-      variations_colors.color
+      variations_colors.color,
+      voucher.voucher_percentage
+
     FROM cart
     LEFT JOIN product ON cart.product_id = product.product_id
     LEFT JOIN variations ON cart.variation_id = variations.variation_id
     LEFT JOIN variations_colors ON cart.variation_color_id = variations_colors.variation_color_id
+    LEFT JOIN voucher ON voucher.voucher_id = cart.voucher_id
     WHERE TRIM(cart.reference_no) = '$reference_no'
        OR TRIM(cart.paypal_order_id) = '$paypal_order_id'
     ORDER BY cart.cart_id ASC
+
   ";
 
   $result = mysqli_query($conn, $sql);
@@ -133,11 +128,56 @@ if (isset($_POST['reference_no'])) {
 
           <?php } ?>
 
-          <div class="order-box" style="background:#e9f7ef;">
-            <strong>Total:</strong>
-            <span style="float:right;font-weight:bold;">
-              ₱ <?php echo number_format($total, 2); ?>
-            </span>
+          <div class="order-box" style="background:#e9f7ef; padding:10px;">
+
+            <?php
+
+            $total_query = "
+                          SELECT
+                              SUM(cart.total_price) AS subtotal,
+                              MAX(voucher.voucher_percentage) AS voucher_percentage
+                          FROM cart
+                          LEFT JOIN voucher ON voucher.voucher_id = cart.voucher_id
+                          WHERE TRIM(cart.reference_no) = '$reference_no'
+                            OR TRIM(cart.paypal_order_id) = '$paypal_order_id'
+                          ";
+
+            $total_result = mysqli_query($conn, $total_query);
+            $total_row = mysqli_fetch_assoc($total_result);
+
+            $total = $total_row['subtotal'] ?? 0;
+            $voucher = $total_row['voucher_percentage'] ?? 0;
+
+            $discount_amount = ($total * $voucher) / 100;
+            $final_total = $total - $discount_amount;
+
+            ?>
+
+            <div>
+              <strong>Subtotal:</strong>
+              <span style="float:right;">
+                ₱ <?php echo number_format($total, 2); ?>
+              </span>
+            </div>
+
+            <?php if ($voucher > 0): ?>
+              <div style="color:#28a745; font-size:13px; margin-top:5px;">
+                Discount (<?php echo $voucher; ?>% OFF):
+                <span style="float:right;">
+                  -₱ <?php echo number_format($discount_amount, 2); ?>
+                </span>
+              </div>
+            <?php endif; ?>
+
+            <hr>
+
+            <div>
+              <strong>Total:</strong>
+              <span style="float:right; font-weight:bold;">
+                ₱ <?php echo number_format($final_total, 2); ?>
+              </span>
+            </div>
+
           </div>
 
         </div>

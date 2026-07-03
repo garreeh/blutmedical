@@ -130,16 +130,6 @@
                   </div>
 
                   <div class="service-contents">
-                    <p class="mb-1"><strong>North Area</strong></p>
-                    <p class="mb-2">
-                      <a href="tel:+639933105274">+63 993 310 5274</a>
-                    </p>
-
-                    <p class="mb-1"><strong>South Area</strong></p>
-                    <p class="mb-0">
-                      <a href="tel:+639458064740">+63 945 806 4740</a>
-                    </p>
-
                     <p class="mb-1"><strong>Sales Support No.</strong></p>
                     <p class="mb-0">
                       <a href="tel:+639458064740">+63 918 123 9092</a>

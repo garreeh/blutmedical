@@ -71,13 +71,14 @@ if (isset($_POST['remind_specific_customer'])) {
 
 
             // Enable temporarily while debugging
-            $mail->SMTPDebug = 0;
+            // $mail->SMTPDebug = 3;
+            // $mail->Debugoutput = 'html';
 
             $mail->isSMTP();
             $mail->Host = 'smtp.office365.com';
             $mail->SMTPAuth = true;                                      // Enable SMTP authentication
             $mail->Username = 'admin@vetaidonline.info';             // SMTP username
-            $mail->Password = 'Mybossrocks081677!';                        // SMTP password
+            $mail->Password = 'mimiRocks081677';                        // SMTP password
             $mail->SMTPSecure = 'tls';
             $mail->Port = 587;
 

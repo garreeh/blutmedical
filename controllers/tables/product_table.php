@@ -1,8 +1,20 @@
 <?php
+include './../../connections/connections.php';
 
 // Define table and primary key
 $table = 'product';
 $primaryKey = 'product_id';
+
+session_start();
+
+$user_type_id = $_SESSION['user_type_id']; // Assume this is set upon login
+
+$sql = "SELECT *
+        FROM usertype 
+        WHERE user_type_id = '$user_type_id'";
+$result = mysqli_query($conn, $sql);
+$row_permission = mysqli_fetch_assoc($result);
+
 
 // Define columns for DataTables
 $columns = array(
@@ -71,18 +83,44 @@ $columns = array(
         'db' => 'product_id',
         'dt' => 6,
         'field' => 'product_id',
-        'formatter' => function ($lab5, $row) {
+        'formatter' => function ($lab5, $row) use ($row_permission) {
+
+            $actions = '';
+
+            // EDIT permission
+            if ($row_permission['product_edit'] == 1) {
+                $actions .= '
+                <a class="dropdown-item fetchDataProduct" href="#">
+                    Edit
+                </a>
+            ';
+            }
+
+            // DELETE permission
+            if ($row_permission['product_delete'] == 1) {
+                $actions .= '
+                <a class="dropdown-item fetchDataProductDelete" href="#">
+                    Delete
+                </a>
+            ';
+            }
+
+            // fallback
+            if ($actions == '') {
+                return '<span class="text-muted">No actions</span>';
+            }
+
             return '
             <div class="dropdown">
-                <button class="btn btn-info" type="button" id="dropdownMenuButton' . $row['product_id'] . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button class="btn btn-info" type="button" data-toggle="dropdown">
                     &#x22EE;
                 </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $row['product_id'] . '">
-                    <a class="dropdown-item fetchDataProduct" href="#">Edit</a>
-                    <a class="dropdown-item fetchDataProductDelete" href="#">Delete</a>
 
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $row['product_id'] . '">
+                    ' . $actions . '
                 </div>
-            </div>';
+            </div>
+        ';
         }
     ),
 );

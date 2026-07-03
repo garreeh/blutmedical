@@ -1,4 +1,17 @@
 <?php
+include '../../connections/connections.php';
+
+session_start();
+
+$user_type_id = $_SESSION['user_type_id']; // Assume this is set upon login
+
+$sql = "SELECT *
+        FROM usertype 
+        WHERE user_type_id = '$user_type_id'";
+$result = mysqli_query($conn, $sql);
+$row_permission = mysqli_fetch_assoc($result);
+
+
 
 // Define table and primary key
 $table = 'users';
@@ -60,10 +73,10 @@ $columns = array(
             $account_status = strtolower($row['account_status']);
 
             if ($account_status == 'active') {
-                $color = '#d4edda';   // light green
+                $color = '#d4edda'; // light green
                 $textColor = '#155724';
             } else {
-                $color = '#f8d7da';   // light red
+                $color = '#f8d7da'; // light red
                 $textColor = '#721c24';
             }
 
@@ -90,18 +103,44 @@ $columns = array(
         'db' => 'user_id',
         'dt' => 6,
         'field' => 'user_id',
-        'formatter' => function ($lab6, $row) {
-            return '
-                <div class="dropdown">
-                    <button class="btn btn-info" type="button" id="dropdownMenuButton' . $row['user_id'] . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        &#x22EE;
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $row['user_id'] . '">
-                        <a class="dropdown-item fetchDataUserSetAdmin" href="#">Set Admin / Unset Admin</a>
-                        <a class="dropdown-item fetchDataUserDelete" href="#">Delete</a>
+        'formatter' => function ($lab6, $row) use ($row_permission) {
 
-                    </div>
-                </div>';
+            $actions = '';
+
+            // SET ADMIN PERMISSION
+            if ($row_permission['report_customer_details_edit'] == 1) {
+                $actions .= '
+            <a class="dropdown-item fetchDataUserSetAdmin" href="#">
+                Set Admin / Unset Admin
+            </a>
+        ';
+            }
+
+            // DELETE PERMISSION
+            if ($row_permission['report_customer_details_delete'] == 1) {
+                $actions .= '
+            <a class="dropdown-item fetchDataUserDelete" href="#">
+                Delete
+            </a>
+        ';
+            }
+
+            // fallback if no permission
+            if ($actions == '') {
+                return '<span class="text-muted">No actions allowed</span>';
+            }
+
+            return '
+        <div class="dropdown">
+            <button class="btn btn-info" type="button" data-toggle="dropdown">
+                &#x22EE;
+            </button>
+
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $row['user_id'] . '">
+                ' . $actions . '
+            </div>
+        </div>
+    ';
         }
     ),
 

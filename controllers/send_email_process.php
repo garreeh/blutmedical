@@ -19,8 +19,11 @@ $contact = $_POST['contact'];
 $fullName = $fname . ' ' . $lname;
 $messageContent = nl2br($_POST['message']); // Converts newlines to <br> for HTML
 
-$mail = new PHPMailer;
-$mail->IsSMTP(); // Enable SMTP
+$mail = new PHPMailer(true);
+$mail->SMTPDebug = 0;
+$mail->IsSMTP();
+
+// Enable SMTP
 // $mail->SMTPDebug = 1; // Debugging: 1 = errors and messages, 2 = messages only : FOR LIVE
 
 // This settings is for Godaddy Live
@@ -32,11 +35,10 @@ $mail->IsSMTP(); // Enable SMTP
 // $mail->Port = 25;
 
 // This Setting is for testing it locally
-
 $mail->Host = 'smtp.office365.com';
 $mail->SMTPAuth = true;                                      // Enable SMTP authentication
 $mail->Username = 'admin@vetaidonline.info';             // SMTP username
-$mail->Password = 'Mybossrocks081677!';                        // SMTP password
+$mail->Password = 'mimiRocks081677';                        // SMTP password
 $mail->SMTPSecure = 'tls';
 $mail->Port = 587;
 

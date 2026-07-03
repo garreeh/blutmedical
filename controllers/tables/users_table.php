@@ -1,9 +1,21 @@
 <?php
+include './../../connections/connections.php';
 
 // Define table and primary key
 $table = 'users';
 $primaryKey = 'user_id';
 // Define columns for DataTables
+
+
+session_start();
+$user_type_id = $_SESSION['user_type_id']; // Assume this is set upon login
+
+$sql = "SELECT *
+        FROM usertype 
+        WHERE user_type_id = '$user_type_id'";
+$result = mysqli_query($conn, $sql);
+$row_permission = mysqli_fetch_assoc($result);
+
 $columns = array(
     array(
         'db' => 'user_id',
@@ -66,18 +78,43 @@ $columns = array(
         'db' => 'user_id',
         'dt' => 6,
         'field' => 'user_id',
-        'formatter' => function ($lab6, $row) {
-            return '
-                <div class="dropdown">
-                    <button class="btn btn-info" type="button" id="dropdownMenuButton' . $row['user_id'] . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        &#x22EE;
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $row['user_id'] . '">
-                        <a class="dropdown-item fetchDataUser" href="#">Edit</a>
-                        <a class="dropdown-item fetchDataUserDelete" href="#">Delete</a>
+        'formatter' => function ($lab6, $row) use ($row_permission) {
 
-                    </div>
-                </div>';
+            $actions = '';
+            // EDIT USER permission
+            if ($row_permission['user_setup_edit'] == 1) {
+                $actions .= '
+                <a class="dropdown-item fetchDataUser" href="#">
+                    Edit
+                </a>
+            ';
+            }
+
+            // DELETE USER permission
+            if ($row_permission['user_setup_delete'] == 1) {
+                $actions .= '
+                <a class="dropdown-item fetchDataUserDelete" href="#">
+                    Delete
+                </a>
+            ';
+            }
+
+            // fallback if no permission
+            if ($actions == '') {
+                return '<span class="text-muted">No actions</span>';
+            }
+
+            return '
+            <div class="dropdown">
+                <button class="btn btn-info" type="button" data-toggle="dropdown">
+                    &#x22EE;
+                </button>
+
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $row['user_id'] . '">
+                    ' . $actions . '
+                </div>
+            </div>
+        ';
         }
     ),
 

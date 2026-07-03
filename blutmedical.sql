@@ -11,7 +11,7 @@
  Target Server Version : 100432
  File Encoding         : 65001
 
- Date: 19/06/2026 10:39:28
+ Date: 04/07/2026 00:05:44
 */
 
 SET NAMES utf8mb4;
@@ -52,7 +52,7 @@ CREATE TABLE `carousel`  (
   `created_at` timestamp NULL DEFAULT current_timestamp,
   `updated_at` timestamp NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`carousel_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of carousel
@@ -89,27 +89,28 @@ CREATE TABLE `cart`  (
   `paypal_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `paypal_transaction_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `variation_color_id` int NULL DEFAULT NULL,
+  `voucher_id` int NULL DEFAULT 0,
   PRIMARY KEY (`cart_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 329 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of cart
 -- ----------------------------
-INSERT INTO `cart` VALUES (302, NULL, 28, 5, 1, 'Delivered', NULL, 3.00, 'Paypal', 'Paid', '', '2025-02-11 12:20:50', '2026-06-15 19:54:00', NULL, 'Garry', 'qwe', 'qwe', 'q@gmail.com', '5EJ59692FR1890104', 'CCSRW7G4Z8NBS', 'Garry Sandbox', 'sb-hjaz836856231@personal.example.com', '', 'undefined, undefined, US', '5EJ59692FR1890104', NULL);
-INSERT INTO `cart` VALUES (303, NULL, 28, 5, 1, 'Delivered', NULL, 3.00, 'Paypal', 'Paid', '', '2025-02-11 12:20:50', '2026-06-15 19:54:00', NULL, 'Garry', 'qwe', 'qwe', 'q@gmail.com', '5EJ59692FR1890104', 'CCSRW7G4Z8NBS', 'Garry Sandbox', 'sb-hjaz836856231@personal.example.com', '', 'undefined, undefined, US', '5EJ59692FR1890104', NULL);
-INSERT INTO `cart` VALUES (308, NULL, 24, 0, 1, 'Processing', NULL, 257.00, 'Cash on Delivery', 'Unpaid', NULL, '2025-03-06 14:16:32', '2025-03-06 14:16:32', NULL, 'q', 'q', 'q', 'q', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
-INSERT INTO `cart` VALUES (309, 1, 28, 5, 1, 'Delivered', NULL, 0.00, 'Cash on Delivery', 'Paid', '711438B67C', '2025-03-06 14:19:05', '2026-06-17 14:44:01', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 11);
-INSERT INTO `cart` VALUES (310, 1, 22, 9, 1, 'Delivered', NULL, 2222.00, 'Cash on Delivery', 'Paid', '711438B67C', '2025-03-13 13:19:18', '2026-06-17 14:44:01', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 0);
-INSERT INTO `cart` VALUES (311, NULL, 23, 7, 1, 'Shipped', NULL, 1.00, 'Cash on Delivery', 'Unpaid', 'ORD-4E7E987B', '2025-03-13 13:38:34', '2026-06-16 20:18:33', NULL, 'qwe', 'Garry', 'qwe', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
-INSERT INTO `cart` VALUES (312, NULL, 25, 0, 1, 'Shipped', NULL, 13333.30, 'Cash on Delivery', 'Unpaid', 'ORD-4E7E987B', '2025-03-13 13:38:34', '2026-06-16 20:18:33', NULL, 'qwe', 'Garry', 'qwe', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
-INSERT INTO `cart` VALUES (313, NULL, 23, 7, 2, 'Shipped', NULL, 2.00, 'Cash on Delivery', 'Unpaid', 'ORD-ABCF1839', '2025-03-13 13:39:38', '2026-06-15 19:44:48', NULL, 'qq', 'qwe', '2323', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
-INSERT INTO `cart` VALUES (314, NULL, 25, 0, 1, 'Shipped', NULL, 13333.30, 'Cash on Delivery', 'Unpaid', 'ORD-ABCF1839', '2025-03-13 13:39:38', '2026-06-15 18:57:44', NULL, 'qq', 'qwe', '2323', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
-INSERT INTO `cart` VALUES (315, NULL, 25, 0, 6, 'Delivered', NULL, 79999.79, 'Cash on Delivery', 'Paid', 'ORD-2881520B', '2025-03-13 13:40:57', '2026-05-16 20:18:13', NULL, '2qwe', 'Garry', '34', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
-INSERT INTO `cart` VALUES (316, NULL, 22, 8, 1, 'Delivered', NULL, 111.00, 'Cash on Delivery', 'Paid', 'ORD-2881520B', '2025-03-13 13:40:57', '2026-05-16 20:18:13', NULL, '2qwe', 'Garry', '34', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
-INSERT INTO `cart` VALUES (317, 1, 22, 8, 1, 'Cart', NULL, 6327.00, 'GCash', 'Unpaid', 'order-id-67d273ca207a7', '2025-03-13 13:57:30', '2026-06-17 08:13:30', NULL, 'qwe', 'qwe', 'qwe', 'gajultos.garry123@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL);
-INSERT INTO `cart` VALUES (326, 1, 28, 5, 1, 'Cart', NULL, 3.00, NULL, '', NULL, '2026-06-15 17:32:02', '2026-06-15 17:32:02', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 11);
-INSERT INTO `cart` VALUES (327, 1, 28, 5, 1, 'Cart', NULL, 3.00, NULL, '', NULL, '2026-06-15 17:32:09', '2026-06-15 17:32:09', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 12);
-INSERT INTO `cart` VALUES (328, 1, 24, 0, 1, 'Cart', NULL, 257.00, NULL, '', NULL, '2026-06-15 17:37:40', '2026-06-17 07:48:40', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 0);
+INSERT INTO `cart` VALUES (302, NULL, 28, 5, 1, 'Cart', NULL, 3.00, 'Paypal', 'Paid', '', '2025-02-11 12:20:50', '2026-07-02 12:21:52', NULL, 'Garry', 'qwe', 'qwe', 'q@gmail.com', '5EJ59692FR1890104', 'CCSRW7G4Z8NBS', 'Garry Sandbox', 'sb-hjaz836856231@personal.example.com', '', 'undefined, undefined, US', '5EJ59692FR1890104', NULL, 0);
+INSERT INTO `cart` VALUES (303, NULL, 28, 5, 1, 'Cart', NULL, 3.00, 'Paypal', 'Paid', '', '2025-02-11 12:20:50', '2026-07-02 12:21:49', NULL, 'Garry', 'qwe', 'qwe', 'q@gmail.com', '5EJ59692FR1890104', 'CCSRW7G4Z8NBS', 'Garry Sandbox', 'sb-hjaz836856231@personal.example.com', '', 'undefined, undefined, US', '5EJ59692FR1890104', NULL, 0);
+INSERT INTO `cart` VALUES (308, NULL, 24, 0, 1, 'Cart', NULL, 257.00, 'Cash on Delivery', 'Unpaid', NULL, '2025-03-06 14:16:32', '2026-07-02 12:21:56', NULL, 'q', 'q', 'q', 'q', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL, 0);
+INSERT INTO `cart` VALUES (309, 1, 28, 5, 1, 'Shipped', NULL, 5000.00, 'Cash on Delivery', 'Paid', '711438B67C', '2025-03-06 14:19:05', '2026-07-02 14:17:21', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 11, 1);
+INSERT INTO `cart` VALUES (310, 1, 22, 9, 1, 'Shipped', NULL, 2000.00, 'Cash on Delivery', 'Paid', '711438B67C', '2025-03-13 13:19:18', '2026-07-02 14:17:21', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 0, 1);
+INSERT INTO `cart` VALUES (311, NULL, 23, 7, 1, 'Processing', NULL, 1.00, 'Cash on Delivery', 'Unpaid', 'ORD-4E7E987B', '2025-03-13 13:38:34', '2026-07-02 14:03:50', NULL, 'qwe', 'Garry', 'qwe', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL, 0);
+INSERT INTO `cart` VALUES (312, NULL, 25, 0, 1, 'Processing', NULL, 13333.30, 'Cash on Delivery', 'Unpaid', 'ORD-4E7E987B', '2025-03-13 13:38:34', '2026-07-02 14:03:51', NULL, 'qwe', 'Garry', 'qwe', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL, 0);
+INSERT INTO `cart` VALUES (313, NULL, 23, 7, 2, 'Cart', NULL, 2.00, 'Cash on Delivery', 'Unpaid', 'ORD-ABCF1839', '2025-03-13 13:39:38', '2026-07-02 12:21:40', NULL, 'qq', 'qwe', '2323', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL, 0);
+INSERT INTO `cart` VALUES (314, NULL, 25, 0, 1, 'Cart', NULL, 13333.30, 'Cash on Delivery', 'Unpaid', 'ORD-ABCF1839', '2025-03-13 13:39:38', '2026-07-02 12:21:39', NULL, 'qq', 'qwe', '2323', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL, 0);
+INSERT INTO `cart` VALUES (315, NULL, 25, 0, 6, 'Cart', NULL, 79999.79, 'Cash on Delivery', 'Unpaid', 'ORD-2881520B', '2025-03-13 13:40:57', '2026-07-02 12:22:11', NULL, '2qwe', 'Garry', '34', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL, 0);
+INSERT INTO `cart` VALUES (316, NULL, 22, 8, 1, 'Cart', NULL, 111.00, 'Cash on Delivery', 'Paid', 'ORD-2881520B', '2025-03-13 13:40:57', '2026-07-02 12:21:44', NULL, '2qwe', 'Garry', '34', 'tanginathis213012@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL, 0);
+INSERT INTO `cart` VALUES (317, 1, 22, 8, 1, 'Cart', NULL, 6327.00, 'GCash', 'Unpaid', 'order-id-67d273ca207a7', '2025-03-13 13:57:30', '2026-06-17 08:13:30', NULL, 'qwe', 'qwe', 'qwe', 'gajultos.garry123@gmail.com', NULL, NULL, NULL, NULL, '', NULL, NULL, NULL, 0);
+INSERT INTO `cart` VALUES (326, 1, 28, 5, 1, 'Cart', NULL, 3.00, NULL, '', NULL, '2026-06-15 17:32:02', '2026-06-15 17:32:02', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 11, 0);
+INSERT INTO `cart` VALUES (327, 1, 28, 5, 1, 'Cart', NULL, 3.00, NULL, '', NULL, '2026-06-15 17:32:09', '2026-06-15 17:32:09', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 12, 0);
+INSERT INTO `cart` VALUES (328, 1, 24, 0, 1, 'Cart', NULL, 257.00, NULL, '', NULL, '2026-06-15 17:37:40', '2026-06-17 07:48:40', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, NULL, 0, 0);
 
 -- ----------------------------
 -- Table structure for category
@@ -334,7 +335,6 @@ INSERT INTO `supplier` VALUES (31, '1', '2', 3, 4, '5@gmail.com', '4', '2025-01-
 INSERT INTO `supplier` VALUES (32, '1', '2', 3, 4, '5@gmail.com', '6', '2025-01-15 11:39:35', '2025-01-15 11:39:35');
 INSERT INTO `supplier` VALUES (33, '1', '2', 3, 1, 'kingaxie31@gmail.com', '3', '2025-01-15 11:40:41', '2025-01-15 11:40:41');
 INSERT INTO `supplier` VALUES (34, '1', '2', 3, 6, '5@gmail.com', '4', '2025-01-15 11:41:19', '2025-01-15 11:41:19');
-INSERT INTO `supplier` VALUES (35, '1', '2', 3, 6, '5@gmail.com', '4', '2025-01-15 11:42:02', '2025-01-15 11:42:02');
 INSERT INTO `supplier` VALUES (36, '1', '2', 3, 4, '5@gmail.com', '6', '2025-01-15 11:43:22', '2025-01-15 11:43:22');
 INSERT INTO `supplier` VALUES (37, '1', '2', 3, 4, 'kingaxie31@gmail.com', '1', '2025-01-15 11:43:43', '2025-01-15 11:43:43');
 INSERT INTO `supplier` VALUES (38, '1', '2', 3, 4, '5@gmail.com', '6', '2025-01-15 11:44:08', '2025-01-15 11:44:08');
@@ -388,21 +388,54 @@ CREATE TABLE `usertype`  (
   `view_order` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
   `client_order_module` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
   `complete_order` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
-  `view_shipped_order` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `shipped_order_module` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `view_transaction_module` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `sales_report_module` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `product_setup_module` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `user_setup` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `view_shipped_order` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `shipped_order_module` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `view_transaction_module` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `sales_report_module` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `product_setup_module` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `user_setup` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `user_setup_add` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `user_setup_edit` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `user_setup_delete` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `product_add` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `product_edit` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `product_delete` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `supplier_module` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `supplier_add` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `supplier_edit` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `supplier_delete` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `shop_category_module` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `shop_category_add` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `shop_category_edit` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `item_category_module` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `item_category_add` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `item_category_edit` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `customer_cart_module` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `customer_cart_remind` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `report_product_ranking` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `report_customer_details` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `report_customer_details_excel` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `report_customer_details_edit` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `report_customer_details_delete` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `discount_module` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `discount_add` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `discount_edit` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `discount_delete` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `peso_currency_settings` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `update_currency_settings` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `carousel_module` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `carousel_add` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `carousel_edit` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
+  `carousel_delete` enum('1','0') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1',
   PRIMARY KEY (`user_type_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of usertype
 -- ----------------------------
-INSERT INTO `usertype` VALUES (1, 'Admin', '2024-09-04 10:46:35', '2025-02-03 16:07:14', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1');
-INSERT INTO `usertype` VALUES (3, 'Staff', '2024-09-04 10:46:46', '2025-02-03 15:56:34', '1', '1', '1', '1', '0', '1', '1', '1', '1', '1');
-INSERT INTO `usertype` VALUES (4, 'Delivery Rider', '2024-10-12 11:21:06', '2025-02-03 15:56:35', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1');
+INSERT INTO `usertype` VALUES (1, 'Admin', '2024-09-04 10:46:35', '2026-07-04 00:04:05', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1');
+INSERT INTO `usertype` VALUES (3, 'Staff', '2024-09-04 10:46:46', '2025-02-03 15:56:34', '1', '1', '1', '1', '0', '1', '1', '1', '1', '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `usertype` VALUES (4, 'Delivery Rider', '2024-10-12 11:21:06', '2025-02-03 15:56:35', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- ----------------------------
 -- Table structure for variations
@@ -453,5 +486,25 @@ INSERT INTO `variations_colors` VALUES (1, 17, 'Size', '2025-01-06 15:08:02', '2
 INSERT INTO `variations_colors` VALUES (2, 17, 'Color', '2025-01-06 15:21:07', '2025-01-08 16:17:33', '23', NULL);
 INSERT INTO `variations_colors` VALUES (11, 28, NULL, '2025-02-10 17:39:43', '2025-02-11 08:16:33', NULL, 'Onyx');
 INSERT INTO `variations_colors` VALUES (12, 28, NULL, '2025-02-10 17:39:47', '2025-02-11 08:17:12', NULL, 'Sapphire');
+
+-- ----------------------------
+-- Table structure for voucher
+-- ----------------------------
+DROP TABLE IF EXISTS `voucher`;
+CREATE TABLE `voucher`  (
+  `voucher_id` int NOT NULL AUTO_INCREMENT,
+  `voucher_code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `voucher_percentage` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `voucher_status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `minimum_cart` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp,
+  `updated_at` timestamp NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`voucher_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of voucher
+-- ----------------------------
+INSERT INTO `voucher` VALUES (1, 'GG112233', '50', 'Active', '3', '2026-07-02 12:20:02', '2026-07-03 23:18:16');
 
 SET FOREIGN_KEY_CHECKS = 1;

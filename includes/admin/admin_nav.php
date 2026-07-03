@@ -104,12 +104,14 @@ if ($result) {
           </li>
         <?php endif; ?>
 
-        <li class="nav-item">
-          <a class="nav-link" data-module="customer_cart"
-            href="/blutmedical/views/admin/customer_cart_module.php?module=customer_cart">
-            <i class="fas fa-fw fa-shopping-cart"></i>
-            <span>Customer Cart</span></a>
-        </li>
+        <?php if ($row['customer_cart_module'] == 1): ?>
+          <li class="nav-item">
+            <a class="nav-link" data-module="customer_cart"
+              href="/blutmedical/views/admin/customer_cart_module.php?module=customer_cart">
+              <i class="fas fa-fw fa-shopping-cart"></i>
+              <span>Customer Cart</span></a>
+          </li>
+        <?php endif; ?>
 
         <!-- Divider -->
         <hr class="sidebar-divider">
@@ -120,83 +122,87 @@ if ($result) {
 
 
 
-        <?php if ($row['sales_report_module'] == 1): ?>
-          <!-- Reports Collapse -->
-          <li class="nav-item" data-module="reports">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapse1" aria-expanded="true"
-              aria-controls="collapse1">
-              <i class="fas fa-fw fa-clipboard-list"></i>
-              <span>Reports</span>
-            </a>
+        <!-- Reports Collapse -->
+        <li class="nav-item" data-module="reports">
 
-            <div id="collapse1" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-              <div class="bg-white py-2 collapse-inner rounded">
+          <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapse1" aria-expanded="true"
+            aria-controls="collapse1">
+            <i class="fas fa-fw fa-clipboard-list"></i>
+            <span>Reports</span>
+          </a>
 
+          <div id="collapse1" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+
+              <?php if ($row['sales_report_module'] == 1): ?>
                 <a class="collapse-item" data-submodule="sales_report"
                   href="/blutmedical/views/admin/sales_report_module.php?module=reports&submodule=sales_report">
                   Sales Report
                 </a>
+              <?php endif; ?>
 
+              <?php if ($row['report_product_ranking'] == 1): ?>
                 <a class="collapse-item" data-submodule="product_ranking"
                   href="/blutmedical/views/admin/product_rank_module.php?module=reports&submodule=product_ranking">
                   Product Ranking
                 </a>
+              <?php endif; ?>
 
+              <?php if ($row['report_customer_details'] == 1): ?>
                 <a class="collapse-item" data-submodule="customers"
                   href="/blutmedical/views/admin/customer_module.php?module=reports&submodule=customers">
                   Customer Details
                 </a>
+              <?php endif; ?>
 
-              </div>
             </div>
-          </li>
-        <?php endif; ?>
+          </div>
+        </li>
 
-        <?php if ($row['product_setup_module'] == 1): ?>
-          <!-- Products Setup Collapse -->
-          <li class="nav-item" data-module="product_setup">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapse2" aria-expanded="true"
-              aria-controls="collapse2">
-              <i class="fas fa-fw fa-clipboard-list"></i>
-              <span>Product Setup</span>
-            </a>
-            <div id="collapse2" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-              <div class="bg-white py-2 collapse-inner rounded">
-                <!-- <h6 class="collapse-header">Setup:</h6> -->
+        <!-- Products Setup Collapse -->
+        <li class="nav-item" data-module="product_setup">
+          <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapse2" aria-expanded="true"
+            aria-controls="collapse2">
+            <i class="fas fa-fw fa-clipboard-list"></i>
+            <span>Product Setup</span>
+          </a>
+          <div id="collapse2" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+              <!-- <h6 class="collapse-header">Setup:</h6> -->
+
+              <?php if ($row['supplier_module'] == 1): ?>
                 <a class="collapse-item" data-submodule="suppliers"
                   href="/blutmedical/views/admin/supplier_module.php?module=product_setup&submodule=suppliers">
                   Suppliers
                 </a>
+              <?php endif; ?>
 
+              <?php if ($row['shop_category_module'] == 1): ?>
                 <a class="collapse-item" data-submodule="shop_category"
                   href="/blutmedical/views/admin/subcategory_module.php?module=product_setup&submodule=shop_category">
                   Shop Category
                 </a>
+              <?php endif; ?>
 
+              <?php if ($row['item_category_module'] == 1): ?>
                 <a class="collapse-item" data-submodule="item_category"
                   href="/blutmedical/views/admin/category_module.php?module=product_setup&submodule=item_category">
                   Item Category
                 </a>
+              <?php endif; ?>
 
+              <?php if ($row['product_setup_module'] == 1): ?>
                 <a class="collapse-item" data-submodule="products"
                   href="/blutmedical/views/admin/product_module.php?module=product_setup&submodule=products">
                   Products
                 </a>
-                <!-- <a class="collapse-item" href="/blutmedical/views/admin/variation_module.php">Variation</a> -->
-                <!-- <a class="collapse-item" href="/blutmedical/views/admin/upload_image_module.php">Upload Image</a> -->
-
-
-              </div>
+              <?php endif; ?>
 
             </div>
-          </li>
 
-          <li class="nav-item">
-            <a class="nav-link" data-module="peso" href="/blutmedical/views/admin/dollar_module.php?module=peso">
-              <i class="fas fa-fw fa-money-bill"></i>
-              <span>Peso Currency</span></a>
-          </li>
-        <?php endif; ?>
+          </div>
+        </li>
+
 
         <!-- Divider -->
         <hr class="sidebar-divider">
@@ -204,13 +210,30 @@ if ($result) {
         <div class="sidebar-heading">
           Settings
         </div>
+        <?php if ($row['peso_currency_settings'] == 1): ?>
+          <li class="nav-item">
+            <a class="nav-link" data-module="peso" href="/blutmedical/views/admin/dollar_module.php?module=peso">
+              <i class="fas fa-fw fa-money-bill"></i>
+              <span>Peso Currency Settings</span></a>
+          </li>
+        <?php endif; ?>
 
+        <?php if ($row['discount_module'] == 1): ?>
 
-        <li class="nav-item">
-          <a class="nav-link" data-module="carousel" href="/blutmedical/views/admin/carousel_module.php?module=carousel">
-            <i class="fas fa-fw fa-images"></i>
-            <span>Carousel Settings</span></a>
-        </li>
+          <li class="nav-item">
+            <a class="nav-link" data-module="discount" href="/blutmedical/views/admin/discount_module.php?module=discount">
+              <i class="fas fa-fw fa-percentage"></i> <!-- Percentage discount -->
+              <span>Voucher Settings</span></a>
+          </li>
+        <?php endif; ?>
+
+        <?php if ($row['carousel_module'] == 1): ?>
+          <li class="nav-item">
+            <a class="nav-link" data-module="carousel" href="/blutmedical/views/admin/carousel_module.php?module=carousel">
+              <i class="fas fa-fw fa-images"></i>
+              <span>Carousel Settings</span></a>
+          </li>
+        <?php endif; ?>
 
         <?php if ($row['user_setup'] == 1): ?>
           <li class="nav-item" data-module="user_setup">

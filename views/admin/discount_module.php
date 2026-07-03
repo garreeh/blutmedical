@@ -16,6 +16,7 @@ $result = mysqli_query($conn, $sql);
 if ($result) {
   while ($row_permission = mysqli_fetch_assoc($result)) {
     ?>
+
     <!DOCTYPE html>
     <html lang="en">
 
@@ -28,7 +29,7 @@ if ($result) {
       <link href="./../../assets/img/favicon.ico" rel="icon">
 
 
-      <title>Admin | User Module</title>
+      <title>Admin | Voucher</title>
 
       <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
       <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
@@ -52,7 +53,7 @@ if ($result) {
         <!-- End of Sidebar -->
 
         <!-- Modal for Adding and Editing Supplier -->
-        <?php include './../../modals/users/modal_add_user.php'; ?>
+        <?php include './../../modals/discount/modal_add_discount.php'; ?>
 
         <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
@@ -66,33 +67,32 @@ if ($result) {
             <!-- Begin Page Content -->
             <div class="container-fluid">
 
-              <!-- Page Heading -->
+
               <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1 class="h3 mb-0 text-gray-800">User Module</h1>
+                <h1 class="h3 mb-0 text-gray-800">Voucher Module</h1>
               </div>
 
-              <?php if ($row_permission['user_setup_add'] == 1): ?>
+              <?php if ($row_permission['discount_add'] == 1): ?>
                 <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mb-4" data-toggle="modal"
-                  data-target="#addUserModal"> <i class="fas fa-plus"></i> Add User</a>
+                  data-target="#addDiscountModal"> <i class="fas fa-plus"></i> Add Voucher</a>
               <?php endif; ?>
-
-              <!-- <a href="./../../excels/supplier_export.php" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mb-4"><i class="fas fa-file-excel"></i> Export Excel</a> -->
 
               <div class="row">
                 <div class="col-xl-12 col-lg-12">
                   <div class="tab-pane fade show active" id="aa" role="tabpanel" aria-labelledby="aa-tab">
 
                     <div class="table-responsive">
-                      <div id="modalContainerUserList"></div>
-                      <?php if ($row_permission['user_setup'] == 1): ?>
-                        <table class="table custom-table table-hover" name="users_table" id="users_table">
+                      <div id="modalContainerDiscount"></div>
+
+                      <?php if ($row_permission['discount_module'] == 1): ?>
+
+                        <table class="table custom-table table-hover" name="discount_table" id="discount_table">
                           <thead>
                             <tr>
-                              <th>ID</th>
-                              <th>Fullname</th>
-                              <th>Email</th>
-                              <th>Account Status</th>
-                              <th>Date Created</th>
+                              <th>Voucher ID</th>
+                              <th>Voucher Code</th>
+                              <th>Voucher Percentage</th>
+                              <th>Status</th>
                               <th>Date Updated</th>
                               <th>Manage</th>
                             </tr>
@@ -130,21 +130,7 @@ if ($result) {
       <link rel="stylesheet" type="text/css" href="./../../assets/datatables/datatables.min.css" />
       <script type="text/javascript" src="./../../assets/datatables/datatables.min.js"></script>
 
-      <!-- COPY THESE WHOLE CODE WHEN IMPORT SELECT -->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js"
-        integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
-      <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css"
-        integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
 
-      <script>
-        $(document).ready(function () {
-          $('select').selectize({
-            sortField: 'text'
-          });
-        });
-      </script>
-      <!-- END OF SELECT -->
 
     </body>
 
@@ -152,73 +138,68 @@ if ($result) {
 
     <script>
       $('#sidebarToggle').click(function () {
-        $('#users_table').css('width', '100%');
+        $('#discount_table').css('width', '100%');
         // console.log(table) //This is for testing only
       });
 
       //Table for Supplier
       $(document).ready(function () {
-        var users_table = $('#users_table').DataTable({
+        var discount_table = $('#discount_table').DataTable({
           "pagingType": "numbers",
           "processing": true,
           "serverSide": true,
-          "ajax": "./../../controllers/tables/users_table.php",
+          "ajax": "./../../controllers/tables/discount_table.php",
         });
 
         window.reloadDataTable = function () {
-          users_table.ajax.reload();
+          discount_table.ajax.reload();
         };
 
       });
 
-      //Bridge for Modal Backend to Frontend
+      //Edit Modal
       $(document).ready(function () {
         // Function to handle click event on datatable rows
-        $('#users_table').on('click', 'tr td:nth-child(7) .fetchDataUser', function () {
-          event.preventDefault();
-          var user_id = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
-          console.log('Button clicked, User ID: ' + user_id);
+        $('#discount_table').on('click', 'tr td:nth-child(6) .fetchDataDiscount', function () {
+          var voucher_id = $(this).closest('tr').find('td').first().text(); // Get the voucher_id from the clicked row
 
           $.ajax({
-            url: './../../modals/users/modal_edit_user.php', // Path to PHP script to fetch modal content
+            url: './../../modals/discount/modal_edit_discount.php', // Path to PHP script to fetch modal content
             method: 'POST',
             data: {
-              user_id: user_id
+              voucher_id: voucher_id
             },
             success: function (response) {
-              $('#modalContainerUserList').html(response);
-              $('#fetchDataUserModal').modal('show');
-              console.log("Modal content loaded for User ID: " + user_id);
+              $('#modalContainerDiscount').html(response);
+              $('#editDiscountModal').modal('show');
+              console.log("#editDiscountModal" + voucher_id);
             },
             error: function (xhr, status, error) {
-              console.error("Error: " + xhr.responseText);
+              console.error(xhr.responseText);
             }
           });
         });
       });
 
-
-      //Bridge for Modal Backend to Frontend
+      // Delete Modal
       $(document).ready(function () {
         // Function to handle click event on datatable rows
-        $('#users_table').on('click', 'tr td:nth-child(7) .fetchDataUserDelete', function () {
-          event.preventDefault();
-          var user_id = $(this).closest('tr').find('td').first().text(); // Get the user_id from the clicked row
-          console.log('Button clicked, User ID: ' + user_id);
+        $('#discount_table').on('click', 'tr td:nth-child(6) .fetchDataDiscountDelete', function () {
+          var voucher_id = $(this).closest('tr').find('td').first().text(); // Get the voucher_id from the clicked row
 
           $.ajax({
-            url: './../../modals/users/modal_delete_user.php', // Path to PHP script to fetch modal content
+            url: './../../modals/discount/modal_delete_discount.php', // Path to PHP script to fetch modal content
             method: 'POST',
             data: {
-              user_id: user_id
+              voucher_id: voucher_id
             },
             success: function (response) {
-              $('#modalContainerUserList').html(response);
-              $('#fetchDataUserModalDelete').modal('show');
-              console.log("Modal content loaded for User ID: " + user_id);
+              $('#modalContainerDiscount').html(response);
+              $('#deleteDiscountModal').modal('show');
+              console.log("#deleteDiscountModal" + voucher_id);
             },
             error: function (xhr, status, error) {
-              console.error("Error: " + xhr.responseText);
+              console.error(xhr.responseText);
             }
           });
         });
