@@ -182,6 +182,12 @@ foreach ($grouped as $row) {
                     href="#">
                     Remind Customer
                 </a>
+
+                <a class="dropdown-item fetchDataCart"
+                    data-id="' . $row['cart_id'] . '"
+                    href="#">
+                    Tag as Paid
+                </a>
             </div>
         </div>';
 

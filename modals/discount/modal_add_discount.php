@@ -45,6 +45,12 @@
               </div>
             </div>
 
+            <div class="form-group col-md-12">
+              <label for="minimum_cart">Minimum Order Number:</label>
+              <input type="text" class="form-control" id="minimum_cart" name="minimum_cart"
+                placeholder="Enter Minimum Order" autocomplete="off" required>
+            </div>
+
           </div>
 
           <input type="hidden" name="add_discount" value="1">

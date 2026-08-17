@@ -1,0 +1,13 @@
+Array
+(
+    [product_id] => 32
+    [price] => -
+    [value] => -
+    [variation_id] => -
+    [cart_quantity] => 1
+    [product_name] => Blut Pen
+    [product_image] => ../../uploads/2x2.jpg
+    [product_sellingprice] => 1
+    [variation_color_id] => 
+    [color] => -
+)

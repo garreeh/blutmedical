@@ -267,6 +267,38 @@ if ($result) {
         });
       });
 
+      $(document).ready(function () {
+        // Function to handle click event on datatable rows
+        $('#customer_cart_table').on('click', 'tr td:nth-child(9) .fetchDataCart', function () {
+          event.preventDefault();
+
+          var row = $(this).closest('tr');
+          var cart_id = $(this).closest('tr').find('td').first().text(); // Get the cart_id from the clicked row
+          var reference_no = row.find('td').eq(10).text(); // ✅ second column (index starts at 0)
+
+
+          $.ajax({
+            url: './../../modals/delivery/modal_add_delivered.php', // Path to PHP script to fetch modal content
+            method: 'POST',
+            data: {
+              cart_id: cart_id,
+              // reference_no: reference_no
+            },
+            success: function (response) {
+              $('#modalContainerCustomerCart').html(response);
+              $('#addDeliveredModal').modal('show');
+              $('#cart_id').val(cart_id); // Set the cart_id here
+              console.log("#addDeliveredModal: " + cart_id);
+              // console.log("#addDeliveredModal: " + reference_no);
+
+            },
+            error: function (xhr, status, error) {
+              console.error(xhr.responseText);
+            }
+          });
+        });
+      });
+
       // $(document).ready(function () {
       //   // Function to handle click event on datatable rows
       //   $('#customer_cart_table').on('click', 'tr td:nth-child(8) .fetchDataDelivery', function () {

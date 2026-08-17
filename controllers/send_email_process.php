@@ -45,7 +45,8 @@ $mail->Port = 587;
 // Set the sender's email address (from the form)
 $mail->setFrom('admin@vetaidonline.info', 'Blut Medical');
 
-$mail->addAddress('admin@vetaidonline.info'); // The GoDaddy email you're sending to
+$mail->addAddress('admin@vetaidonline.com');
+$mail->addAddress('marketing1@gmail.com');
 
 $mail->isHTML(true);
 $mail->Subject = "Customer Query";

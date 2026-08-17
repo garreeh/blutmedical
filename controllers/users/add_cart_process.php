@@ -1,12 +1,12 @@
 <?php
 
-// error_reporting(E_ALL);
-// ini_set('display_errors', 1);
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 session_start();
 
-// file_put_contents("debug_session.txt", print_r($_SESSION, true));
-// file_put_contents("debug_post.txt", print_r($_POST, true));
+file_put_contents("debug_session.txt", print_r($_SESSION, true));
+file_put_contents("debug_post.txt", print_r($_POST, true));
 
 include '../../connections/connections.php';
 
@@ -14,8 +14,15 @@ include '../../connections/connections.php';
 if (isset($_POST['product_id']) && isset($_POST['cart_quantity'])) {
     $product_id = $conn->real_escape_string($_POST['product_id']);
     $cart_quantity = (int) $_POST['cart_quantity'];
-    $variation_id = isset($_POST['variation_id']) ? $conn->real_escape_string($_POST['variation_id']) : null;
-    $variation_color_id = isset($_POST['variation_color_id']) ? $conn->real_escape_string($_POST['variation_color_id']) : null;
+    $variation_id = (
+        isset($_POST['variation_id']) &&
+        is_numeric($_POST['variation_id'])
+    ) ? (int) $_POST['variation_id'] : null;
+
+    $variation_color_id = (
+        isset($_POST['variation_color_id']) &&
+        is_numeric($_POST['variation_color_id'])
+    ) ? (int) $_POST['variation_color_id'] : null;
 
     if (isset($_SESSION['user_id'])) {
         $user_id = $_SESSION['user_id'];
@@ -91,11 +98,37 @@ if (isset($_POST['product_id']) && isset($_POST['cart_quantity'])) {
         } else {
             // If no such product with the same size & color, insert a new entry
             $total_price = $cart_quantity * $product_price;
+            $variationIdValue = $variation_id !== null ? $variation_id : "NULL";
+            $variationColorValue = $variation_color_id !== null ? $variation_color_id : "NULL";
 
             $insert_query = "
-                INSERT INTO cart (user_id, product_id, cart_quantity, total_price, cart_status, variation_id, variation_color_id, payment_status, delivery_guest_fullname, paypal_contact_number) 
-                VALUES ('$user_id', '$product_id', '$cart_quantity', '$total_price', 'Cart', '$variation_id', '$variation_color_id', 'Unpaid', '', '')
-            ";
+				INSERT INTO cart 
+				(
+					user_id, 
+					product_id, 
+					cart_quantity, 
+					total_price, 
+					cart_status, 
+					variation_id, 
+					variation_color_id, 
+					payment_status, 
+					delivery_guest_fullname, 
+					paypal_contact_number
+				) 
+				VALUES 
+				(
+					'$user_id',
+					'$product_id',
+					'$cart_quantity',
+					'$total_price',
+					'Cart',
+					$variationIdValue,
+					$variationColorValue,
+					'Unpaid',
+					'',
+					''
+				)
+			";
             if ($conn->query($insert_query)) {
                 $response = array('success' => true, 'message' => 'Product added to cart successfully!');
             } else {

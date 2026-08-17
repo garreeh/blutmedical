@@ -5,6 +5,17 @@
 * Template URI: https://untree.co/
 * License: https://creativecommons.org/licenses/by/3.0/
 */ -->
+<style>
+  #submitCheckout:disabled {
+    background-color: #6c757d !important;
+    /* gray */
+    border-color: #6c757d !important;
+    color: #fff !important;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+</style>
+
 <!doctype html>
 <html lang="en">
 
@@ -25,6 +36,10 @@
 <body>
 
   <?php
+  if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+  }
+
   include './connections/connections.php';
   include './includes/navigation.php';
 
@@ -236,6 +251,7 @@
           console.error('AJAX Error:', error);
         }
       });
+
     } else {
       // Retrieve and parse the guest cart data from localStorage
       var guestCart = JSON.parse(localStorage.getItem('guestCart')) || [];
@@ -525,52 +541,230 @@
   $('#checkoutModal').on('show.bs.modal', function () {
     var isLoggedIn = <?php echo json_encode(isset($_SESSION['user_id'])); ?>;
 
+    let typingTimer;
+
+    // voucher state
+    let voucherPercent = 0;
+    let cartTotal = 0;
+    let cartItems = [];
+
+    // ==============================
+    // VOUCHER INPUT
+    // ==============================
+    $('#voucher_code').off('input').on('input', function () {
+
+      clearTimeout(typingTimer);
+
+      let code = $(this).val().trim();
+
+      // Reset message
+      $('#voucher-message')
+        .removeClass('text-success text-danger text-info')
+        .html('');
+
+      // ==============================
+      // EMPTY FIELD = ALLOW CHECKOUT
+      // ==============================
+      if (code.length === 0) {
+
+        voucherPercent = 0;
+        discountAmount = 0;
+
+        selectedVoucherId = null;
+        $('#voucher_id').val('');
+
+        $('#submitCheckout').prop('disabled', false);
+
+        $('#voucher-message')
+          .removeClass('text-success text-danger text-info')
+          .html('');
+
+        updateTotalBreakdown();
+        return;
+      }
+
+      // ==============================
+      // HAS VALUE (EVEN INCOMPLETE) = BLOCK CHECKOUT
+      // ==============================
+      $('#submitCheckout').prop('disabled', true);
+
+      $('#voucher-message')
+        .removeClass('text-success text-danger text-info')
+        .addClass('text-danger')
+        .html('Clear voucher field to proceed.');
+
+      // Only validate when length is correct
+      if (code.length !== 8) return;
+
+
+      $('#voucher-message')
+        .addClass('text-info')
+        .html('Checking voucher...');
+
+      typingTimer = setTimeout(function () {
+
+        $.ajax({
+          url: '/blutmedical/controllers/users/validate_voucher.php',
+          type: 'POST',
+          dataType: 'json',
+          data: {
+            voucher_code: code,
+            cart_total: cartTotal,
+            cart_items: cartItems.length
+          },
+
+          success: function (res) {
+
+            if (res.status) {
+
+              voucherPercent = parseFloat(res.voucher_percentage) || 0;
+              discountAmount = parseFloat(res.discount) || 0;
+
+              selectedVoucherId = res.voucher_id;
+              $('#voucher_id').val(res.voucher_id);
+
+              $('#voucher-message')
+                .removeClass('text-danger text-info')
+                .addClass('text-success')
+                .html(
+                  res.message +
+                  `<br><small>Discount: ₱ ${discountAmount.toFixed(2)}</small>`
+                );
+
+              // ✅ Enable Confirm Payment
+              $('#submitCheckout').prop('disabled', false);
+
+            } else {
+
+              selectedVoucherId = null;
+              $('#voucher_id').val('');
+
+              voucherPercent = 0;
+              discountAmount = 0;
+
+              $('#voucher-message')
+                .removeClass('text-success text-info')
+                .addClass('text-danger')
+                .html(res.message);
+
+              // ❌ Disable Confirm Payment
+              $('#submitCheckout').prop('disabled', true);
+            }
+
+            updateTotalBreakdown();
+          },
+
+          error: function () {
+
+            voucherPercent = 0;
+            discountAmount = 0;
+
+            selectedVoucherId = null;
+            $('#voucher_id').val('');
+
+            $('#submitCheckout').prop('disabled', true);
+
+            $('#voucher-message')
+              .removeClass('text-success text-info')
+              .addClass('text-danger')
+              .html('Server error.');
+
+            updateTotalBreakdown();
+          }
+        });
+
+      }, 500);
+    });
+
+
     if (isLoggedIn) {
       // Fetch cart items from the server
       $.ajax({
         type: 'POST',
         url: '/blutmedical/controllers/users/fetch_cart_last_process.php',
         dataType: 'json',
+
         success: function (response) {
+
           if (response.success) {
-            var cartItemsHtml = '';
-            var totalPrice = 0;
 
-            // Loop through cart items and create table rows
+            let cartItemsHtml = '';
+            let totalPrice = 0;
+
             response.cartItems.forEach(function (item) {
-              var productPrice = parseFloat(item.product_sellingprice) || 0;
-              var cartQuantity = parseInt(item.cart_quantity, 10) || 0;
-              var variationId = item.variation_id;
-              var productId = item.product_id;
 
-              var variationPrice = item.variation_id === 0 ? productPrice : (item.variation_id ? parseFloat(item.price) : productPrice); // Check if variation_id exists
+              let productPrice = parseFloat(item.product_sellingprice) || 0;
+              let cartQuantity = parseInt(item.cart_quantity, 10) || 0;
 
-              var variationValue = item.value !== null ? item.value : '-';
+              let variationPrice = item.variation_id === 0
+                ? productPrice
+                : (item.variation_id ? parseFloat(item.price) : productPrice);
 
-              var itemTotal = variationPrice * cartQuantity;
+              let itemTotal = variationPrice * cartQuantity;
 
-              cartItemsHtml += '<tr>';
-              cartItemsHtml += '<td>' + item.product_name + '</td>';
-              cartItemsHtml += '<td>' + cartQuantity + '</td>';
-              cartItemsHtml += '<td>$ ' + variationPrice.toFixed(2) + '</td>';
-              cartItemsHtml += '<td>$ ' + itemTotal.toFixed(2) + '</td>';
-              cartItemsHtml += '</tr>';
+              cartItemsHtml += `
+              <tr>
+                <td>${item.product_name}</td>
+                <td>${cartQuantity}</td>
+                <td>$ ${variationPrice.toFixed(2)}</td>
+                <td>$ ${itemTotal.toFixed(2)}</td>
+              </tr>
+            `;
 
               totalPrice += itemTotal;
             });
 
-            // Update the cart content and total price in the modal
             $('#order-summary').html(cartItemsHtml);
-            $('#total-amount').text('$ ' + totalPrice.toFixed(2));
+
+            // sync globals
+            cartTotal = totalPrice;
+            cartItems = response.cartItems;
+
+            updateTotalBreakdown();
+
           } else {
             alert('Error fetching cart items');
           }
         },
-        error: function (xhr, status, error) {
-          console.error('Error fetching cart:', error);
-          alert('An error occurred while fetching the cart.');
+
+        error: function () {
+          alert('Cart loading error');
         }
       });
+
+      function updateTotalBreakdown() {
+
+        let subtotal = cartTotal;
+        let discount = 0;
+
+        if (voucherPercent > 0) {
+          discount = (subtotal * voucherPercent) / 100;
+        }
+
+        let finalTotal = subtotal - discount;
+
+        if (finalTotal < 0) finalTotal = 0;
+
+        $('#total-amount').html(`
+    <div style="margin-top:10px;">
+
+      <p><strong>Subtotal:</strong> $ ${subtotal.toFixed(2)}</p>
+
+      ${voucherPercent > 0 ? `
+        <p style="color:green;">
+          <strong>Voucher:</strong> ${voucherPercent}% OFF (-$ ${discount.toFixed(2)})
+        </p>
+      ` : ''}
+
+      <hr>
+
+      <h4><strong>Total:</strong> $ ${finalTotal.toFixed(2)}</h4>
+
+    </div>
+  `);
+
+      }
+
     } else {
       // Fetch cart items from localStorage
       var cart = JSON.parse(localStorage.getItem('guestCart')) || [];

@@ -93,8 +93,17 @@ $columns = array(
   ),
 
   array(
-    'db' => 'updated_at',
+    'db' => 'minimum_cart',
     'dt' => 4,
+    'field' => 'minimum_cart',
+    'formatter' => function ($lab1, $row) {
+      return $row['minimum_cart'];
+    }
+  ),
+
+  array(
+    'db' => 'updated_at',
+    'dt' => 5,
     'field' => 'updated_at',
     'formatter' => function ($lab5, $row) {
       return date('Y-m-d', strtotime($row['updated_at']));
@@ -103,7 +112,7 @@ $columns = array(
 
   array(
     'db' => 'voucher_id',
-    'dt' => 5,
+    'dt' => 6,
     'field' => 'voucher_id',
     'formatter' => function ($lab6, $row) use ($row_permission) {
 

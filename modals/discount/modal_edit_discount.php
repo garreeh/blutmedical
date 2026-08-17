@@ -53,6 +53,15 @@ if (isset($_POST['voucher_id'])) {
                     </div>
                   </div>
                 </div>
+                <div class="form-row">
+
+                  <div class="form-group col-md-12">
+                    <label for="minimum_cart">Minimum Order Number:</label>
+                    <input type="text" class="form-control" id="minimum_cart" name="minimum_cart"
+                      placeholder="Enter Minimum Order" value="<?php echo $row['minimum_cart']; ?>" autocomplete="off"
+                      required>
+                  </div>
+                </div>
 
                 <div class="form-row">
                   <div class="form-group col-md-12">

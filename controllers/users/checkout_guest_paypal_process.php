@@ -20,6 +20,18 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
 ]);
 curl_setopt($ch, CURLOPT_POSTFIELDS, 'grant_type=client_credentials');
 
+
+// Get PayPal API access token (LIVE)
+// $ch = curl_init();
+// curl_setopt($ch, CURLOPT_URL, "https://api-m.paypal.com/v1/oauth2/token");
+// curl_setopt($ch, CURLOPT_POST, true);
+// curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+// curl_setopt($ch, CURLOPT_USERPWD, $paypalClientId . ':' . $paypalSecret);
+// curl_setopt($ch, CURLOPT_HTTPHEADER, [
+//   'Content-Type: application/x-www-form-urlencoded',
+// ]);
+// curl_setopt($ch, CURLOPT_POSTFIELDS, 'grant_type=client_credentials');
+
 $response = curl_exec($ch);
 $httpStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);

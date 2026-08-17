@@ -7,6 +7,8 @@ if (isset($_POST['edit_voucher'])) {
   $voucher_id = $conn->real_escape_string($_POST['voucher_id']);
   $voucher_code = $conn->real_escape_string($_POST['voucher_code']);
   $voucher_percentage = $conn->real_escape_string($_POST['voucher_percentage']);
+  $minimum_cart = $conn->real_escape_string($_POST['minimum_cart']);
+
   $voucher_status = $conn->real_escape_string($_POST['voucher_status']);
 
 
@@ -15,6 +17,7 @@ if (isset($_POST['edit_voucher'])) {
           SET 
             voucher_code = '$voucher_code',
             voucher_percentage = '$voucher_percentage',
+            minimum_cart = '$minimum_cart',
             voucher_status = '$voucher_status'
           WHERE voucher_id = '$voucher_id'";
 

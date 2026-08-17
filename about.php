@@ -38,7 +38,8 @@
         <div class="col-lg-5">
           <div class="intro-excerpt">
             <h1 style="color:black !important; opacity: 100%;">About us</h1>
-            <p class="mb-4" style="color:black !important; opacity: 100%;">We are a provider of innovative premium quality products that will elevate any medical
+            <p class="mb-4" style="color:black !important; opacity: 100%;">We are a provider of innovative premium
+              quality products that will elevate any medical
               practice be it for veterinarians or human doctors.</p>
             <p><a href="products.php" class="btn btn-secondary me-2">Shop Now</a></p>
           </div>
@@ -110,7 +111,7 @@
 
         <div class="col-lg-5">
           <div class="img-wrap">
-            <img src="images/why-choose-us-img.jpg" alt="Image" class="img-fluid">
+            <img src="about.jpeg" alt="Image" class="img-fluid">
           </div>
         </div>
 

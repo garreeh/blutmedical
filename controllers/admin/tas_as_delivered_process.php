@@ -12,7 +12,7 @@ if (isset($_POST['tag_as_shipped'])) {
   |--------------------------------------------------------------------------
   */
   $getOrder = mysqli_query($conn, "
-        SELECT reference_no, paypal_order_id, payment_method
+        SELECT reference_no, paypal_order_id, payment_method, user_id
         FROM cart
         WHERE cart_id = '$cart_id'
         LIMIT 1
@@ -33,12 +33,40 @@ if (isset($_POST['tag_as_shipped'])) {
   | STEP 2: DETERMINE GROUP KEY
   |--------------------------------------------------------------------------
   */
-  if ($row['payment_method'] === 'Paypal') {
+  if (
+    $row['payment_method'] === 'Paypal' &&
+    !empty($row['paypal_order_id'])
+  ) {
+
     $where = "paypal_order_id = '" . $conn->real_escape_string($row['paypal_order_id']) . "'";
     $group_id = $row['paypal_order_id'];
-  } else {
+
+  } elseif (!empty($row['reference_no'])) {
+
     $where = "reference_no = '" . $conn->real_escape_string($row['reference_no']) . "'";
     $group_id = $row['reference_no'];
+
+  } else {
+
+    // No reference number or PayPal order ID
+    // Generate a new reference number
+    $user_id = (int) $row['user_id'];
+    $reference_no = 'REF-' . strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 10));
+
+    // Assign the reference number to all ungrouped items of this user
+    $assignReference = "
+        UPDATE cart
+        SET reference_no = '$reference_no'
+        WHERE user_id = '$user_id'
+          AND (reference_no IS NULL OR reference_no = '')
+          AND (paypal_order_id IS NULL OR paypal_order_id = '')
+    ";
+
+    mysqli_query($conn, $assignReference);
+
+    // Use the newly generated reference number for the shipped update
+    $where = "reference_no = '$reference_no'";
+    $group_id = $reference_no;
   }
 
   /*

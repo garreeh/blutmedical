@@ -1,56 +1,89 @@
-(function($) {
-  "use strict"; // Start of use strict
+(function ($) {
+  "use strict";
 
-  // Toggle the side navigation
-  $("#sidebarToggle, #sidebarToggleTop").on('click', function(e) {
+  // Tracks whether the user manually closed the sidebar
+  let sidebarClosedByUser = false;
+
+  function keepSidebarOpen() {
+    // Only force open on mobile if the user hasn't manually closed it
+    if ($(window).width() < 768 && !sidebarClosedByUser) {
+      $("body").removeClass("sidebar-toggled");
+      $(".sidebar").removeClass("toggled");
+
+      // Keep all submenus closed
+      $(".sidebar .collapse")
+        .removeClass("show")
+        .attr("aria-expanded", "false");
+
+      $(".sidebar .nav-link[data-toggle='collapse']")
+        .addClass("collapsed")
+        .attr("aria-expanded", "false");
+    }
+  }
+
+  // Initial load
+  keepSidebarOpen();
+
+  // Toggle sidebar
+  $("#sidebarToggle, #sidebarToggleTop").on("click", function () {
+
     $("body").toggleClass("sidebar-toggled");
     $(".sidebar").toggleClass("toggled");
+
     if ($(".sidebar").hasClass("toggled")) {
-      $('.sidebar .collapse').collapse('hide');
-    };
+      // User closed sidebar
+      sidebarClosedByUser = true;
+      $(".sidebar .collapse").collapse("hide");
+    } else {
+      // User opened sidebar
+      sidebarClosedByUser = false;
+    }
   });
 
-  // Close any open menu accordions when window is resized below 768px
-  $(window).resize(function() {
-    if ($(window).width() < 768) {
-      $('.sidebar .collapse').collapse('hide');
-    };
-    
-    // Toggle the side navigation when window is resized below 480px
-    if ($(window).width() < 480 && !$(".sidebar").hasClass("toggled")) {
-      $("body").addClass("sidebar-toggled");
-      $(".sidebar").addClass("toggled");
-      $('.sidebar .collapse').collapse('hide');
-    };
+  // Only check on resize
+  $(window).on("resize", function () {
+    keepSidebarOpen();
   });
 
-  // Prevent the content wrapper from scrolling when the fixed side navigation hovered over
-  $('body.fixed-nav .sidebar').on('mousewheel DOMMouseScroll wheel', function(e) {
+  // Prevent the content wrapper from scrolling when the fixed side navigation is hovered
+  $("body.fixed-nav .sidebar").on("mousewheel DOMMouseScroll wheel", function (e) {
     if ($(window).width() > 768) {
       var e0 = e.originalEvent,
         delta = e0.wheelDelta || -e0.detail;
+
       this.scrollTop += (delta < 0 ? 1 : -1) * 30;
       e.preventDefault();
     }
   });
 
-  // Scroll to top button appear
-  $(document).on('scroll', function() {
+  // Scroll to top button
+  $(document).on("scroll", function () {
     var scrollDistance = $(this).scrollTop();
+
     if (scrollDistance > 100) {
-      $('.scroll-to-top').fadeIn();
+      $(".scroll-to-top").fadeIn();
     } else {
-      $('.scroll-to-top').fadeOut();
+      $(".scroll-to-top").fadeOut();
     }
+
+    // If sidebar is open, keep it open.
+    // If sidebar was manually closed, don't reopen it.
+    keepSidebarOpen();
   });
 
-  // Smooth scrolling using jQuery easing
-  $(document).on('click', 'a.scroll-to-top', function(e) {
+  // Smooth scrolling
+  $(document).on("click", "a.scroll-to-top", function (e) {
     var $anchor = $(this);
-    $('html, body').stop().animate({
-      scrollTop: ($($anchor.attr('href')).offset().top)
-    }, 1000, 'easeInOutExpo');
+
+    $("html, body").stop().animate(
+      {
+        scrollTop: $($anchor.attr("href")).offset().top
+      },
+      1000,
+      "easeInOutExpo"
+    );
+
     e.preventDefault();
   });
 
-})(jQuery); // End of use strict
+})(jQuery);

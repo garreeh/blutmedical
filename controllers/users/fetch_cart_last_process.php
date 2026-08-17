@@ -5,10 +5,11 @@ include './../../connections/connections.php';
 $user_id = $_SESSION['user_id'];
 
 // Fetch cart items
-$sql = "SELECT product.*, cart.*, variations.`value`, variations.variation_id, variations.price
+$sql = "SELECT product.*, cart.*, variations.`value`, variations.variation_id, variations.price, voucher.*
         FROM cart
         LEFT JOIN product ON cart.product_id = product.product_id
         LEFT JOIN variations ON cart.variation_id = variations.variation_id
+        LEFT JOIN voucher ON cart.voucher_id = voucher.voucher_id
         WHERE cart.user_id = '$user_id' AND cart.cart_status = 'Cart'";
 $result = mysqli_query($conn, $sql);
 

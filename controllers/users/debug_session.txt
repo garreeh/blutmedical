@@ -1,0 +1,9 @@
+Array
+(
+    [user_id] => 1
+    [user_fullname] => Garry Gajultos
+    [user_email] => gajultos.garry123@gmail.com
+    [username] => garry
+    [is_admin] => 1
+    [user_type_id] => 1
+)

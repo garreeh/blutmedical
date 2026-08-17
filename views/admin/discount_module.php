@@ -93,6 +93,8 @@ if ($result) {
                               <th>Voucher Code</th>
                               <th>Voucher Percentage</th>
                               <th>Status</th>
+                              <th>Minimum Order</th>
+
                               <th>Date Updated</th>
                               <th>Manage</th>
                             </tr>
@@ -160,7 +162,9 @@ if ($result) {
       //Edit Modal
       $(document).ready(function () {
         // Function to handle click event on datatable rows
-        $('#discount_table').on('click', 'tr td:nth-child(6) .fetchDataDiscount', function () {
+        $('#discount_table').on('click', 'tr td:nth-child(7) .fetchDataDiscount', function () {
+          event.preventDefault();
+
           var voucher_id = $(this).closest('tr').find('td').first().text(); // Get the voucher_id from the clicked row
 
           $.ajax({
@@ -184,7 +188,9 @@ if ($result) {
       // Delete Modal
       $(document).ready(function () {
         // Function to handle click event on datatable rows
-        $('#discount_table').on('click', 'tr td:nth-child(6) .fetchDataDiscountDelete', function () {
+        $('#discount_table').on('click', 'tr td:nth-child(7) .fetchDataDiscountDelete', function () {
+          event.preventDefault();
+
           var voucher_id = $(this).closest('tr').find('td').first().text(); // Get the voucher_id from the clicked row
 
           $.ajax({
