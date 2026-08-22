@@ -380,8 +380,13 @@
       var totalAmount = 0;
       $.each(cartItems, function (index, item) { // Use cartItems here
         var cartQuantity = parseInt(item.cart_quantity, 10) || 0;
-        var productPrice = parseFloat(item.product_sellingprice) || 0;
-        totalAmount += productPrice * cartQuantity; // Add item total to overall total
+        var productPrice = item.variation_id === '-'
+          ? parseFloat(item.product_sellingprice) || 0
+          : parseFloat(item.price) || 0;
+
+        var itemTotal = productPrice * cartQuantity;
+
+        totalAmount += itemTotal;
       });
 
       var formData = new FormData($('#checkoutForm')[0]);

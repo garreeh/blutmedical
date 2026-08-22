@@ -67,6 +67,21 @@ $paymentMethod = $data['paymentCategory'] ?? 'PayPal';
 $voucher_id = isset($data['voucher_id']) ? (int) $data['voucher_id'] : 0;
 $paypal_order_id = $data['orderID'] ?? null;
 
+// Generate unique PayPal reference number
+do {
+  $randomNumber = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+  $reference_no = 'Paypal-' . $randomNumber;
+
+  $checkReferenceSql = "
+        SELECT 1
+        FROM cart
+        WHERE reference_no = '$reference_no'
+        LIMIT 1
+    ";
+
+  $checkReferenceResult = mysqli_query($conn, $checkReferenceSql);
+
+} while ($checkReferenceResult && mysqli_num_rows($checkReferenceResult) > 0);
 // Start transaction
 mysqli_begin_transaction($conn);
 
@@ -141,10 +156,11 @@ try {
   $updateCartSql = "
         UPDATE cart
         SET
+			reference_no = '$reference_no',
             cart_status = 'Processing',
             payment_method = '$paymentMethod',
             payment_status = 'Unpaid',
-            paypal_order_id = " . ($paypal_order_id ? "'$paypal_order_id'" : "NULL") . ",
+            paypal_order_id = '$reference_no',
             voucher_id = '$voucher_id'
         WHERE user_id = '$user_id'
         AND cart_status = 'Cart'

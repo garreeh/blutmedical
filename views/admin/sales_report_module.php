@@ -90,7 +90,7 @@ if (session_status() == PHP_SESSION_NONE) {
                   <br>
                   <h4> To: <span id="displayTo"> </span> </h4>
                   <hr>
-                  <h4>Total Sales: <span id="totalSales"> </span></h4>
+                  <!-- <h4>Total Sales: <span id="totalSales"> </span></h4> -->
                 </div>
                 <br>
 
@@ -103,10 +103,11 @@ if (session_status() == PHP_SESSION_NONE) {
                       <th>Ref No.</th>
                       <th>Customer Details</th>
                       <th>Status</th>
-                      <th>Total Payment</th>
+                      <th>Total Amount</th>
+                      <th>Process Payment</th>
                       <th>Payment Method</th>
                       <th>Date Created</th>
-                      <th>Date Updated</th>
+                      <th>Manage</th>
                     </tr>
                   </thead>
                 </table>
@@ -182,6 +183,38 @@ if (session_status() == PHP_SESSION_NONE) {
           $('#showPhoto').modal('show');
           $('#cart_id').val(cart_id); // Set the cart_id here
           console.log("#showPhoto: " + cart_id);
+        },
+        error: function (xhr, status, error) {
+          console.error(xhr.responseText);
+        }
+      });
+    });
+  });
+
+
+  $(document).ready(function () {
+    // Function to handle click event on datatable rows
+    $('#order_table').on('click', 'tr td:nth-child(9) .fetchOrderDetails', function () {
+      event.preventDefault();
+
+      var row = $(this).closest('tr');
+      var cart_id = $(this).closest('tr').find('td').first().text(); // Get the cart_id from the clicked row
+      var reference_no = row.find('td').eq(1).text(); // ✅ second column (index starts at 0)
+
+
+      $.ajax({
+        url: './../../modals/order/order_details_modal.php', // Path to PHP script to fetch modal content
+        method: 'POST',
+        data: {
+          cart_id: cart_id,
+          reference_no: reference_no
+        },
+        success: function (response) {
+          $('#modalContainerProvider').html(response);
+          $('#showPhoto').modal('show');
+          $('#cart_id').val(cart_id); // Set the cart_id here
+          console.log("#showPhoto: " + cart_id);
+          console.log("reference_no: " + reference_no);
         },
         error: function (xhr, status, error) {
           console.error(xhr.responseText);

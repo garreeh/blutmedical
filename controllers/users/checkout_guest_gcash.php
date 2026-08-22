@@ -16,10 +16,10 @@ header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 
 // Your Xendit API Key Live
-// $apiKey = "xnd_production_bVjZslIVmC9NeJsiEVha5hFY9fSYMZewWjdzjGHcvvWbQ4hOGlWqUMNW5nhxKjU";
+$apiKey = "xnd_production_bVjZslIVmC9NeJsiEVha5hFY9fSYMZewWjdzjGHcvvWbQ4hOGlWqUMNW5nhxKjU";
 
 // API KEY FOR TEST MODE
-$apiKey = "xnd_development_UALkcpzM2t2axMBtO1AVa0Qq9g0rWLy8EfVxD7J7yXqXZoFWxKcbAIAtRO1DwYN";
+// $apiKey = "xnd_development_UALkcpzM2t2axMBtO1AVa0Qq9g0rWLy8EfVxD7J7yXqXZoFWxKcbAIAtRO1DwYN";
 
 // Generate a unique reference ID
 $referenceId = "order-id-" . uniqid();

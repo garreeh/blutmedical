@@ -195,7 +195,7 @@
                 cartContent += '<tr>';
                 cartContent += '<td class="product-thumbnail"><img src="' + baseURL + item.product_image.replace(/^\.\.\//, baseURL + '') + '" alt="' + item.name + '" class="img-fluid"></td>';
                 cartContent += '<td>'
-                  + '<a href="http://localhost/blutmedical/product_details.php?product_id='
+                  + '<a href="http://blutmedical.com/v2/product_details.php?product_id='
                   + item.product_id
                   + '" target="_blank" style="color:#007bff; text-decoration:underline; font-weight:600; cursor:pointer;">'
                   + item.product_name
@@ -279,7 +279,7 @@
 
           cartContentRow += '<td class="product-thumbnail"><img src="' + baseURL + item.product_image.replace(/^\.\.\//, baseURL + '') + '" alt="' + item.product_image + '" class="img-fluid"></td>';
           cartContentRow += '<td>'
-            + '<a href="http://localhost/blutmedical/product_details.php?product_id='
+            + '<a href="http://blutmedical.com/v2/product_details.php?product_id='
             + item.product_id
             + '" target="_blank" style="color:#007bff; text-decoration:underline; font-weight:600; cursor:pointer;">'
             + item.product_name

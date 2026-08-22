@@ -91,7 +91,7 @@ if ($result) {
             <a class="nav-link" data-module="deliveries"
               href="/blutmedical/views/admin/deliveries_module.php?module=deliveries"">
               <i class=" fas fa-fw fa-money-bill"></i>
-              <span>Shipped Orders</span></a>
+              <span>To Ship Orders</span></a>
           </li>
         <?php endif; ?>
 

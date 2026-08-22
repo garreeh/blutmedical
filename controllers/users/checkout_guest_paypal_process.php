@@ -67,8 +67,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $delivery_address = isset($formData['address']) ? $formData['address'] : null;
     $delivery_guest_contact_number = isset($formData['contact_number']) ? $formData['contact_number'] : null;
     $delivery_guest_email = isset($formData['email']) ? $formData['email'] : null;
-    $paypal_order_id = $formData['orderID'];  // This comes from the payload
-    $paypal_payer_id = $formData['payerID'];  // This comes from the payload
+    $paypal_order_id = $formData['orderID'];
+    $paypal_payer_id = $formData['payerID'];
+
+    // Generate a unique reference number
+    do {
+      $randomNumber = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+      $reference_no = 'Paypal-' . $randomNumber;
+
+      $checkReferenceSql = "
+        SELECT 1
+        FROM cart
+        WHERE reference_no = '$reference_no'
+        LIMIT 1
+    ";
+
+      $checkReferenceResult = mysqli_query($conn, $checkReferenceSql);
+
+      if (!$checkReferenceResult) {
+        throw new Exception('Error checking reference number: ' . mysqli_error($conn));
+      }
+
+    } while (mysqli_num_rows($checkReferenceResult) > 0);
+
     $paypal_name = $formData['paypalPayerName'];  // This comes from the payload
     $paypal_email = $formData['paypalPayerEmail'];  // This comes from the payload
     $paypal_contact_number = $formData['paypalPayerContact'];  // This comes from the payload
@@ -86,10 +107,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $productTotalPrice = $productPrice * $cart_quantity;
       $variation_color_id = $item['variation_color_id'];
 
-      // Insert into cart table
-      $sql = "INSERT INTO cart (product_id, variation_color_id, cart_quantity, variation_id, total_price, cart_status, payment_method, delivery_guest_fullname, delivery_address, delivery_guest_contact_number, delivery_guest_email, payment_status, paypal_order_id, paypal_payer_id, paypal_name, paypal_email, paypal_contact_number, paypal_address, paypal_transaction_id) 
-                        VALUES ('$product_id', '$variation_color_id', '$cart_quantity', '$variation_id', '$productTotalPrice', 'Processing', 'Paypal', '$delivery_guest_fullname', '$delivery_address', '$delivery_guest_contact_number', '$delivery_guest_email', 'Unpad', '$paypal_order_id', '$paypal_payer_id', '$paypal_name', '$paypal_email', '$paypal_contact_number', '$paypal_address', '$paypal_transaction_id')";
-
+      $sql = "INSERT INTO cart (
+    product_id,
+    reference_no,
+    variation_color_id,
+    cart_quantity,
+    variation_id,
+    total_price,
+    cart_status,
+    payment_method,
+    delivery_guest_fullname,
+    delivery_address,
+    delivery_guest_contact_number,
+    delivery_guest_email,
+    payment_status,
+    paypal_order_id,
+    paypal_payer_id,
+    paypal_name,
+    paypal_email,
+    paypal_contact_number,
+    paypal_address,
+    paypal_transaction_id
+) 
+VALUES (
+    '$product_id',
+    '$reference_no',
+    '$variation_color_id',
+    '$cart_quantity',
+    '$variation_id',
+    '$productTotalPrice',
+    'Processing',
+    'Paypal',
+    '$delivery_guest_fullname',
+    '$delivery_address',
+    '$delivery_guest_contact_number',
+    '$delivery_guest_email',
+    'Unpaid',
+    '$reference_no',
+    '$paypal_payer_id',
+    '$paypal_name',
+    '$paypal_email',
+    '$paypal_contact_number',
+    '$paypal_address',
+    '$paypal_transaction_id'
+)";
       if (!mysqli_query($conn, $sql)) {
         throw new Exception('Error saving cart: ' . mysqli_error($conn));
       }
@@ -98,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo json_encode([
       'status' => 'success',
       'message' => 'Items saved to cart successfully!',
-      'paypal_order_id' => $paypal_order_id // Send PayPal Order ID back
+      'paypal_order_id' => $paypal_order_id
     ]);
   } catch (Exception $e) {
     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);

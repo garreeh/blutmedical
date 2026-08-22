@@ -1,13 +1,13 @@
 Array
 (
-    [product_id] => 32
-    [price] => -
-    [value] => -
-    [variation_id] => -
+    [product_id] => 28
+    [price] => 3
+    [value] => Test
+    [variation_id] => 5
     [cart_quantity] => 1
-    [product_name] => Blut Pen
-    [product_image] => ../../uploads/2x2.jpg
-    [product_sellingprice] => 1
-    [variation_color_id] => 
-    [color] => -
+    [product_name] => TEST LAST
+    [product_image] => ../../uploads/Front ID Garry.jpeg
+    [product_sellingprice] => 123123
+    [variation_color_id] => 11
+    [color] => Onyx
 )

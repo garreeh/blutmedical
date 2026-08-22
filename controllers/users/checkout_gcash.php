@@ -47,9 +47,6 @@ if (!$user_id) {
   exit;
 }
 
-// ==============================
-// RESET CART (ALWAYS REMOVE VOUCHER FIRST)
-// ==============================
 $sql = "
 UPDATE cart
 SET
@@ -71,9 +68,7 @@ if (!mysqli_query($conn, $sql)) {
 
 $discountAmount = 0;
 
-// ==============================
-// APPLY VOUCHER IF SELECTED
-// ==============================
+
 if ($voucher_id > 0) {
 
   $voucherQuery = mysqli_query($conn, "
@@ -127,7 +122,7 @@ if ($voucher_id > 0) {
 
   $discountAmount = ($amount * $voucherPercentage) / 100;
 
-  $amount -= $discountAmount;
+  $amount += $discountAmount;
 
   if ($amount < 0) {
     $amount = 0;
@@ -138,13 +133,10 @@ if ($voucher_id > 0) {
 // CONVERT CURRENCY
 // ==============================
 $resultCurrency = mysqli_query($conn, "
-    SELECT dollar_currency
-    FROM currency
-    WHERE dollar_id=1
+    SELECT dollar_currency FROM currency WHERE dollar_id = 1
 ");
 
 if (!$resultCurrency || mysqli_num_rows($resultCurrency) == 0) {
-
   echo json_encode([
     'success' => false,
     'message' => 'Failed to fetch currency.'
@@ -230,7 +222,11 @@ if (isset($result['actions']['desktop_web_checkout_url']) || isset($result['acti
   echo json_encode([
     'success' => true,
     'payment_url' => $paymentUrl,
-    'reference_id' => $referenceId
+    'reference_id' => $referenceId,
+    'debug_input_amount' => $input['amount'],
+    'debug_amount_before_conversion' => $amount / $conversionRate,
+    'debug_conversion_rate' => $conversionRate,
+    'debug_final_amount' => $amount
   ]);
 
 } else {
