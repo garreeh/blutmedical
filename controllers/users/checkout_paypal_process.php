@@ -4,16 +4,18 @@ include '../../connections/connections.php';
 session_start();
 
 // PayPal Sandbox
-// $paypalClientId = 'AfcJOedIT9WM3IBgUd8D4uEiAXppkMsftrR2DRtcm8CUco5sptEShId2hujHrtNd_FK7gzOyzbV53zsX';
-// $paypalSecret = 'EGS6Unh1tDJqJZlDz452qIXxa6i5XbHx9ZRg0vHhI6MZWT7QWWlu70KGTWuW6TnEIXJGN01ZGPL__KwM';
+$paypalClientId = 'AfcJOedIT9WM3IBgUd8D4uEiAXppkMsftrR2DRtcm8CUco5sptEShId2hujHrtNd_FK7gzOyzbV53zsX';
+$paypalSecret = 'EGS6Unh1tDJqJZlDz452qIXxa6i5XbHx9ZRg0vHhI6MZWT7QWWlu70KGTWuW6TnEIXJGN01ZGPL__KwM';
 
 // LIVE
-$paypalClientId = 'AR4DFDz9j-s1s4O9bvAfIqeKsDHD8b-q-rPUW7Ay4hm5L_O9K02gyoze73IF1tEA09CF6vm6v1BCBq9D';
-$paypalSecret = 'EONgTKQHhxWDbJVG3VpsHg1_L7ZMilG2tHlVkKFjvXVUwsFPmm3BRrsLOx9h-SzPktKpb3jS1UTiDwrt';
+// $paypalClientId = 'AR4DFDz9j-s1s4O9bvAfIqeKsDHD8b-q-rPUW7Ay4hm5L_O9K02gyoze73IF1tEA09CF6vm6v1BCBq9D';
+// $paypalSecret = 'EONgTKQHhxWDbJVG3VpsHg1_L7ZMilG2tHlVkKFjvXVUwsFPmm3BRrsLOx9h-SzPktKpb3jS1UTiDwrt';
 
 // Get PayPal API access token
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, "https://api-m.paypal.com/v1/oauth2/token");
+// curl_setopt($ch, CURLOPT_URL, "https://api-m.paypal.com/v1/oauth2/token");
+curl_setopt($ch, CURLOPT_URL, "https://api-m.sandbox.paypal.com/v1/oauth2/token");
+
 curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_USERPWD, $paypalClientId . ':' . $paypalSecret);
@@ -38,21 +40,30 @@ $response = curl_exec($ch);
 $httpStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
+
 if ($httpStatus == 200) {
   $paypalAccessToken = json_decode($response)->access_token;
 } else {
-  error_log("Failed to get PayPal API token", 3, 'ipn_error.log');
+  error_log("Failed to get PayPal API token: " . $response, 3, 'ipn_error.log');
+
   http_response_code(400);
+
+  echo json_encode([
+    'success' => false,
+    'message' => 'Failed to get PayPal API token.'
+  ]);
+
   exit;
 }
 
-// Read the API request body
-$requestBody = file_get_contents('php://input');
-$data = json_decode($requestBody, true);
+// FormData is sent as multipart/form-data, so use $_POST
+$data = $_POST;
 
+$response = [
+  'success' => false,
+  'message' => ''
+];
 
-$response = array('success' => false, 'message' => '');
-// Ensure user is logged in
 if (!isset($_SESSION['user_id'])) {
   echo json_encode([
     'success' => false,
@@ -67,9 +78,28 @@ $paymentMethod = $data['paymentCategory'] ?? 'PayPal';
 $voucher_id = isset($data['voucher_id']) ? (int) $data['voucher_id'] : 0;
 $paypal_order_id = $data['orderID'] ?? null;
 
-// Generate unique PayPal reference number
+// Debug
+error_log("PayPal Order ID: " . ($paypal_order_id ?? 'NULL'));
+error_log("Voucher ID: " . $voucher_id);
+error_log("Payment Method: " . $paymentMethod);
+
+if (empty($paypal_order_id)) {
+  echo json_encode([
+    'success' => false,
+    'message' => 'PayPal Order ID is missing.'
+  ]);
+  exit;
+}
+
+// Generate unique reference number
 do {
-  $randomNumber = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+  $randomNumber = str_pad(
+    random_int(0, 999999),
+    6,
+    '0',
+    STR_PAD_LEFT
+  );
+
   $reference_no = 'Paypal-' . $randomNumber;
 
   $checkReferenceSql = "
@@ -79,10 +109,16 @@ do {
         LIMIT 1
     ";
 
-  $checkReferenceResult = mysqli_query($conn, $checkReferenceSql);
+  $checkReferenceResult = mysqli_query(
+    $conn,
+    $checkReferenceSql
+  );
 
-} while ($checkReferenceResult && mysqli_num_rows($checkReferenceResult) > 0);
-// Start transaction
+} while (
+  $checkReferenceResult &&
+  mysqli_num_rows($checkReferenceResult) > 0
+);
+
 mysqli_begin_transaction($conn);
 
 try {
@@ -105,20 +141,21 @@ try {
     throw new Exception('No items found in cart.');
   }
 
-  $totalAmount = 0;
+  $subtotal = 0;
 
   while ($row = mysqli_fetch_assoc($result)) {
+
     $price = (float) $row['product_sellingprice'];
     $qty = (int) $row['cart_quantity'];
 
-    $totalAmount += ($price * $qty);
+    $subtotal += ($price * $qty);
   }
 
-  // ==========================
-  // APPLY VOUCHER
-  // ==========================
+  $totalAmount = $subtotal;
   $discountAmount = 0;
+  $voucherPercent = 0;
 
+  // Apply voucher
   if ($voucher_id > 0) {
 
     $voucherSql = "
@@ -129,38 +166,53 @@ try {
             LIMIT 1
         ";
 
-    $voucherResult = mysqli_query($conn, $voucherSql);
+    $voucherResult = mysqli_query(
+      $conn,
+      $voucherSql
+    );
 
-    if ($voucherResult && mysqli_num_rows($voucherResult) > 0) {
+    if (
+      $voucherResult &&
+      mysqli_num_rows($voucherResult) > 0
+    ) {
 
-      $voucher = mysqli_fetch_assoc($voucherResult);
+      $voucher = mysqli_fetch_assoc(
+        $voucherResult
+      );
 
       $voucherPercent = (float) $voucher['voucher_percentage'];
 
-      $discountAmount = ($totalAmount * $voucherPercent) / 100;
+      $discountAmount =
+        ($subtotal * $voucherPercent) / 100;
 
-      $totalAmount -= $discountAmount;
+      $totalAmount =
+        $subtotal - $discountAmount;
 
       if ($totalAmount < 0) {
         $totalAmount = 0;
       }
 
     } else {
+
       $voucher_id = 0;
+      $discountAmount = 0;
+      $totalAmount = $subtotal;
     }
   }
 
-  // ==========================
-  // UPDATE CART
-  // ==========================
+  $subtotal = round($subtotal, 2);
+  $discountAmount = round($discountAmount, 2);
+  $totalAmount = round($totalAmount, 2);
+
+  // Update cart
   $updateCartSql = "
         UPDATE cart
         SET
-			reference_no = '$reference_no',
+            reference_no = '$reference_no',
             cart_status = 'Processing',
             payment_method = '$paymentMethod',
             payment_status = 'Unpaid',
-            paypal_order_id = '$reference_no',
+            paypal_order_id = '$paypal_order_id',
             voucher_id = '$voucher_id'
         WHERE user_id = '$user_id'
         AND cart_status = 'Cart'
@@ -176,10 +228,12 @@ try {
     'success' => true,
     'message' => 'Checkout successful.',
     'paypal_order_id' => $paypal_order_id,
-    'subtotal' => round($totalAmount + $discountAmount, 2),
-    'discount' => round($discountAmount, 2),
-    'final_total' => round($totalAmount, 2),
-    'voucher_id' => $voucher_id
+    'reference_no' => $reference_no,
+    'subtotal' => $subtotal,
+    'discount' => $discountAmount,
+    'final_total' => $totalAmount,
+    'voucher_id' => $voucher_id,
+    'voucher_percentage' => $voucherPercent
   ]);
 
   exit;
@@ -196,5 +250,4 @@ try {
   exit;
 }
 
-// Output the JSON response
 echo json_encode($response);

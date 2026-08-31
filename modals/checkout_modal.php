@@ -104,12 +104,12 @@
 </div>
 
 <!-- Paypal SandBOX -->
-<!-- <script
-  src="https://www.paypal.com/sdk/js?client-id=AfcJOedIT9WM3IBgUd8D4uEiAXppkMsftrR2DRtcm8CUco5sptEShId2hujHrtNd_FK7gzOyzbV53zsX&currency=USD"></script> -->
+<script
+  src="https://www.paypal.com/sdk/js?client-id=AfcJOedIT9WM3IBgUd8D4uEiAXppkMsftrR2DRtcm8CUco5sptEShId2hujHrtNd_FK7gzOyzbV53zsX&currency=USD"></script>
 
 <!-- Paypal Live -->
-<script
-  src="https://www.paypal.com/sdk/js?client-id=AR4DFDz9j-s1s4O9bvAfIqeKsDHD8b-q-rPUW7Ay4hm5L_O9K02gyoze73IF1tEA09CF6vm6v1BCBq9D&currency=USD"></script>
+<!-- <script
+  src="https://www.paypal.com/sdk/js?client-id=AR4DFDz9j-s1s4O9bvAfIqeKsDHD8b-q-rPUW7Ay4hm5L_O9K02gyoze73IF1tEA09CF6vm6v1BCBq9D&currency=USD"></script> -->
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -378,16 +378,42 @@
       const paymentCategory = $('input[name="paymentCategory"]:checked').val();
 
       var totalAmount = 0;
-      $.each(cartItems, function (index, item) { // Use cartItems here
+      $.each(cartItems, function (index, item) {
+
+        console.log("ITEM:", item);
+        console.log("variation_id:", item.variation_id);
+        console.log("product_sellingprice:", item.product_sellingprice);
+        console.log("price:", item.price);
+
         var cartQuantity = parseInt(item.cart_quantity, 10) || 0;
-        var productPrice = item.variation_id === '-'
-          ? parseFloat(item.product_sellingprice) || 0
-          : parseFloat(item.price) || 0;
+
+        var productPrice;
+
+        // No variation
+        if (
+          item.variation_id === null ||
+          item.variation_id === undefined ||
+          item.variation_id === '' ||
+          item.variation_id === '-'
+        ) {
+          productPrice = parseFloat(item.product_sellingprice) || 0;
+        }
+        // Has variation
+        else {
+          productPrice = parseFloat(item.price) || 0;
+        }
 
         var itemTotal = productPrice * cartQuantity;
 
+        console.log("cartQuantity:", cartQuantity);
+        console.log("SELECTED productPrice:", productPrice);
+        console.log("itemTotal:", itemTotal);
+
         totalAmount += itemTotal;
       });
+
+      console.log("================================");
+      console.log("FINAL TOTAL AMOUNT:", totalAmount);
 
       var formData = new FormData($('#checkoutForm')[0]);
       formData.append('amount', totalAmount);
@@ -794,13 +820,60 @@
 
         onApprove: function (data, actions) {
           return actions.order.capture().then(function (details) {
-            var formData = new FormData($('#checkoutForm')[0]); // Create FormData from form
+            console.log("=================================");
+            console.log("PAYPAL PAYMENT APPROVED");
+            console.log("=================================");
 
-            // Append orderID to FormData
+            console.log("PayPal Details:", details);
+            console.log("PayPal Order ID:", data.orderID);
+
+            // Check voucher directly from the hidden input
+            console.log("Voucher input value:", $("#voucher_id").val());
+
+            // Create FormData from checkout form
+            var formData = new FormData($('#checkoutForm')[0]);
+
+            console.log("=================================");
+            console.log("FORM DATA BEFORE APPENDING ORDER ID");
+            console.log("=================================");
+
+            // Log every FormData value
+            for (let pair of formData.entries()) {
+              console.log(pair[0] + ":", pair[1]);
+            }
+
+            // Specifically check voucher
+            console.log(
+              "Voucher ID from FormData:",
+              formData.get('voucher_id')
+            );
+
+            console.log(
+              "Payment Category from FormData:",
+              formData.get('paymentCategory')
+            );
+
+            // Append PayPal Order ID
             formData.append('orderID', data.orderID);
 
-            // Check if orderID is added
-            console.log(formData.get('orderID'));
+            console.log("=================================");
+            console.log("FORM DATA AFTER APPENDING ORDER ID");
+            console.log("=================================");
+
+            // Log FormData again
+            for (let pair of formData.entries()) {
+              console.log(pair[0] + ":", pair[1]);
+            }
+
+            console.log(
+              "Final Voucher ID:",
+              formData.get('voucher_id')
+            );
+
+            console.log(
+              "Final PayPal Order ID:",
+              formData.get('orderID')
+            );
 
 
             // Send the form data via AJAX

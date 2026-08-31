@@ -2,15 +2,16 @@
 include '../../connections/connections.php';
 
 // PayPal Sandbox
-// $paypalClientId = 'AfcJOedIT9WM3IBgUd8D4uEiAXppkMsftrR2DRtcm8CUco5sptEShId2hujHrtNd_FK7gzOyzbV53zsX';
-// $paypalSecret = 'EGS6Unh1tDJqJZlDz452qIXxa6i5XbHx9ZRg0vHhI6MZWT7QWWlu70KGTWuW6TnEIXJGN01ZGPL__KwM';
+$paypalClientId = 'AfcJOedIT9WM3IBgUd8D4uEiAXppkMsftrR2DRtcm8CUco5sptEShId2hujHrtNd_FK7gzOyzbV53zsX';
+$paypalSecret = 'EGS6Unh1tDJqJZlDz452qIXxa6i5XbHx9ZRg0vHhI6MZWT7QWWlu70KGTWuW6TnEIXJGN01ZGPL__KwM';
 
 // LIVE
-$paypalClientId = 'AR4DFDz9j-s1s4O9bvAfIqeKsDHD8b-q-rPUW7Ay4hm5L_O9K02gyoze73IF1tEA09CF6vm6v1BCBq9D';
-$paypalSecret = 'EONgTKQHhxWDbJVG3VpsHg1_L7ZMilG2tHlVkKFjvXVUwsFPmm3BRrsLOx9h-SzPktKpb3jS1UTiDwrt';
+// $paypalClientId = 'AR4DFDz9j-s1s4O9bvAfIqeKsDHD8b-q-rPUW7Ay4hm5L_O9K02gyoze73IF1tEA09CF6vm6v1BCBq9D';
+// $paypalSecret = 'EONgTKQHhxWDbJVG3VpsHg1_L7ZMilG2tHlVkKFjvXVUwsFPmm3BRrsLOx9h-SzPktKpb3jS1UTiDwrt';
 
 // Get PayPal API access token
 $ch = curl_init();
+// curl_setopt($ch, CURLOPT_URL, "https://api-m.paypal.com/v1/oauth2/token");
 curl_setopt($ch, CURLOPT_URL, "https://api-m.sandbox.paypal.com/v1/oauth2/token");
 curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

@@ -8,6 +8,6 @@ Array
     [product_name] => TEST LAST
     [product_image] => ../../uploads/Front ID Garry.jpeg
     [product_sellingprice] => 123123
-    [variation_color_id] => 11
-    [color] => Onyx
+    [variation_color_id] => 12
+    [color] => Sapphire
 )
